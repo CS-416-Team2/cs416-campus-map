@@ -1,0 +1,108 @@
+"use client";
+
+import Image from "next/image";
+import { Calendar, MapPin, Share2, Bookmark } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ParkingSuggestions } from "@/components/events/ParkingSuggestions";
+import { cn } from "@/lib/utils";
+import type { CampusEvent, EventCategory } from "@/types";
+
+const categoryConfig: Record<
+  EventCategory,
+  { variant: "orange" | "green" | "blue"; label: string }
+> = {
+  orange: { variant: "orange", label: "Event – Orange" },
+  green: { variant: "green", label: "Event – Green" },
+  blue: { variant: "blue", label: "Event – Blue" },
+};
+
+interface EventCardProps {
+  event: CampusEvent;
+  isActive?: boolean;
+  onSelect?: (event: CampusEvent) => void;
+}
+
+export function EventCard({ event, isActive = false, onSelect }: EventCardProps) {
+  const { variant, label } = categoryConfig[event.category];
+
+  return (
+    <article
+      className={cn(
+        "flex flex-col bg-white border rounded-xl overflow-hidden transition-all",
+        isActive
+          ? "border-2 border-secondary shadow-md ring-2 ring-secondary/10"
+          : "border border-outline-variant hover:shadow-lg hover:border-outline",
+      )}
+      aria-label={event.title}
+    >
+      {/* Image */}
+      <div
+        className={cn(
+          "relative overflow-hidden",
+          isActive ? "h-48" : "h-40",
+        )}
+      >
+        <Image
+          src={event.imageUrl}
+          alt={event.title}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 480px"
+        />
+        <div className="absolute top-3 left-3">
+          <Badge variant={variant}>{label}</Badge>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="p-md space-y-md">
+        <div className="flex justify-between items-start gap-3">
+          <div>
+            <h3 className="text-headline-sm text-on-surface">{event.title}</h3>
+            <div className="flex items-center gap-1.5 text-secondary text-label-md mt-1">
+              <Calendar className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>
+                {event.date} • {event.time}
+              </span>
+            </div>
+          </div>
+          <button
+            aria-label={`Bookmark ${event.title}`}
+            className="text-secondary hover:text-secondary/80 transition-colors mt-0.5 shrink-0"
+          >
+            <Bookmark className="w-5 h-5" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 text-on-surface-variant text-body-sm">
+          <MapPin className="w-4 h-4 shrink-0" aria-hidden="true" />
+          <span>{event.location}</span>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2 pt-1">
+          <Button
+            className="flex-1"
+            onClick={() => onSelect?.(event)}
+            aria-label={`Register for ${event.title}`}
+          >
+            Register
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label={`Share ${event.title}`}
+          >
+            <Share2 className="w-4 h-4" aria-hidden="true" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Parking suggestions for the active/selected card */}
+      {isActive && event.parking.length > 0 && (
+        <ParkingSuggestions spots={event.parking} />
+      )}
+    </article>
+  );
+}
