@@ -123,7 +123,7 @@ export default function RoutingPage() {
           </div>
 
           {/* Swap button */}
-          <div className="flex justify-center -my-0.5 relative z-10 my-2">
+          <div className="flex justify-center -my-0.5 relative z-10">
             <button
               onClick={swapLocations}
               aria-label="Swap origin and destination"
