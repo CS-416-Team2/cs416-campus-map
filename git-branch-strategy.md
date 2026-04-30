@@ -1,6 +1,6 @@
 # Git Branch Workflow Instructions
 
-## Project: PNW Student Life Events Website
+## Project: UML and Developments on Linux Platform
 
 A full-stack web application for Purdue University Northwest that displays student life events, handles event registration, suggests parking lots, and provides driving routes via map integration.
 
@@ -173,7 +173,7 @@ git pull origin develop
 ## Project Structure
 
 ```
-student-life-events/
+cs416-campus-map/
 ├── frontend/              # Frontend application
 ├── backend/               # Backend API server
 ├── database/              # MySQL schema, migrations, seed data
