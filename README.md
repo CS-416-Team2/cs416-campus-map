@@ -1,4 +1,4 @@
-# CS416 Course Dashboard
+# CS416 Campus Map
 
 PLACEHOLDER
 
