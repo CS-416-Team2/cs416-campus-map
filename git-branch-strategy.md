@@ -2,13 +2,13 @@
 
 ## Project: UML and Developments on Linux Platform
 
-A full-stack web application for Purdue University Northwest that displays student life events, handles event registration, suggests parking lots, and provides driving routes via map integration.
+A full-stack web application for Purdue University Northwest that displays student life events with hyperlinks to the official PNW events page, suggests parking lots, and provides driving routes via Mapbox integration.
 
-**Tech Stack:** Frontend (React/Next.js), Backend (Node.js/Python/Flask), Database (MySQL), Containerization (Docker), OS (Ubuntu via VirtualBox)
+**Tech Stack:** Frontend (Next.js / React / TypeScript / Tailwind CSS / shadcn/ui), Backend (Next.js API Routes), Database (Supabase / PostgreSQL), Deployment (Vercel), OS (Ubuntu via VirtualBox)
 
 This project uses:
 
-- `main` → stable, production-ready code
+- `release` → stable, production-ready code (deployed on Vercel)
 - `develop` → main development branch
 - `feature/...` → individual features and bug fixes
 
@@ -17,8 +17,8 @@ This project uses:
 ## 1. Clone the Repository (once)
 
 ```bash
-git clone <REPO_URL>
-cd <REPO_NAME>
+git clone https://github.com/CS-416-Team2/cs416-campus-map.git
+cd cs416-campus-map
 ```
 
 ---
@@ -26,8 +26,8 @@ cd <REPO_NAME>
 ## 2. Get the Latest Branches
 
 ```bash
-git checkout main
-git pull origin main
+git checkout release
+git pull origin release
 git checkout develop
 git pull origin develop
 ```
@@ -36,7 +36,7 @@ git pull origin develop
 
 ## 3. Create Your Feature Branch FROM `develop`
 
-Always branch off `develop`, NOT `main`.
+Always branch off `develop`, NOT `release`.
 
 ```bash
 git checkout develop
@@ -47,12 +47,11 @@ git checkout -b feature/your-feature-name
 Examples:
 
 ```bash
-git checkout -b feature/event-listing-page
-git checkout -b feature/student-registration-api
-git checkout -b feature/parking-lot-search
-git checkout -b feature/driving-route-map
-git checkout -b feature/mysql-schema
-git checkout -b feature/docker-setup
+git checkout -b feature/event-listing
+git checkout -b feature/map-markers
+git checkout -b feature/parking-api
+git checkout -b feature/driving-route
+git checkout -b feature/supabase-schema
 ```
 
 ---
@@ -76,12 +75,15 @@ git push
 ### Commit Message Examples
 
 ```
-feat: add event listing page with ascending date sort
-feat: create student registration API endpoint
-feat: integrate OpenStreetMap for driving routes
-fix: correct MySQL connection timeout issue
-docs: add API endpoint documentation
-chore: update Docker Compose configuration
+feat: display events sorted ascending by date
+feat: add hyperlink button to PNW events page
+feat: render event markers with popup cards
+feat: add directions API route with mapbox geocoding
+feat: create events and parking_lots tables
+feat: seed parking lot data with coordinates
+fix: correct marker position on campus map
+docs: update git-branch-strategy.md
+chore: setup tailwind and shadcn/ui
 ```
 
 ---
@@ -108,33 +110,35 @@ git merge develop
    - **Compare branch:** `feature/your-feature-name`
 4. Add a title and description
 5. Click **"Create Pull Request"**
+6. Post the PR link in the Discord QA channel for review
 
 ---
 
 ## Merging the Pull Request
 
-1. Review changes
+1. QA reviews and tests the changes
 2. Click **"Merge Pull Request"**
 3. Click **"Confirm Merge"**
 4. Delete the branch after merging (recommended)
 
 ---
 
-## Merging `develop` into `main`
+## Merging `develop` into `release`
 
 When the team is ready to push stable code to production:
 
 1. Create a Pull Request:
-   - **Base:** `main`
+   - **Base:** `release`
    - **Compare:** `develop`
 2. Review and approve
 3. Merge on GitHub
+4. Vercel automatically deploys from `release`
 
 After merging, everyone should pull the latest:
 
 ```bash
-git checkout main
-git pull origin main
+git checkout release
+git pull origin release
 git checkout develop
 git pull origin develop
 ```
@@ -144,29 +148,24 @@ git pull origin develop
 ## Branch Naming Examples
 
 ### Frontend
-- `feature/event-listing-page`
-- `feature/event-detail-modal`
-- `feature/student-registration-form`
+- `feature/event-listing`
+- `feature/event-detail-view`
+- `feature/map-markers`
 - `feature/parking-lot-display`
-- `feature/driving-route-map`
+- `feature/driving-route`
+- `feature/mobile-layout`
 - `fix/event-sort-order`
 
 ### Backend
 - `feature/events-api`
-- `feature/registration-api`
 - `feature/parking-api`
-- `feature/map-api-integration`
-- `fix/db-connection-error`
+- `feature/directions-api`
+- `fix/api-error-handling`
 
 ### Database
-- `feature/mysql-schema`
+- `feature/supabase-schema`
 - `feature/seed-event-data`
-
-### DevOps
-- `feature/docker-compose`
-- `feature/dockerfile-frontend`
-- `feature/dockerfile-backend`
-- `chore/update-docker-config`
+- `feature/seed-parking-data`
 
 ---
 
@@ -174,9 +173,11 @@ git pull origin develop
 
 ```
 cs416-campus-map/
-├── frontend/              # Frontend application
-├── backend/               # Backend API server
-├── database/              # MySQL schema, migrations, seed data
+├── frontend/              # Next.js application
+│   ├── app/               # App Router pages and API routes
+│   ├── components/        # React components
+│   └── package.json
+├── docs/                  # Diagrams, screenshots
 ├── .gitignore
 ├── README.md
 └── git-branch-strategy.md
@@ -186,11 +187,12 @@ cs416-campus-map/
 
 ## Rules
 
-- **NEVER** push directly to `main` or `develop`
+- **NEVER** push directly to `release` or `develop`
 - **ALWAYS** branch from `develop`
 - **ALL** feature work goes into `develop` via Pull Requests
-- **ONLY** `develop` gets merged into `main` when stable
+- **ONLY** `develop` gets merged into `release` when stable
 - Keep your branch updated regularly to avoid conflicts
+- Post all PRs in the Discord QA channel for review
 - Take screenshots of your contributions for the project report
 - All team members must have visible commits and pull requests on GitHub
 
