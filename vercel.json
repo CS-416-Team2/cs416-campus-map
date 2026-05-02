@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build --prefix frontend/course_map",
-  "devCommand": "npm run dev --prefix frontend/course_map",
-  "installCommand": "npm install --prefix frontend/course_map",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
   "framework": "nextjs"
 }
