@@ -1,0 +1,10 @@
+{
+  "name": "cs416-campus-map",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm install --prefix frontend/course_map",
+    "dev": "npm run dev --prefix frontend/course_map",
+    "build": "npm run build --prefix frontend/course_map",
+    "start": "npm run start --prefix frontend/course_map"
+  }
+}
