@@ -12,29 +12,27 @@ export function RouteOverlay() {
 
   return (
     <Source id="route-source" type="geojson" data={routeData.geoJson}>
-      {/* Glow shadow rendered behind the main line */}
+      {/* Casing (border) rendered behind the main line */}
       <Layer
         id="route-layer-shadow"
         type="line"
         source="route-source"
         layout={{ "line-join": "round", "line-cap": "round" }}
         paint={{
-          "line-color": "#86f2e4",
-          "line-width": ["interpolate", ["linear"], ["zoom"], 12, 6, 18, 20],
-          "line-opacity": 0.3,
-          "line-blur": ["interpolate", ["linear"], ["zoom"], 12, 2, 18, 6],
+          "line-color": "#2563eb",
+          "line-width": ["interpolate", ["linear"], ["zoom"], 12, 5, 18, 14],
+          "line-opacity": 1,
         }}
       />
-      {/* Main dashed teal route line */}
+      {/* Main solid blue route line */}
       <Layer
         id="route-layer"
         type="line"
         source="route-source"
         layout={{ "line-join": "round", "line-cap": "round" }}
         paint={{
-          "line-color": "rgba(177, 129, 12, 1)",
+          "line-color": "#3b82f6",
           "line-width": ["interpolate", ["linear"], ["zoom"], 12, 3, 18, 8],
-          "line-dasharray": [2, 2],
         }}
       />
     </Source>

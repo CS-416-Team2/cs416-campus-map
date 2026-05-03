@@ -256,12 +256,14 @@ export default function RoutingPage() {
     <div className="relative flex h-full overflow-hidden">
       {/* Map */}
       <div className="absolute inset-0">
-        <MapContainer>
+        <MapContainer mapStyle={isNavigating ? "mapbox://styles/mapbox/navigation-night-v1" : undefined}>
           <RouteOverlay />
           {userLocation && (
             <Marker longitude={userLocation[0]} latitude={userLocation[1]} anchor="center">
-              <div className="bg-white p-2.5 rounded-full shadow-lg border-[3px] border-secondary flex items-center justify-center animate-pulse-slow">
-                <Navigation className="w-5 h-5 text-secondary fill-secondary" style={{ transform: "rotate(-45deg)" }} aria-hidden="true" />
+              <div className="bg-white p-1 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)] border-[3px] border-white flex items-center justify-center animate-pulse-slow">
+                <div className="bg-blue-500 rounded-full p-2 flex items-center justify-center">
+                  <Navigation className="w-6 h-6 text-white fill-white" style={{ transform: "rotate(-45deg)" }} aria-hidden="true" />
+                </div>
               </div>
             </Marker>
           )}

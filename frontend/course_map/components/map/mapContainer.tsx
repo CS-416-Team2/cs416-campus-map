@@ -10,9 +10,10 @@ const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 interface MapContainerProps {
   children?: React.ReactNode;
   className?: string;
+  mapStyle?: string;
 }
 
-export function MapContainer({ children, className }: MapContainerProps) {
+export function MapContainer({ children, className, mapStyle = "mapbox://styles/mapbox/streets-v12" }: MapContainerProps) {
   const { viewState, setViewState } = useMapStore();
 
   const handleMove = useCallback(
@@ -65,7 +66,7 @@ export function MapContainer({ children, className }: MapContainerProps) {
       <Map
         {...viewState}
         onMove={handleMove}
-        mapStyle="mapbox://styles/mapbox/streets-v12"
+        mapStyle={mapStyle}
         mapboxAccessToken={MAPBOX_TOKEN}
         style={{ width: "100%", height: "100%" }}
         reuseMaps
