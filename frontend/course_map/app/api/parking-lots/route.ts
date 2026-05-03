@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
-import {
-  EventInsertSchema,
-  EventFilterSchema,
-  PaginationSchema,
-} from "@/lib/validators";
+import { ParkingLotInsertSchema, PaginationSchema } from "@/lib/validators";
 import { handleApiError } from "@/lib/api-error";
 import { rateLimit } from "@/lib/rate-limit";
 import { withSecurityHeaders } from "@/lib/security-headers";
@@ -16,9 +12,8 @@ import {
 } from "@/lib/api-helpers";
 
 /**
- * GET /api/events
- * Public — list events with optional filters and pagination.
- * Eager-loads event_parking_suggestions to prevent N+1.
+ * GET /api/parking-lots
+ * Public — list parking lots with pagination.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -26,44 +21,30 @@ export async function GET(request: NextRequest) {
     if (limited) return withSecurityHeaders(limited);
 
     const { searchParams } = new URL(request.url);
-    const filters = EventFilterSchema.parse({
-      category: searchParams.get("category") ?? undefined,
-      tag: searchParams.get("tag") ?? undefined,
-      search: searchParams.get("search") ?? undefined,
-    });
+    const campus = searchParams.get("campus");
     const pagination = PaginationSchema.parse({
       page: searchParams.get("page") ?? undefined,
       limit: searchParams.get("limit") ?? undefined,
-      orderBy: searchParams.get("orderBy") ?? "created_at",
-      direction: searchParams.get("direction") ?? undefined,
+      orderBy: searchParams.get("orderBy") ?? "name",
+      direction: searchParams.get("direction") ?? "asc",
     });
 
     const supabase = getSupabaseAdmin();
     const { from, to } = paginationRange(pagination.page, pagination.limit);
 
     let query = supabase
-      .from("events")
-      .select(
-        "*, event_parking_suggestions(*, parking_lots(*))",
-        { count: "exact" },
-      )
-      .order(pagination.orderBy ?? "created_at", {
+      .from("parking_lots")
+      .select("*", { count: "exact" })
+      .order(pagination.orderBy ?? "name", {
         ascending: pagination.direction === "asc",
       })
       .range(from, to);
 
-    if (filters.category) {
-      query = query.eq("category", filters.category);
-    }
-    if (filters.tag) {
-      query = query.contains("tags", [filters.tag]);
-    }
-    if (filters.search) {
-      query = query.ilike("title", `%${filters.search}%`);
+    if (campus) {
+      query = query.eq("campus", campus);
     }
 
     const { data, error, count } = await query;
-
     if (error) throw error;
 
     return withSecurityHeaders(
@@ -75,8 +56,8 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/events
- * Admin-only — create a new event.
+ * POST /api/parking-lots
+ * Admin-only — create a parking lot.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -87,11 +68,11 @@ export async function POST(request: NextRequest) {
     await requireAdmin(user.id);
 
     const body = await request.json();
-    const validated = EventInsertSchema.parse(body);
+    const validated = ParkingLotInsertSchema.parse(body);
 
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
-      .from("events")
+      .from("parking_lots")
       .insert(validated)
       .select()
       .single();
