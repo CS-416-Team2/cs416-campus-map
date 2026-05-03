@@ -71,6 +71,7 @@ export default function RoutingPage() {
     setSelectedEvent,
     selectedEvent,
     userLocation,
+    selectedDestination,
     setViewState,
   } = useMapStore();
 
