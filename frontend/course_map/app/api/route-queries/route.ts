@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
-import {
-  EventInsertSchema,
-  EventFilterSchema,
-  PaginationSchema,
-} from "@/lib/validators";
+import { RouteQueryInsertSchema, PaginationSchema } from "@/lib/validators";
 import { handleApiError } from "@/lib/api-error";
 import { rateLimit } from "@/lib/rate-limit";
 import { withSecurityHeaders } from "@/lib/security-headers";
-import {
-  requireAuth,
-  requireAdmin,
-  paginationRange,
-  paginatedResponse,
-} from "@/lib/api-helpers";
+import { paginationRange, paginatedResponse } from "@/lib/api-helpers";
 
 /**
- * GET /api/events
- * Public — list events with optional filters and pagination.
- * Eager-loads event_parking_suggestions to prevent N+1.
+ * GET /api/route-queries
+ * Public — list route queries with optional ?event_id= filter.
+ * Eager-loads events to prevent N+1.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -26,11 +17,7 @@ export async function GET(request: NextRequest) {
     if (limited) return withSecurityHeaders(limited);
 
     const { searchParams } = new URL(request.url);
-    const filters = EventFilterSchema.parse({
-      category: searchParams.get("category") ?? undefined,
-      tag: searchParams.get("tag") ?? undefined,
-      search: searchParams.get("search") ?? undefined,
-    });
+    const eventId = searchParams.get("event_id");
     const pagination = PaginationSchema.parse({
       page: searchParams.get("page") ?? undefined,
       limit: searchParams.get("limit") ?? undefined,
@@ -42,28 +29,18 @@ export async function GET(request: NextRequest) {
     const { from, to } = paginationRange(pagination.page, pagination.limit);
 
     let query = supabase
-      .from("events")
-      .select(
-        "*, event_parking_suggestions(*, parking_lots(*))",
-        { count: "exact" },
-      )
+      .from("route_queries")
+      .select("*, events(*)", { count: "exact" })
       .order(pagination.orderBy ?? "created_at", {
         ascending: pagination.direction === "asc",
       })
       .range(from, to);
 
-    if (filters.category) {
-      query = query.eq("category", filters.category);
-    }
-    if (filters.tag) {
-      query = query.contains("tags", [filters.tag]);
-    }
-    if (filters.search) {
-      query = query.ilike("title", `%${filters.search}%`);
+    if (eventId) {
+      query = query.eq("event_id", eventId);
     }
 
     const { data, error, count } = await query;
-
     if (error) throw error;
 
     return withSecurityHeaders(
@@ -75,23 +52,20 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/events
- * Admin-only — create a new event.
+ * POST /api/route-queries
+ * Public — log a route query.
  */
 export async function POST(request: NextRequest) {
   try {
-    const limited = rateLimit(request, 30, 60_000);
+    const limited = rateLimit(request, 60, 60_000);
     if (limited) return withSecurityHeaders(limited);
 
-    const user = await requireAuth(request);
-    await requireAdmin(user.id);
-
     const body = await request.json();
-    const validated = EventInsertSchema.parse(body);
+    const validated = RouteQueryInsertSchema.parse(body);
 
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
-      .from("events")
+      .from("route_queries")
       .insert(validated)
       .select()
       .single();

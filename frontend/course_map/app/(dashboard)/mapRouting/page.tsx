@@ -53,27 +53,17 @@ async function geocodeAddress(
 
 function getGPSLocation(): Promise<[number, number] | null> {
   return new Promise((resolve) => {
-    // Fallback campus coordinates for testing when GPS is unavailable
-    const FALLBACK_COORDS: [number, number] = [-87.4732, 41.5834];
-
-    if (!navigator.geolocation) {
-      console.warn("Geolocation API not available, using fallback.");
-      return resolve(FALLBACK_COORDS);
-    }
-    
+    if (!navigator.geolocation) return resolve(null);
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => resolve([coords.longitude, coords.latitude]),
-      (err) => {
-        console.warn("GPS unavailable or denied, using fallback.", err);
-        resolve(FALLBACK_COORDS);
-      },
-      { timeout: 3_000, maximumAge: 60_000 },
+      () => resolve(null),
+      { timeout: 10_000 },
     );
   });
 }
 
 export default function RoutingPage() {
-  const { data: routeData, isLoading: isRouteLoading, refetch: refetchRoute } = useDirections();
+  const { data: routeData, isLoading: isRouteLoading } = useDirections();
   const { data: events = [], isLoading: isEventsLoading } = useEvents();
   const {
     setUserLocation,
@@ -81,7 +71,6 @@ export default function RoutingPage() {
     setSelectedEvent,
     selectedEvent,
     userLocation,
-    selectedDestination,
     setViewState,
   } = useMapStore();
 
@@ -137,13 +126,9 @@ export default function RoutingPage() {
     try {
       // ── Origin ────────────────────────────────────────────────────────────
       if (origin === "Current Location") {
-        // Always attempt GPS so we get fresh coords and trigger a queryKey change
-        const coords = await getGPSLocation();
-        if (coords) {
-          setUserLocation(coords);
-        } else if (!userLocation) {
-          // GPS unavailable and no cached location — can't navigate
-          return;
+        if (!userLocation) {
+          const coords = await getGPSLocation();
+          if (coords) setUserLocation(coords);
         }
       } else {
         const coords = await geocodeAddress(origin);
@@ -151,29 +136,14 @@ export default function RoutingPage() {
       }
 
       // ── Destination ───────────────────────────────────────────────────────
-      // If the user hasn't changed the destination text from the selected event,
-      // skip geocoding and use the precise event coordinates we already have.
-      // Geocoding generic names like "Hammond Campus" can return wrong locations.
-      if (selectedEvent && destination === selectedEvent.location && selectedDestination) {
-        // Keep existing selectedDestination
-      } else {
-        const destCoords = await geocodeAddress(destination);
-        if (destCoords) {
-          setSelectedDestination(destCoords);
-        } else if (!selectedDestination) {
-          // No geocoded result and no pre-selected destination — can't navigate
-          return;
-        }
-      }
-      // If destCoords is null but selectedDestination is already set (from an
-      // event), we keep it and just refetch with the current store values.
+      // Always geocode the destination text so the user's typed input is used.
+      // If geocoding fails (e.g. internal campus name), the existing
+      // selectedDestination that was set from the map page is preserved.
+      const destCoords = await geocodeAddress(destination);
+      if (destCoords) setSelectedDestination(destCoords);
     } finally {
       setIsGeocoding(false);
     }
-
-    // Force a fresh directions fetch even if the store values haven't changed
-    // (e.g. user clicked the button a second time with the same origin/dest).
-    refetchRoute();
   };
 
   return (
