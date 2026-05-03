@@ -21,9 +21,9 @@ const categoryBadgeVariant: Record<EventCategory, "orange" | "green" | "blue"> =
   };
 
 const categoryLabel: Record<EventCategory, string> = {
-  orange: "Event – Orange",
-  green: "Event – Green",
-  blue: "Event – Blue",
+  orange: "Event â€“ Orange",
+  green: "Event â€“ Green",
+  blue: "Event â€“ Blue",
 };
 
 export function LocationCard({ event, onClose, onNavigate }: LocationCardProps) {
@@ -51,7 +51,7 @@ export function LocationCard({ event, onClose, onNavigate }: LocationCardProps) 
             {event.title}
           </h3>
           <p className="text-body-sm text-on-surface-variant">
-            {event.location} • {event.date}
+            {event.location} â€¢ {event.date}
           </p>
         </div>
         <button

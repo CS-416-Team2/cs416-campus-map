@@ -74,7 +74,7 @@ export function EventCard({
             <div className="flex items-center gap-1.5 text-secondary text-label-md mt-1">
               <Calendar className="w-4 h-4 shrink-0" aria-hidden="true" />
               <span>
-                {event.date} • {event.time}
+                {event.date} â€¢ {event.time}
               </span>
             </div>
           </div>
