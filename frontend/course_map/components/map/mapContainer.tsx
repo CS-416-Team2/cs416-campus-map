@@ -65,7 +65,7 @@ export function MapContainer({ children, className }: MapContainerProps) {
       <Map
         {...viewState}
         onMove={handleMove}
-        mapStyle="mapbox://styles/mapbox/light-v11"
+        mapStyle="mapbox://styles/mapbox/streets-v12"
         mapboxAccessToken={MAPBOX_TOKEN}
         style={{ width: "100%", height: "100%" }}
         reuseMaps
