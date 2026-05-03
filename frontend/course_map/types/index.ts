@@ -1,3 +1,13 @@
+export type {
+  Database,
+  Json,
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+  Enums,
+  Constants,
+} from "./database";
+
 export type EventCategory = "orange" | "green" | "blue";
 
 export type EventTag = "academic" | "athletics" | "social" | "workshops";
