@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 const navLinks = [
   { label: "Map Dashboard", href: "/map" },
   { label: "Event Explorer", href: "/events" },
-  { label: "Routing & Nav", href: "/mapRouting" },
+  { label: "Navigation", href: "/mapRouting" },
   { label: "My Schedule", href: "/eventSchedule" },
 ];
 
