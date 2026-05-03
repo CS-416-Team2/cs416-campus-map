@@ -1,69 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
-import {
-  EventInsertSchema,
-  EventFilterSchema,
-  PaginationSchema,
-} from "@/lib/validators";
+import { UserProfileInsertSchema, PaginationSchema } from "@/lib/validators";
 import { handleApiError } from "@/lib/api-error";
 import { rateLimit } from "@/lib/rate-limit";
 import { withSecurityHeaders } from "@/lib/security-headers";
 import {
   requireAuth,
-  requireAdmin,
   paginationRange,
   paginatedResponse,
 } from "@/lib/api-helpers";
 
 /**
- * GET /api/events
- * Public — list events with optional filters and pagination.
- * Eager-loads event_parking_suggestions to prevent N+1.
+ * GET /api/user-profiles
+ * Authenticated — list profiles (admin can see all, users see their own).
  */
 export async function GET(request: NextRequest) {
   try {
     const limited = rateLimit(request);
     if (limited) return withSecurityHeaders(limited);
 
+    const user = await requireAuth(request);
+
     const { searchParams } = new URL(request.url);
-    const filters = EventFilterSchema.parse({
-      category: searchParams.get("category") ?? undefined,
-      tag: searchParams.get("tag") ?? undefined,
-      search: searchParams.get("search") ?? undefined,
-    });
     const pagination = PaginationSchema.parse({
       page: searchParams.get("page") ?? undefined,
       limit: searchParams.get("limit") ?? undefined,
-      orderBy: searchParams.get("orderBy") ?? "created_at",
-      direction: searchParams.get("direction") ?? undefined,
     });
 
     const supabase = getSupabaseAdmin();
     const { from, to } = paginationRange(pagination.page, pagination.limit);
 
+    // Check if admin
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single();
+
     let query = supabase
-      .from("events")
-      .select(
-        "*, event_parking_suggestions(*, parking_lots(*))",
-        { count: "exact" },
-      )
-      .order(pagination.orderBy ?? "created_at", {
-        ascending: pagination.direction === "asc",
-      })
+      .from("user_profiles")
+      .select("*", { count: "exact" })
       .range(from, to);
 
-    if (filters.category) {
-      query = query.eq("category", filters.category);
-    }
-    if (filters.tag) {
-      query = query.contains("tags", [filters.tag]);
-    }
-    if (filters.search) {
-      query = query.ilike("title", `%${filters.search}%`);
+    // Non-admins can only see their own profile
+    if (!roleData || roleData.role !== "admin") {
+      query = query.eq("user_id", user.id);
     }
 
     const { data, error, count } = await query;
-
     if (error) throw error;
 
     return withSecurityHeaders(
@@ -75,8 +59,8 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/events
- * Admin-only — create a new event.
+ * POST /api/user-profiles
+ * Authenticated — create own profile (upsert).
  */
 export async function POST(request: NextRequest) {
   try {
@@ -84,15 +68,16 @@ export async function POST(request: NextRequest) {
     if (limited) return withSecurityHeaders(limited);
 
     const user = await requireAuth(request);
-    await requireAdmin(user.id);
-
     const body = await request.json();
-    const validated = EventInsertSchema.parse(body);
+    const validated = UserProfileInsertSchema.parse({
+      ...body,
+      user_id: user.id, // Force to authenticated user
+    });
 
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
-      .from("events")
-      .insert(validated)
+      .from("user_profiles")
+      .upsert(validated, { onConflict: "user_id" })
       .select()
       .single();
 
