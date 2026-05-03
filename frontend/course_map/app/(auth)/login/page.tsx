@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { AuthWindow } from "@/components/auth/AuthWindow";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/map";
@@ -137,5 +137,22 @@ export default function LoginPage() {
         </button>
       </form>
     </AuthWindow>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-full flex items-center justify-center">
+          <Loader2
+            className="w-6 h-6 animate-spin text-secondary"
+            aria-hidden="true"
+          />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }
