@@ -278,7 +278,7 @@ export default function RoutingPage() {
       {/* Route panel */}
       {panelOpen && (
         <div
-          className="absolute top-6 left-6 w-96 max-h-[calc(100%-3rem)] overflow-y-auto bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-200 flex flex-col p-6 z-30"
+          className="absolute top-4 left-4 right-4 w-auto md:top-6 md:left-6 md:right-auto md:w-96 max-h-[calc(100%-2rem)] md:max-h-[calc(100%-3rem)] overflow-y-auto bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-200 flex flex-col p-4 md:p-6 z-30"
           role="complementary"
           aria-label="Route planning panel"
         >
@@ -521,7 +521,7 @@ export default function RoutingPage() {
       {!panelOpen && (
         <button
           onClick={() => setPanelOpen(true)}
-          className="absolute top-6 left-6 z-30 bg-white border border-slate-200 rounded-xl shadow-lg px-4 py-3 text-label-md text-on-surface flex items-center gap-2 hover:shadow-xl transition-all"
+          className="absolute top-4 left-4 md:top-6 md:left-6 z-30 bg-white border border-slate-200 rounded-xl shadow-lg px-4 py-3 text-label-md text-on-surface flex items-center gap-2 hover:shadow-xl transition-all"
           aria-label="Open route planning panel"
         >
           <Navigation className="w-4 h-4 text-secondary" aria-hidden="true" />
