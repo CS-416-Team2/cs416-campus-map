@@ -12,7 +12,7 @@ import { useMapStore } from "@/hooks/use-map-store";
 import type { CampusEvent, EventTag, MapMarkerData } from "@/types";
 
 type FilterValue = "all" | EventTag;
-const CAMPUS_CENTER: [number, number] = [-87.4732, 41.5834];
+const CAMPUS_CENTER: [number, number] = [-87.47357432996594, 41.58392629103461];
 const CAMPUS_RADIUS_MILES = 1.5;
 
 function toRadians(value: number) {
