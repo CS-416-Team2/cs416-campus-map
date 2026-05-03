@@ -53,11 +53,21 @@ async function geocodeAddress(
 
 function getGPSLocation(): Promise<[number, number] | null> {
   return new Promise((resolve) => {
-    if (!navigator.geolocation) return resolve(null);
+    // Fallback campus coordinates for testing when GPS is unavailable
+    const FALLBACK_COORDS: [number, number] = [-87.4732, 41.5834];
+
+    if (!navigator.geolocation) {
+      console.warn("Geolocation API not available, using fallback.");
+      return resolve(FALLBACK_COORDS);
+    }
+    
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => resolve([coords.longitude, coords.latitude]),
-      () => resolve(null),
-      { timeout: 10_000 },
+      (err) => {
+        console.warn("GPS unavailable or denied, using fallback.", err);
+        resolve(FALLBACK_COORDS);
+      },
+      { timeout: 3_000, maximumAge: 60_000 },
     );
   });
 }
