@@ -59,7 +59,9 @@ export function MapContainer({ children, className }: MapContainerProps) {
   }
 
   return (
-    <div className={`relative w-full h-full overflow-hidden ${className ?? ""}`}>
+    <div
+      className={`relative w-full h-full overflow-hidden ${className ?? ""}`}
+    >
       <Map
         {...viewState}
         onMove={handleMove}

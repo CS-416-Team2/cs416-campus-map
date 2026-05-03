@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Building2,
   CalendarCheck,
@@ -10,16 +10,16 @@ import {
   Landmark,
   MapPin,
   Footprints,
-  Plus,
-  Minus,
 } from "lucide-react";
 import { MapContainer } from "@/components/map/mapContainer";
 import { LocationCard } from "@/components/map/LocationCard";
+import { MapMarker } from "@/components/map/MapMarker";
+import { RouteOverlay } from "@/components/map/routeOverlay";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useMapStore } from "@/hooks/use-map-store";
 import { CAMPUS_EVENTS } from "@/data/events";
-import type { MapLayerId } from "@/types";
+import type { MapLayerId, MapMarkerData } from "@/types";
 
 const campusLayers = [
   { id: "buildings" as MapLayerId, label: "Buildings", Icon: Building2, color: "text-secondary" },
@@ -33,47 +33,81 @@ const localLayers = [
   { id: "banks" as MapLayerId, label: "Banks", Icon: Landmark, color: "text-[#6366f1]" },
 ];
 
+const eventMarkers: MapMarkerData[] = CAMPUS_EVENTS.map((e) => ({
+  id: e.id,
+  type: "event",
+  name: e.title,
+  coordinates: e.coordinates,
+  color: "#f59e0b",
+  eventId: e.id,
+}));
+
 export default function MapPage() {
-  const { activeLayers, toggleLayer, selectedEvent, setSelectedEvent, setSelectedDestination } =
-    useMapStore();
+  const router = useRouter();
+  const {
+    activeLayers,
+    toggleLayer,
+    selectedEvent,
+    setSelectedEvent,
+    setSelectedDestination,
+    setUserLocation,
+    setViewState,
+  } = useMapStore();
+
+  const handleCenterLocation = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const { longitude, latitude } = coords;
+        setUserLocation([longitude, latitude]);
+        setViewState({ longitude, latitude, zoom: 16 });
+      },
+      () => {
+        // Permission denied or position unavailable — nothing to do
+      },
+    );
+  };
+
+  const handleStartWalking = () => {
+    router.push("/mapRouting");
+  };
 
   const handleNavigate = () => {
-    if (selectedEvent) setSelectedDestination(selectedEvent.coordinates);
+    if (selectedEvent) {
+      setSelectedDestination(selectedEvent.coordinates);
+      router.push("/mapRouting");
+    }
   };
 
   return (
     <div className="relative h-full w-full overflow-hidden" aria-label="Campus map dashboard">
-      <MapContainer />
-
-      {/* Zoom controls */}
-      <div
-        className="absolute top-4 right-4 z-30 flex flex-col bg-white rounded-lg shadow-lg border border-slate-200 divide-y divide-slate-100"
-        role="group"
-        aria-label="Zoom controls"
-      >
-        <button
-          aria-label="Zoom in"
-          className="p-3 hover:bg-slate-50 text-on-surface-variant transition-colors"
-        >
-          <Plus className="w-4 h-4" aria-hidden="true" />
-        </button>
-        <button
-          aria-label="Zoom out"
-          className="p-3 hover:bg-slate-50 text-on-surface-variant transition-colors"
-        >
-          <Minus className="w-4 h-4" aria-hidden="true" />
-        </button>
-      </div>
+      <MapContainer>
+        <RouteOverlay />
+        {activeLayers.events &&
+          eventMarkers.map((marker) => (
+            <MapMarker
+              key={marker.id}
+              marker={marker}
+              isActive={selectedEvent?.id === marker.eventId}
+              onClick={() => {
+                const event = CAMPUS_EVENTS.find((e) => e.id === marker.eventId);
+                if (event) setSelectedEvent(event);
+              }}
+            />
+          ))}
+      </MapContainer>
 
       {/* Floating action buttons */}
       <div className="absolute bottom-8 right-8 flex flex-col gap-4 z-30">
         <button
+          onClick={handleCenterLocation}
           aria-label="Center on my location"
           className="w-14 h-14 bg-white text-on-surface-variant rounded-full flex items-center justify-center shadow-2xl hover:bg-surface-container-low transition-colors active:scale-90"
         >
           <MapPin className="w-5 h-5" aria-hidden="true" />
         </button>
         <button
+          onClick={handleStartWalking}
           aria-label="Start walking navigation"
           className="w-14 h-14 bg-secondary text-on-secondary rounded-full flex items-center justify-center shadow-2xl hover:opacity-90 active:scale-90 transition-all"
         >
