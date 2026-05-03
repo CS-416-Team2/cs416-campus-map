@@ -12,7 +12,9 @@ import {
   Sun,
   LocateFixed,
   Loader2,
+  MapPin,
 } from "lucide-react";
+import { Marker } from "react-map-gl";
 import { Button } from "@/components/ui/button";
 import { MapContainer } from "@/components/map/mapContainer";
 import { RouteOverlay } from "@/components/map/routeOverlay";
@@ -200,6 +202,20 @@ export default function RoutingPage() {
       <div className="absolute inset-0">
         <MapContainer>
           <RouteOverlay />
+          {userLocation && (
+            <Marker longitude={userLocation[0]} latitude={userLocation[1]} anchor="center">
+              <div className="bg-white p-2.5 rounded-full shadow-lg border-[3px] border-secondary flex items-center justify-center animate-pulse-slow">
+                <Navigation className="w-5 h-5 text-secondary fill-secondary" style={{ transform: "rotate(45deg)" }} aria-hidden="true" />
+              </div>
+            </Marker>
+          )}
+          {selectedDestination && (
+            <Marker longitude={selectedDestination[0]} latitude={selectedDestination[1]} anchor="bottom">
+              <div className="text-error drop-shadow-md">
+                <MapPin className="w-10 h-10 fill-error" aria-hidden="true" />
+              </div>
+            </Marker>
+          )}
         </MapContainer>
       </div>
 

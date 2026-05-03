@@ -70,7 +70,13 @@ export function MapContainer({ children, className }: MapContainerProps) {
         style={{ width: "100%", height: "100%" }}
         reuseMaps
       >
-        <GeolocateControl position="top-right" />
+        <GeolocateControl 
+          position="top-right" 
+          trackUserLocation={true}
+          showUserHeading={true}
+          showUserLocation={true}
+          positionOptions={{ enableHighAccuracy: true }}
+        />
         <NavigationControl position="top-right" />
         {children}
       </Map>
