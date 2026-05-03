@@ -36,7 +36,7 @@ export function Navbar() {
       {/* Logo (visible only on mobile since sidebar is hidden) */}
       <div className="flex items-center gap-6">
         <span className="text-xl font-black text-slate-900 tracking-tight lg:hidden">
-          CampusNav
+          PNW Event Map
         </span>
 
 
