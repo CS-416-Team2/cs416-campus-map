@@ -37,7 +37,7 @@ export const useMapStore = create<MapState>((set) => ({
   selectedDestination: null,
   activeLayers: {
     buildings: true,
-    events: false,
+    events: true,
     parking: true,
     restaurants: true,
     banks: false,

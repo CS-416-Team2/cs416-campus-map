@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Bell, HelpCircle, UserCircle, Search } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Bell, HelpCircle, UserCircle, Search, LogOut, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 const navLinks = [
   { label: "Map Dashboard", href: "/map" },
@@ -14,6 +15,18 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isLoading, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+    router.refresh();
+  };
+
+  const displayName = user?.user_metadata?.first_name
+    ? `${user.user_metadata.first_name} ${user.user_metadata.last_name ?? ""}`.trim()
+    : user?.email ?? "";
 
   return (
     <header
@@ -80,12 +93,48 @@ export function Navbar() {
         >
           <HelpCircle className="w-5 h-5 text-on-surface-variant" aria-hidden="true" />
         </button>
-        <button
-          aria-label="Account"
-          className="p-1 rounded-full hover:bg-surface-container transition-colors active:scale-95"
-        >
-          <UserCircle className="w-7 h-7 text-on-surface-variant" aria-hidden="true" />
-        </button>
+
+        {!isLoading && (
+          <>
+            {user ? (
+              <div className="flex items-center gap-1">
+                <div
+                  className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-surface-container transition-colors"
+                  title={displayName}
+                >
+                  <UserCircle className="w-7 h-7 text-secondary" aria-hidden="true" />
+                  <span className="hidden md:block text-body-sm font-medium text-on-surface max-w-[120px] truncate">
+                    {displayName}
+                  </span>
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  aria-label="Sign out"
+                  className="p-2 rounded-full hover:bg-red-50 hover:text-error transition-colors active:scale-95"
+                >
+                  <LogOut className="w-5 h-5 text-on-surface-variant" aria-hidden="true" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-on-secondary text-label-sm font-semibold hover:opacity-90 transition-opacity"
+              >
+                <LogIn className="w-4 h-4" aria-hidden="true" />
+                Sign In
+              </Link>
+            )}
+          </>
+        )}
+
+        {isLoading && (
+          <button
+            aria-label="Account"
+            className="p-1 rounded-full hover:bg-surface-container transition-colors active:scale-95"
+          >
+            <UserCircle className="w-7 h-7 text-on-surface-variant" aria-hidden="true" />
+          </button>
+        )}
       </div>
     </header>
   );

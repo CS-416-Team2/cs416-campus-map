@@ -30,7 +30,9 @@ const STEP_ICONS: Record<string, string> = {
   merge: "⤵",
 };
 
-async function geocodeAddress(address: string): Promise<[number, number] | null> {
+async function geocodeAddress(
+  address: string,
+): Promise<[number, number] | null> {
   if (!MAPBOX_TOKEN || !address.trim()) return null;
   try {
     const url =
@@ -72,8 +74,8 @@ export default function RoutingPage() {
   const [origin, setOrigin] = useState(() =>
     userLocation ? "Current Location" : "",
   );
-  const [destination, setDestination] = useState(() =>
-    selectedEvent?.location ?? "",
+  const [destination, setDestination] = useState(
+    () => selectedEvent?.location ?? "",
   );
   const [showSteps, setShowSteps] = useState(true);
   const [panelOpen, setPanelOpen] = useState(true);
@@ -148,7 +150,9 @@ export default function RoutingPage() {
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-headline-sm text-on-surface">Plan Your Route</h2>
+            <h2 className="text-headline-sm text-on-surface">
+              Plan Your Route
+            </h2>
             <button
               onClick={() => setPanelOpen(false)}
               aria-label="Close route panel"
@@ -160,11 +164,17 @@ export default function RoutingPage() {
 
           {/* Origin */}
           <div className="space-y-1">
-            <label htmlFor="route-origin" className="text-label-sm text-outline block">
+            <label
+              htmlFor="route-origin"
+              className="text-label-sm text-outline block"
+            >
               Your Location
             </label>
             <div className="flex items-center bg-surface-container-low rounded-lg px-3 py-2.5 border border-outline-variant gap-2">
-              <Navigation className="w-4 h-4 text-secondary shrink-0" aria-hidden="true" />
+              <Navigation
+                className="w-4 h-4 text-secondary shrink-0"
+                aria-hidden="true"
+              />
               <input
                 id="route-origin"
                 type="text"
@@ -191,17 +201,26 @@ export default function RoutingPage() {
               aria-label="Swap origin and destination"
               className="bg-white border border-outline-variant p-1.5 rounded-full shadow-sm hover:bg-slate-50 transition-colors"
             >
-              <ArrowUpDown className="w-4 h-4 text-on-surface-variant" aria-hidden="true" />
+              <ArrowUpDown
+                className="w-4 h-4 text-on-surface-variant"
+                aria-hidden="true"
+              />
             </button>
           </div>
 
           {/* Destination */}
           <div className="space-y-1">
-            <label htmlFor="route-dest" className="text-label-sm text-outline block">
+            <label
+              htmlFor="route-dest"
+              className="text-label-sm text-outline block"
+            >
               Destination
             </label>
             <div className="flex items-center bg-surface-container-low rounded-lg px-3 py-2.5 border border-outline-variant gap-2">
-              <div className="w-4 h-4 rounded-full bg-error shrink-0" aria-hidden="true" />
+              <div
+                className="w-4 h-4 rounded-full bg-error shrink-0"
+                aria-hidden="true"
+              />
               <input
                 id="route-dest"
                 type="text"
@@ -214,7 +233,10 @@ export default function RoutingPage() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 my-6" aria-label="Route statistics">
+          <div
+            className="grid grid-cols-3 gap-3 my-6"
+            aria-label="Route statistics"
+          >
             {[
               {
                 label: "Distance",
@@ -233,7 +255,9 @@ export default function RoutingPage() {
                 key={label}
                 className="bg-slate-50 p-3 rounded-lg text-center border border-slate-100"
               >
-                <p className="text-label-sm text-on-surface-variant uppercase">{label}</p>
+                <p className="text-label-sm text-on-surface-variant uppercase">
+                  {label}
+                </p>
                 <p className="text-headline-sm text-secondary mt-1">{value}</p>
               </div>
             ))}
@@ -263,7 +287,9 @@ export default function RoutingPage() {
                 aria-expanded={showSteps}
                 aria-controls="directions-list"
               >
-                <span className="text-label-md text-on-surface">Step-by-Step Directions</span>
+                <span className="text-label-md text-on-surface">
+                  Step-by-Step Directions
+                </span>
                 <ChevronDown
                   className={cn(
                     "w-4 h-4 text-on-surface-variant transition-transform",
@@ -278,16 +304,26 @@ export default function RoutingPage() {
                   {steps.map((step, i) => (
                     <li key={i} className="flex gap-4">
                       <div className="flex flex-col items-center shrink-0">
-                        <span className="text-secondary text-lg leading-none" aria-hidden="true">
+                        <span
+                          className="text-secondary text-lg leading-none"
+                          aria-hidden="true"
+                        >
                           {STEP_ICONS[step.icon] ?? "→"}
                         </span>
                         {i < steps.length - 1 && (
-                          <div className="w-px flex-1 bg-slate-100 mt-2" aria-hidden="true" />
+                          <div
+                            className="w-px flex-1 bg-slate-100 mt-2"
+                            aria-hidden="true"
+                          />
                         )}
                       </div>
                       <div className="flex-1 pb-2">
-                        <p className="text-body-sm text-on-surface">{step.instruction}</p>
-                        <p className="text-[11px] text-on-surface-variant mt-1">{step.distance}</p>
+                        <p className="text-body-sm text-on-surface">
+                          {step.instruction}
+                        </p>
+                        <p className="text-[11px] text-on-surface-variant mt-1">
+                          {step.distance}
+                        </p>
                       </div>
                     </li>
                   ))}
@@ -310,23 +346,6 @@ export default function RoutingPage() {
         </button>
       )}
 
-      {/* Right-side controls */}
-      <div className="absolute right-6 top-6 flex flex-col gap-3 z-30">
-        {[
-          { Icon: Layers, label: "Toggle layers" },
-          { Icon: Plus, label: "Zoom in" },
-          { Icon: Minus, label: "Zoom out" },
-        ].map(({ Icon, label }) => (
-          <button
-            key={label}
-            aria-label={label}
-            className="bg-white p-3 rounded-lg shadow-lg border border-slate-200 hover:bg-slate-50 transition-colors active:scale-95"
-          >
-            <Icon className="w-5 h-5 text-on-surface-variant" aria-hidden="true" />
-          </button>
-        ))}
-      </div>
-
       {/* Bottom status bar */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30">
         <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-slate-200 flex items-center gap-2">
@@ -334,7 +353,10 @@ export default function RoutingPage() {
           <span className="text-label-sm">72°F Sunny</span>
         </div>
         <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-slate-200 flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-green-500" aria-hidden="true" />
+          <span
+            className="h-2 w-2 rounded-full bg-green-500"
+            aria-hidden="true"
+          />
           <span className="text-label-sm">Traffic: Light</span>
         </div>
       </div>

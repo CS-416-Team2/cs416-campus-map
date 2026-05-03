@@ -59,7 +59,10 @@ export default function EventsPage() {
         </div>
 
         {/* Event list */}
-        <div className="flex-1 overflow-y-auto p-lg space-y-card-gap" role="list">
+        <div
+          className="flex-1 overflow-y-auto p-lg space-y-card-gap"
+          role="list"
+        >
           {isLoading ? (
             <EventListSkeleton />
           ) : filtered.length === 0 ? (
@@ -81,39 +84,14 @@ export default function EventsPage() {
       </section>
 
       {/* ── Right panel: map ──────────────────────────────────────────── */}
-      <section className="flex-1 relative hidden md:block" aria-label="Events map">
+      <section
+        className="flex-1 relative hidden md:block"
+        aria-label="Events map"
+      >
         <MapContainer />
 
-        {/* Map controls */}
-        <div className="absolute bottom-lg right-lg flex flex-col gap-2 z-20">
-          <button
-            aria-label="Center on my location"
-            className="w-12 h-12 bg-white rounded-xl shadow-lg border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-slate-50 active:scale-95 transition-all"
-          >
-            <MapPin className="w-5 h-5" aria-hidden="true" />
-          </button>
-          <div
-            className="flex flex-col bg-white rounded-xl shadow-lg border border-outline-variant divide-y divide-outline-variant"
-            role="group"
-            aria-label="Zoom controls"
-          >
-            <button
-              aria-label="Zoom in"
-              className="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:bg-slate-50 active:scale-95 transition-all"
-            >
-              <Plus className="w-4 h-4" aria-hidden="true" />
-            </button>
-            <button
-              aria-label="Zoom out"
-              className="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:bg-slate-50 active:scale-95 transition-all"
-            >
-              <Minus className="w-4 h-4" aria-hidden="true" />
-            </button>
-          </div>
-        </div>
-
         {/* Map legend */}
-        <div className="absolute top-lg right-lg z-20">
+        <div className="absolute top-lg right-16 z-20">
           <div className="bg-white/90 backdrop-blur-md p-md rounded-xl shadow-lg border border-outline-variant w-48">
             <h5 className="text-label-md mb-2 text-on-surface">Map Layers</h5>
             <div className="space-y-sm">
@@ -122,14 +100,19 @@ export default function EventsPage() {
                 { label: "Parking Lots", checked: true },
                 { label: "Campus Transit", checked: false },
               ].map(({ label }) => (
-                <label key={label} className="flex items-center gap-3 cursor-pointer">
+                <label
+                  key={label}
+                  className="flex items-center gap-3 cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     defaultChecked={label !== "Campus Transit"}
                     aria-label={label}
                     className="w-4 h-4 rounded border-outline text-secondary focus:ring-secondary accent-secondary"
                   />
-                  <span className="text-label-sm text-on-surface-variant">{label}</span>
+                  <span className="text-label-sm text-on-surface-variant">
+                    {label}
+                  </span>
                 </label>
               ))}
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Map,
   Compass,
@@ -9,10 +9,14 @@ import {
   CalendarDays,
   University,
   PlusCircle,
+  ShieldCheck,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
-const navItems = [
+const baseNavItems = [
   { label: "Map Dashboard", href: "/map", icon: Map },
   { label: "Event Explorer", href: "/events", icon: Compass },
   { label: "Routing & Nav", href: "/mapRouting", icon: Navigation },
@@ -25,6 +29,21 @@ interface SidebarProps {
 
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, role, isLoading, signOut } = useAuth();
+
+  const navItems = [
+    ...baseNavItems,
+    ...(role === "admin"
+      ? [{ label: "Admin Dashboard", href: "/admin", icon: ShieldCheck }]
+      : []),
+  ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <aside
@@ -75,15 +94,50 @@ export function Sidebar({ className }: SidebarProps) {
         })}
       </nav>
 
-      {/* Register CTA */}
-      <div className="mt-auto px-4 pb-6">
-        <Link
-          href="/eventCreator"
-          className="flex items-center justify-center gap-2 w-full bg-secondary text-on-secondary py-3 px-4 rounded-lg text-label-md font-bold hover:opacity-90 transition-opacity active:scale-[0.98]"
-        >
-          <PlusCircle className="w-4 h-4" aria-hidden="true" />
-          Register Event
-        </Link>
+      {/* Bottom section */}
+      <div className="mt-auto px-4 pb-6 space-y-3">
+        {/* Register Event CTA — students only */}
+        {!isLoading && role === "student" && (
+          <Link
+            href="/eventCreator"
+            className="flex items-center justify-center gap-2 w-full bg-secondary text-on-secondary py-3 px-4 rounded-lg text-label-md font-bold hover:opacity-90 transition-opacity active:scale-[0.98]"
+          >
+            <PlusCircle className="w-4 h-4" aria-hidden="true" />
+            Register Event
+          </Link>
+        )}
+
+        {/* Auth actions */}
+        {!isLoading && (
+          <>
+            {user ? (
+              <div className="border-t border-slate-200 pt-3 space-y-1">
+                <p className="px-2 text-[11px] text-on-surface-variant truncate">
+                  {user.user_metadata?.first_name
+                    ? `${user.user_metadata.first_name} ${user.user_metadata.last_name ?? ""}`
+                    : user.email}
+                </p>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-slate-100 hover:text-error transition-colors"
+                >
+                  <LogOut className="w-4 h-4" aria-hidden="true" />
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <div className="border-t border-slate-200 pt-3">
+                <Link
+                  href="/login"
+                  className="flex items-center justify-center gap-2 w-full border border-secondary text-secondary py-2.5 px-4 rounded-lg text-label-md font-semibold hover:bg-teal-50 transition-colors"
+                >
+                  <LogIn className="w-4 h-4" aria-hidden="true" />
+                  Sign In
+                </Link>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </aside>
   );

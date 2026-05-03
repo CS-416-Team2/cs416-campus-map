@@ -19,7 +19,7 @@ import { RouteOverlay } from "@/components/map/routeOverlay";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useMapStore } from "@/hooks/use-map-store";
-import { CAMPUS_EVENTS } from "@/data/events";
+import { useEvents } from "@/hooks/use-events";
 import type { MapLayerId, MapMarkerData } from "@/types";
 
 const campusLayers = [
@@ -34,15 +34,6 @@ const localLayers = [
   { id: "banks" as MapLayerId, label: "Banks", Icon: Landmark, color: "text-[#6366f1]" },
 ];
 
-const eventMarkers: MapMarkerData[] = CAMPUS_EVENTS.map((e) => ({
-  id: e.id,
-  type: "event",
-  name: e.title,
-  coordinates: e.coordinates,
-  color: "#f59e0b",
-  eventId: e.id,
-}));
-
 export default function MapPage() {
   const router = useRouter();
   const {
@@ -54,6 +45,17 @@ export default function MapPage() {
     setUserLocation,
     setViewState,
   } = useMapStore();
+
+  const { data: events = [] } = useEvents();
+
+  const eventMarkers: MapMarkerData[] = events.map((e) => ({
+    id: e.id,
+    type: "event",
+    name: e.title,
+    coordinates: e.coordinates,
+    color: "#f59e0b",
+    eventId: e.id,
+  }));
 
   const handleCenterLocation = () => {
     if (!navigator.geolocation) return;
@@ -92,7 +94,7 @@ export default function MapPage() {
               marker={marker}
               isActive={selectedEvent?.id === marker.eventId}
               onClick={() => {
-                const event = CAMPUS_EVENTS.find((e) => e.id === marker.eventId);
+                const event = events.find((e) => e.id === marker.eventId);
                 if (event) setSelectedEvent(event);
               }}
             />
@@ -129,7 +131,7 @@ export default function MapPage() {
         </div>
       </div>
 
-      {/* Selected location card */}
+      {/* Selected location card / event preview */}
       {selectedEvent ? (
         <div className="absolute bottom-8 left-4 z-30">
           <LocationCard
@@ -138,23 +140,23 @@ export default function MapPage() {
             onNavigate={handleNavigate}
           />
         </div>
-      ) : (
+      ) : events.length > 0 ? (
         <div className="absolute bottom-8 left-4 z-30">
           <button
-            onClick={() => setSelectedEvent(CAMPUS_EVENTS[0])}
+            onClick={() => setSelectedEvent(events[0])}
             className="bg-white/90 backdrop-blur-md border border-slate-200 rounded-xl shadow-lg px-4 py-3 flex items-center gap-3 hover:shadow-xl transition-all active:scale-95"
-            aria-label="View Annual Tech Innovation Summit event"
+            aria-label={`View ${events[0].title} event`}
           >
             <span className="inline-flex px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded uppercase tracking-wider">
               Event
             </span>
             <div className="text-left">
-              <p className="text-label-md text-on-surface">Annual Tech Summit</p>
-              <p className="text-body-sm text-on-surface-variant">Main Auditorium • 200m away</p>
+              <p className="text-label-md text-on-surface">{events[0].title}</p>
+              <p className="text-body-sm text-on-surface-variant">{events[0].location}</p>
             </div>
           </button>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

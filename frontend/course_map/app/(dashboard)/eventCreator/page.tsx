@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Send, Info, AlertCircle, RocketIcon, Clock } from "lucide-react";
+import { Send, Info, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,12 +26,16 @@ import {
   RegistrationSchema,
   type RegistrationFormValues,
 } from "@/lib/validators";
-import { SELECTABLE_EVENTS } from "@/data/events";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { useEvents } from "@/hooks/use-events";
 
 export default function EventCreatorPage() {
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
+  const { data: events = [], isLoading: eventsLoading } = useEvents();
   const [submitted, setSubmitted] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
@@ -41,11 +47,52 @@ export default function EventCreatorPage() {
     resolver: zodResolver(RegistrationSchema),
   });
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace("/login?next=/eventCreator");
+    }
+  }, [authLoading, user, router]);
+
   const onSubmit = async (data: RegistrationFormValues) => {
-    // In production: POST to /api/register or call Supabase directly
-    await new Promise((r) => setTimeout(r, 800));
-    console.log("Registration submitted:", data);
-    setSubmitted(true);
+    setApiError(null);
+
+    const studentId = user?.user_metadata?.student_id as string | undefined;
+    if (!studentId) {
+      setApiError(
+        "Your account must have a student ID to register for events.",
+      );
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/registrations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          first_name: data.firstName.trim(),
+          middle_name: data.middleName?.trim() || null,
+          last_name: data.lastName.trim(),
+          student_id: studentId,
+          event_id: data.eventId,
+          status: "registered",
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(
+          payload?.message ||
+            "Unable to submit registration. Please try again.",
+        );
+      }
+
+      setSubmitted(true);
+      reset();
+    } catch (error) {
+      setApiError(error instanceof Error ? error.message : "Unknown error");
+    }
   };
 
   if (submitted) {
@@ -89,6 +136,12 @@ export default function EventCreatorPage() {
                 events. Please ensure all details match your university record.
               </p>
             </div>
+
+            {apiError && (
+              <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg mx-8 mt-6">
+                {apiError}
+              </div>
+            )}
 
             <form
               onSubmit={handleSubmit(onSubmit)}
@@ -205,11 +258,21 @@ export default function EventCreatorPage() {
                       <SelectValue placeholder="Choose an event" />
                     </SelectTrigger>
                     <SelectContent>
-                      {SELECTABLE_EVENTS.map(({ value, label }) => (
-                        <SelectItem key={value} value={value}>
-                          {label}
+                      {eventsLoading ? (
+                        <SelectItem value="loading" disabled>
+                          Loading events...
                         </SelectItem>
-                      ))}
+                      ) : events.length > 0 ? (
+                        events.map((event) => (
+                          <SelectItem key={event.id} value={event.id}>
+                            {event.title} — {event.date}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-events" disabled>
+                          No events available
+                        </SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                   {errors.eventId && (
@@ -251,9 +314,21 @@ export default function EventCreatorPage() {
                 >
                   Clear Form
                 </Button>
-                <Button type="submit" disabled={isSubmitting} className="gap-2">
-                  {isSubmitting ? "Submitting…" : "Submit Registration"}
-                  {!isSubmitting && (
+                <Button
+                  type="submit"
+                  disabled={
+                    isSubmitting || eventsLoading || events.length === 0
+                  }
+                  className="gap-2"
+                >
+                  {isSubmitting
+                    ? "Submitting…"
+                    : eventsLoading
+                      ? "Loading events…"
+                      : events.length === 0
+                        ? "No events available"
+                        : "Submit Registration"}
+                  {!isSubmitting && !eventsLoading && events.length > 0 && (
                     <Send className="w-4 h-4" aria-hidden="true" />
                   )}
                 </Button>
@@ -263,38 +338,6 @@ export default function EventCreatorPage() {
 
           {/* ── Sidebar ────────────────────────────────────────── */}
           <div className="lg:col-span-5 space-y-6">
-            {/* Event spotlight */}
-            <Card className="relative overflow-hidden">
-              <div className="relative z-10">
-                <CardHeader>
-                  <CardTitle>Event Spotlight</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center text-on-secondary shrink-0">
-                      <RocketIcon className="w-5 h-5" aria-hidden="true" />
-                    </div>
-                    <div>
-                      <p className="text-label-md text-on-surface">
-                        Annual Tech Career Fair
-                      </p>
-                      <p className="text-body-sm text-on-surface-variant">
-                        <Clock
-                          className="w-3.5 h-3.5 inline mr-1"
-                          aria-hidden="true"
-                        />
-                        Tomorrow, 10:00 AM • Main Hall
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-body-sm text-on-surface-variant">
-                    Connect with 50+ leading technology firms. Bring your
-                    digital portfolio and prepare for on-the-spot interviews.
-                  </p>
-                </CardContent>
-              </div>
-            </Card>
-
             {/* Registration status */}
             <Card>
               <CardHeader>
