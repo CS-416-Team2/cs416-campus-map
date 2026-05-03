@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { EventCard } from "@/components/events/EventCard";
 import { EventFilters } from "@/components/events/EventFilters";
@@ -49,6 +49,7 @@ export default function EventsPage() {
   const [search, setSearch] = useState("");
   const [activeEvent, setActiveEvent] = useState<CampusEvent | null>(null);
   const [showOffCampusEvents, setShowOffCampusEvents] = useState(true);
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const { data: events = [], isLoading } = useEvents(filter);
   const {
@@ -80,8 +81,8 @@ export default function EventsPage() {
     ? eventMarkers
     : eventMarkers.filter((marker) => isOnCampusEvent(marker.coordinates));
 
-  const handleSelect = (event: CampusEvent) => {
-    setActiveEvent((prev) => (prev?.id === event.id ? null : event));
+  const handleSelect = (event: CampusEvent, fromMarker = false) => {
+    setActiveEvent(event);
     setSelectedEvent(event);
     setSelectedDestination(event.coordinates);
     setViewState({
@@ -89,6 +90,13 @@ export default function EventsPage() {
       latitude: event.coordinates[1],
       zoom: 16,
     });
+
+    if (fromMarker) {
+      cardRefs.current[event.id]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
   };
 
   return (
@@ -129,12 +137,19 @@ export default function EventsPage() {
               No events found
             </p>
           ) : (
-            filtered.map((event) => (
-              <div key={event.id} role="listitem">
+            filtered.map((event, index) => (
+              <div
+                key={event.id}
+                role="listitem"
+                ref={(el) => {
+                  cardRefs.current[event.id] = el;
+                }}
+              >
                 <EventCard
                   event={event}
                   isActive={activeEvent?.id === event.id}
                   onSelect={handleSelect}
+                  eagerImage={index === 0}
                 />
               </div>
             ))
@@ -157,7 +172,7 @@ export default function EventsPage() {
                 isActive={activeEvent?.id === marker.eventId}
                 onClick={() => {
                   const event = filtered.find((e) => e.id === marker.eventId);
-                  if (event) handleSelect(event);
+                  if (event) handleSelect(event, true);
                 }}
               />
             ))}

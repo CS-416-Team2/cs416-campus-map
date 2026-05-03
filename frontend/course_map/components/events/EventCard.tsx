@@ -11,13 +11,20 @@ interface EventCardProps {
   event: CampusEvent;
   isActive?: boolean;
   onSelect?: (event: CampusEvent) => void;
+  eagerImage?: boolean;
 }
 
-export function EventCard({ event, isActive = false, onSelect }: EventCardProps) {
+export function EventCard({
+  event,
+  isActive = false,
+  onSelect,
+  eagerImage = false,
+}: EventCardProps) {
   return (
     <article
+      onClick={() => onSelect?.(event)}
       className={cn(
-        "flex flex-col bg-white border rounded-xl overflow-hidden transition-all",
+        "flex flex-col bg-white border rounded-xl overflow-hidden transition-all cursor-pointer",
         isActive
           ? "border-2 border-secondary shadow-md ring-2 ring-secondary/10"
           : "border border-outline-variant hover:shadow-lg hover:border-outline",
@@ -37,6 +44,8 @@ export function EventCard({ event, isActive = false, onSelect }: EventCardProps)
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 480px"
+          loading={eagerImage ? "eager" : "lazy"}
+          priority={eagerImage}
         />
         <div className="absolute top-3 left-3">
           <span className="inline-flex px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded uppercase tracking-wider">
@@ -58,6 +67,7 @@ export function EventCard({ event, isActive = false, onSelect }: EventCardProps)
             </div>
           </div>
           <button
+            onClick={(e) => e.stopPropagation()}
             aria-label={`Bookmark ${event.title}`}
             className="text-secondary hover:text-secondary/80 transition-colors mt-0.5 shrink-0"
           >
@@ -74,7 +84,10 @@ export function EventCard({ event, isActive = false, onSelect }: EventCardProps)
         <div className="flex gap-2 pt-1">
           <Button
             className="flex-1"
-            onClick={() => onSelect?.(event)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect?.(event);
+            }}
             aria-label={`Register for ${event.title}`}
           >
             Register
@@ -82,6 +95,7 @@ export function EventCard({ event, isActive = false, onSelect }: EventCardProps)
           <Button
             variant="outline"
             size="icon"
+            onClick={(e) => e.stopPropagation()}
             aria-label={`Share ${event.title}`}
           >
             <Share2 className="w-4 h-4" aria-hidden="true" />

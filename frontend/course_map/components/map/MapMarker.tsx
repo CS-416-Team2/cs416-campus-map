@@ -39,7 +39,7 @@ export function MapMarker({ marker, isActive = false, onClick }: MapMarkerProps)
       anchor="bottom"
     >
       <button
-        className="flex flex-col items-center gap-1 group cursor-pointer"
+        className="relative flex flex-col items-center gap-1 group cursor-pointer"
         onClick={() => onClick?.(marker)}
         aria-label={`${marker.name} — ${marker.type}`}
       >
@@ -60,7 +60,12 @@ export function MapMarker({ marker, isActive = false, onClick }: MapMarkerProps)
         >
           <Icon className="w-4 h-4" aria-hidden="true" />
         </div>
-        <span className="bg-white px-2 py-0.5 rounded shadow-md text-[10px] font-bold uppercase tracking-wider text-slate-800 whitespace-nowrap">
+        <span
+          className={cn(
+            "bg-white px-2 py-0.5 rounded shadow-md text-[10px] font-bold uppercase tracking-wider text-slate-800 whitespace-nowrap max-w-[220px] truncate transition-opacity",
+            isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+          )}
+        >
           {marker.name}
         </span>
       </button>
