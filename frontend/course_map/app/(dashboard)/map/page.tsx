@@ -14,6 +14,7 @@ import {
 import { MapContainer } from "@/components/map/mapContainer";
 import { LocationCard } from "@/components/map/LocationCard";
 import { MapMarker } from "@/components/map/MapMarker";
+import { MapLayerController } from "@/components/map/MapLayerController";
 import { RouteOverlay } from "@/components/map/routeOverlay";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -83,6 +84,7 @@ export default function MapPage() {
     <div className="relative h-full w-full overflow-hidden" aria-label="Campus map dashboard">
       <MapContainer>
         <RouteOverlay />
+        <MapLayerController />
         {activeLayers.events &&
           eventMarkers.map((marker) => (
             <MapMarker

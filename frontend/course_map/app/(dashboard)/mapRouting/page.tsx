@@ -10,6 +10,8 @@ import {
   Plus,
   Minus,
   Sun,
+  LocateFixed,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MapContainer } from "@/components/map/mapContainer";
@@ -18,25 +20,9 @@ import { useDirections } from "@/hooks/use-directions";
 import { useMapStore } from "@/hooks/use-map-store";
 import { cn } from "@/lib/utils";
 
-const MOCK_STEPS = [
-  {
-    instruction: "Head east on Embarcadero Rd toward High St",
-    distance: "0.4 mi",
-    icon: "turn_right",
-  },
-  {
-    instruction: "Continue straight onto Campus Entrance Dr",
-    distance: "1.2 mi",
-    icon: "straight",
-  },
-  {
-    instruction: "At the roundabout, take the 2nd exit toward Library Plaza",
-    distance: "200 yards",
-    icon: "roundabout_right",
-  },
-];
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-const stepIconMap: Record<string, string> = {
+const STEP_ICONS: Record<string, string> = {
   turn_right: "↱",
   straight: "↑",
   roundabout_right: "⟳",
@@ -44,26 +30,59 @@ const stepIconMap: Record<string, string> = {
   merge: "⤵",
 };
 
+async function geocodeAddress(address: string): Promise<[number, number] | null> {
+  if (!MAPBOX_TOKEN || !address.trim()) return null;
+  try {
+    const url =
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/` +
+      `${encodeURIComponent(address)}.json` +
+      `?access_token=${MAPBOX_TOKEN}&limit=1`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.features?.length) return null;
+    const [lng, lat] = data.features[0].center as [number, number];
+    return [lng, lat];
+  } catch {
+    return null;
+  }
+}
+
+function getGPSLocation(): Promise<[number, number] | null> {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) return resolve(null);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => resolve([coords.longitude, coords.latitude]),
+      () => resolve(null),
+      { timeout: 10_000 },
+    );
+  });
+}
+
 export default function RoutingPage() {
-  const [origin, setOrigin] = useState("240 Embarcadero Rd, Palo Alto");
-  const [destination, setDestination] = useState("Main Campus Library, Building 4");
+  const { data: routeData, isLoading: isRouteLoading } = useDirections();
+  const {
+    setUserLocation,
+    setSelectedDestination,
+    selectedEvent,
+    userLocation,
+    setViewState,
+  } = useMapStore();
+
+  const [origin, setOrigin] = useState(() =>
+    userLocation ? "Current Location" : "",
+  );
+  const [destination, setDestination] = useState(() =>
+    selectedEvent?.location ?? "",
+  );
   const [showSteps, setShowSteps] = useState(true);
   const [panelOpen, setPanelOpen] = useState(true);
+  const [isGeocoding, setIsGeocoding] = useState(false);
 
-  const { data: routeData } = useDirections();
-  const { setUserLocation, setSelectedDestination } = useMapStore();
-
-  const metrics = routeData?.metrics ?? {
-    distanceMiles: "4.2",
-    durationMinutes: 12,
-    tolls: "$0.00",
-  };
-
-  const steps = routeData?.steps ?? MOCK_STEPS.map((s) => ({
-    icon: s.icon as "straight" | "turn_right" | "roundabout_right",
-    instruction: s.instruction,
-    distance: s.distance,
-  }));
+  const hasRoute = !!routeData;
+  const metrics = routeData?.metrics;
+  const steps = routeData?.steps ?? [];
+  const isBusy = isGeocoding || isRouteLoading;
 
   const swapLocations = () => {
     const tmp = origin;
@@ -71,22 +90,56 @@ export default function RoutingPage() {
     setDestination(tmp);
   };
 
-  const handleStartNavigation = () => {
-    // In a real app, geocode origin & destination
-    setUserLocation([-122.1697, 37.4275]);
-    setSelectedDestination([-122.168, 37.426]);
+  const handleUseGPS = async () => {
+    setIsGeocoding(true);
+    try {
+      const coords = await getGPSLocation();
+      if (coords) {
+        setUserLocation(coords);
+        setViewState({ longitude: coords[0], latitude: coords[1], zoom: 15 });
+        setOrigin("Current Location");
+      }
+    } finally {
+      setIsGeocoding(false);
+    }
+  };
+
+  const handleStartNavigation = async () => {
+    if (!MAPBOX_TOKEN) return;
+    setIsGeocoding(true);
+    try {
+      // ── Origin ────────────────────────────────────────────────────────────
+      if (origin === "Current Location") {
+        if (!userLocation) {
+          const coords = await getGPSLocation();
+          if (coords) setUserLocation(coords);
+        }
+      } else {
+        const coords = await geocodeAddress(origin);
+        if (coords) setUserLocation(coords);
+      }
+
+      // ── Destination ───────────────────────────────────────────────────────
+      // Always geocode the destination text so the user's typed input is used.
+      // If geocoding fails (e.g. internal campus name), the existing
+      // selectedDestination that was set from the map page is preserved.
+      const destCoords = await geocodeAddress(destination);
+      if (destCoords) setSelectedDestination(destCoords);
+    } finally {
+      setIsGeocoding(false);
+    }
   };
 
   return (
     <div className="relative flex h-full overflow-hidden">
-      {/* Map base layer */}
+      {/* Map */}
       <div className="absolute inset-0">
         <MapContainer>
           <RouteOverlay />
         </MapContainer>
       </div>
 
-      {/* Route panel overlay */}
+      {/* Route panel */}
       {panelOpen && (
         <div
           className="absolute top-6 left-6 w-96 max-h-[calc(100%-3rem)] overflow-y-auto bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-200 flex flex-col p-6 z-30"
@@ -117,12 +170,21 @@ export default function RoutingPage() {
                 type="text"
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
-                className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface"
+                placeholder="Enter start address…"
+                className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface placeholder:text-on-surface-variant/50"
               />
+              <button
+                onClick={handleUseGPS}
+                disabled={isGeocoding}
+                aria-label="Use my current GPS location"
+                className="text-on-surface-variant hover:text-secondary transition-colors shrink-0 disabled:opacity-40"
+              >
+                <LocateFixed className="w-4 h-4" aria-hidden="true" />
+              </button>
             </div>
           </div>
 
-          {/* Swap button */}
+          {/* Swap */}
           <div className="flex justify-center -my-0.5 relative z-10">
             <button
               onClick={swapLocations}
@@ -145,17 +207,27 @@ export default function RoutingPage() {
                 type="text"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface"
+                placeholder="Enter destination…"
+                className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface placeholder:text-on-surface-variant/50"
               />
             </div>
           </div>
 
-          {/* Stats grid */}
+          {/* Stats */}
           <div className="grid grid-cols-3 gap-3 my-6" aria-label="Route statistics">
             {[
-              { label: "Distance", value: `${metrics.distanceMiles} mi` },
-              { label: "Time", value: `${metrics.durationMinutes} min` },
-              { label: "Tolls", value: metrics.tolls },
+              {
+                label: "Distance",
+                value: hasRoute ? `${metrics!.distanceMiles} mi` : "—",
+              },
+              {
+                label: "Time",
+                value: hasRoute ? `${metrics!.durationMinutes} min` : "—",
+              },
+              {
+                label: "Tolls",
+                value: hasRoute ? metrics!.tolls : "—",
+              },
             ].map(({ label, value }) => (
               <div
                 key={label}
@@ -167,64 +239,66 @@ export default function RoutingPage() {
             ))}
           </div>
 
-          {/* Start navigation */}
+          {/* Start Navigation */}
           <Button
             className="w-full gap-3 h-12 shadow-lg"
             onClick={handleStartNavigation}
+            disabled={isBusy}
             aria-label="Start navigation"
           >
-            <Navigation className="w-4 h-4" aria-hidden="true" />
-            Start Navigation
+            {isGeocoding ? (
+              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Navigation className="w-4 h-4" aria-hidden="true" />
+            )}
+            {isGeocoding ? "Finding route…" : "Start Navigation"}
           </Button>
 
           {/* Step-by-step directions */}
-          <div className="mt-8 border-t border-slate-100 pt-6">
-            <button
-              className="flex items-center justify-between w-full mb-4"
-              onClick={() => setShowSteps((s) => !s)}
-              aria-expanded={showSteps}
-              aria-controls="directions-list"
-            >
-              <span className="text-label-md text-on-surface">Step-by-Step Directions</span>
-              <ChevronDown
-                className={cn(
-                  "w-4 h-4 text-on-surface-variant transition-transform",
-                  showSteps && "rotate-180",
-                )}
-                aria-hidden="true"
-              />
-            </button>
+          {steps.length > 0 && (
+            <div className="mt-8 border-t border-slate-100 pt-6">
+              <button
+                className="flex items-center justify-between w-full mb-4"
+                onClick={() => setShowSteps((s) => !s)}
+                aria-expanded={showSteps}
+                aria-controls="directions-list"
+              >
+                <span className="text-label-md text-on-surface">Step-by-Step Directions</span>
+                <ChevronDown
+                  className={cn(
+                    "w-4 h-4 text-on-surface-variant transition-transform",
+                    showSteps && "rotate-180",
+                  )}
+                  aria-hidden="true"
+                />
+              </button>
 
-            {showSteps && (
-              <ol id="directions-list" className="space-y-6">
-                {steps.map((step, i) => (
-                  <li key={i} className="flex gap-4">
-                    <div className="flex flex-col items-center shrink-0">
-                      <span
-                        className="text-secondary text-lg leading-none"
-                        aria-hidden="true"
-                      >
-                        {stepIconMap[step.icon] ?? "→"}
-                      </span>
-                      {i < steps.length - 1 && (
-                        <div className="w-px flex-1 bg-slate-100 mt-2" aria-hidden="true" />
-                      )}
-                    </div>
-                    <div className="flex-1 pb-2">
-                      <p className="text-body-sm text-on-surface">{step.instruction}</p>
-                      <p className="text-[11px] text-on-surface-variant mt-1">
-                        {step.distance}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </div>
+              {showSteps && (
+                <ol id="directions-list" className="space-y-6">
+                  {steps.map((step, i) => (
+                    <li key={i} className="flex gap-4">
+                      <div className="flex flex-col items-center shrink-0">
+                        <span className="text-secondary text-lg leading-none" aria-hidden="true">
+                          {STEP_ICONS[step.icon] ?? "→"}
+                        </span>
+                        {i < steps.length - 1 && (
+                          <div className="w-px flex-1 bg-slate-100 mt-2" aria-hidden="true" />
+                        )}
+                      </div>
+                      <div className="flex-1 pb-2">
+                        <p className="text-body-sm text-on-surface">{step.instruction}</p>
+                        <p className="text-[11px] text-on-surface-variant mt-1">{step.distance}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Reopen panel button */}
+      {/* Reopen panel */}
       {!panelOpen && (
         <button
           onClick={() => setPanelOpen(true)}
@@ -253,7 +327,7 @@ export default function RoutingPage() {
         ))}
       </div>
 
-      {/* Bottom weather & traffic bar */}
+      {/* Bottom status bar */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30">
         <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-slate-200 flex items-center gap-2">
           <Sun className="w-4 h-4 text-yellow-500" aria-hidden="true" />
