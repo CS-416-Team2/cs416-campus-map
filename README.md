@@ -49,6 +49,34 @@ The team operates as a simulated software company hired by Purdue University Nor
 
 ---
 
+## Roadmap
+
+Active and upcoming work. Update this section as priorities change. For branch naming, keeping up to date with `develop`, and merging to `release`, see [git-branch-strategy.md](git-branch-strategy.md).
+
+### In development
+
+- *TBD — list work in progress (owner, feature branch, or open PR).*
+
+### Planned
+
+- *TBD — backlog ideas, stretch goals, or remaining course requirements.*
+
+---
+
+## Getting your work onto `develop`
+
+Do **not** push commits directly to `develop`. Changes land on `develop` through a **pull request** from a feature branch:
+
+1. `git checkout develop` then `git pull origin develop`
+2. `git checkout -b feature/your-feature-name`
+3. Commit locally, then `git push -u origin feature/your-feature-name`
+4. On GitHub: **Pull requests → New pull request** with **base** `develop` and **compare** your feature branch
+5. After review and merge, your work is on `develop`
+
+The team policy is to avoid direct pushes to `develop` and `release`; see the **Rules** section in [git-branch-strategy.md](git-branch-strategy.md).
+
+---
+
 ## Project Structure
 
 ```
