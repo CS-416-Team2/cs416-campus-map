@@ -14,7 +14,7 @@
   --color-inverse-primary: #bec6e0;
 
   /* Secondary (teal) */
-  --color-secondary: #006a61;
+  --color-secondary: rgba(177, 129, 12);
   --color-on-secondary: #ffffff;
   --color-secondary-container: #86f2e4;
   --color-on-secondary-container: #006f66;

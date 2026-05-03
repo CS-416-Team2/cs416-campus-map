@@ -26,17 +26,17 @@ interface MapState {
 
 export const useMapStore = create<MapState>((set) => ({
   viewState: {
-    longitude: -87.4760563,
-    latitude: 41.5824067,
-    zoom: 15.5,
-    pitch: 45,
-    bearing: 0,
+    longitude: -87.47357432996594,
+    latitude: 41.58392629103461,
+    zoom: 16.5,
+    pitch: 0,
+    bearing: 90,
   },
   selectedEvent: null,
   userLocation: null,
   selectedDestination: null,
   activeLayers: {
-    buildings: true,
+    buildings: false,
     events: true,
     parking: true,
     restaurants: true,

@@ -19,7 +19,7 @@ import { useAuth } from "@/hooks/use-auth";
 const baseNavItems = [
   { label: "Map Dashboard", href: "/map", icon: Map },
   { label: "Event Explorer", href: "/events", icon: Compass },
-  { label: "Routing & Nav", href: "/mapRouting", icon: Navigation },
+  { label: "Navigation", href: "/mapRouting", icon: Navigation },
   { label: "My Schedule", href: "/eventSchedule", icon: CalendarDays },
 ];
 
@@ -61,7 +61,7 @@ export function Sidebar({ className }: SidebarProps) {
           </div>
           <div>
             <h2 className="text-body-md font-bold text-secondary leading-none">
-              University Central
+              Purdue University Northwest
             </h2>
             <p className="text-[10px] uppercase tracking-widest text-on-surface-variant mt-1 font-bold">
               Campus Navigation
