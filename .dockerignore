@@ -1,0 +1,11 @@
+node_modules
+frontend/course_map/node_modules
+frontend/course_map/.next
+frontend/course_map/out
+.git
+.gitignore
+*.md
+.env
+.env.*
+.vercel
+.DS_Store
