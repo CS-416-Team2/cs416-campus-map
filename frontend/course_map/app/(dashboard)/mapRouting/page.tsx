@@ -63,7 +63,7 @@ function getGPSLocation(): Promise<[number, number] | null> {
 }
 
 export default function RoutingPage() {
-  const { data: routeData, isLoading: isRouteLoading } = useDirections();
+  const { data: routeData, isLoading: isRouteLoading, refetch: refetchRoute } = useDirections();
   const { data: events = [], isLoading: isEventsLoading } = useEvents();
   const {
     setUserLocation,
@@ -71,6 +71,7 @@ export default function RoutingPage() {
     setSelectedEvent,
     selectedEvent,
     userLocation,
+    selectedDestination,
     setViewState,
   } = useMapStore();
 
@@ -126,9 +127,13 @@ export default function RoutingPage() {
     try {
       // ── Origin ────────────────────────────────────────────────────────────
       if (origin === "Current Location") {
-        if (!userLocation) {
-          const coords = await getGPSLocation();
-          if (coords) setUserLocation(coords);
+        // Always attempt GPS so we get fresh coords and trigger a queryKey change
+        const coords = await getGPSLocation();
+        if (coords) {
+          setUserLocation(coords);
+        } else if (!userLocation) {
+          // GPS unavailable and no cached location — can't navigate
+          return;
         }
       } else {
         const coords = await geocodeAddress(origin);
@@ -136,14 +141,29 @@ export default function RoutingPage() {
       }
 
       // ── Destination ───────────────────────────────────────────────────────
-      // Always geocode the destination text so the user's typed input is used.
-      // If geocoding fails (e.g. internal campus name), the existing
-      // selectedDestination that was set from the map page is preserved.
-      const destCoords = await geocodeAddress(destination);
-      if (destCoords) setSelectedDestination(destCoords);
+      // If the user hasn't changed the destination text from the selected event,
+      // skip geocoding and use the precise event coordinates we already have.
+      // Geocoding generic names like "Hammond Campus" can return wrong locations.
+      if (selectedEvent && destination === selectedEvent.location && selectedDestination) {
+        // Keep existing selectedDestination
+      } else {
+        const destCoords = await geocodeAddress(destination);
+        if (destCoords) {
+          setSelectedDestination(destCoords);
+        } else if (!selectedDestination) {
+          // No geocoded result and no pre-selected destination — can't navigate
+          return;
+        }
+      }
+      // If destCoords is null but selectedDestination is already set (from an
+      // event), we keep it and just refetch with the current store values.
     } finally {
       setIsGeocoding(false);
     }
+
+    // Force a fresh directions fetch even if the store values haven't changed
+    // (e.g. user clicked the button a second time with the same origin/dest).
+    refetchRoute();
   };
 
   return (
