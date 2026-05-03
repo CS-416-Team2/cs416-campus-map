@@ -20,9 +20,9 @@ export function RouteOverlay() {
         layout={{ "line-join": "round", "line-cap": "round" }}
         paint={{
           "line-color": "#86f2e4",
-          "line-width": 10,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 12, 6, 18, 20],
           "line-opacity": 0.3,
-          "line-blur": 4,
+          "line-blur": ["interpolate", ["linear"], ["zoom"], 12, 2, 18, 6],
         }}
       />
       {/* Main dashed teal route line */}
@@ -33,7 +33,7 @@ export function RouteOverlay() {
         layout={{ "line-join": "round", "line-cap": "round" }}
         paint={{
           "line-color": "#006a61",
-          "line-width": 6,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 12, 3, 18, 8],
           "line-dasharray": [2, 2],
         }}
       />
