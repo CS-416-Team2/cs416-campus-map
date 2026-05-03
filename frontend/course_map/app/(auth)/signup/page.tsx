@@ -49,38 +49,57 @@ export default function SignupPage() {
     setIsLoading(true);
     try {
       const supabase = createClient();
-
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: {
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            student_id: isAdmin ? null : studentId.trim() || null,
-            role: isAdmin ? "admin" : "student",
-          },
-        },
+      const signUpRes = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          studentId: isAdmin ? null : studentId.trim() || null,
+          isAdmin,
+        }),
       });
 
-      if (signUpError) {
-        setError(signUpError.message);
+      if (!signUpRes.ok) {
+        const payload = await signUpRes.json().catch(() => null);
+        setError(
+          payload?.error ?? payload?.message ?? "Failed to create account.",
+        );
         return;
       }
 
-      // If the role should be admin, call the set-role API
-      if (isAdmin && data.session) {
+      // Sign in after successful sign-up when email confirmation is disabled.
+      // If confirmation is required, this will fail with "Email not confirmed".
+      const { data: signInData, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+
+      const confirmationRequired =
+        !!signInError &&
+        /confirm|not confirmed|verification/i.test(signInError.message);
+
+      if (signInError && !confirmationRequired) {
+        setError(signInError.message);
+        return;
+      }
+
+      // If the role should be admin, call the set-role API when signed in.
+      if (isAdmin && signInData.session) {
         await fetch("/api/auth/set-role", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${data.session.access_token}`,
+            Authorization: `Bearer ${signInData.session.access_token}`,
           },
           body: JSON.stringify({ role: "admin" }),
         });
       }
 
-      if (data.session) {
+      if (signInData.session) {
         // Email confirmation disabled — user is immediately signed in
         router.push("/map");
         router.refresh();

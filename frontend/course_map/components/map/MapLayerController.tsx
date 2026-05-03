@@ -25,8 +25,17 @@ const POI_CONFIG: Record<PoiLayerId, { maki: string[]; color: string }> = {
   },
 };
 
-export function MapLayerController() {
+interface MapLayerControllerProps {
+  includeLocalAreas?: boolean;
+}
+
+export function MapLayerController({
+  includeLocalAreas = true,
+}: MapLayerControllerProps) {
   const { activeLayers } = useMapStore();
+  const poiEntries = (
+    Object.entries(POI_CONFIG) as [PoiLayerId, (typeof POI_CONFIG)[PoiLayerId]][]
+  ).filter(([layerId]) => includeLocalAreas || layerId === "parking");
 
   return (
     <>
@@ -73,7 +82,7 @@ export function MapLayerController() {
       )}
 
       {/* POI layers — Mapbox Streets composite/poi_label source layer */}
-      {(Object.entries(POI_CONFIG) as [PoiLayerId, (typeof POI_CONFIG)[PoiLayerId]][]).flatMap(
+      {poiEntries.flatMap(
         ([layerId, { maki, color }]) =>
           activeLayers[layerId]
             ? [

@@ -3,19 +3,9 @@
 import Image from "next/image";
 import { Calendar, MapPin, Share2, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ParkingSuggestions } from "@/components/events/ParkingSuggestions";
 import { cn } from "@/lib/utils";
-import type { CampusEvent, EventCategory } from "@/types";
-
-const categoryConfig: Record<
-  EventCategory,
-  { variant: "orange" | "green" | "blue"; label: string }
-> = {
-  orange: { variant: "orange", label: "Event – Orange" },
-  green: { variant: "green", label: "Event – Green" },
-  blue: { variant: "blue", label: "Event – Blue" },
-};
+import type { CampusEvent } from "@/types";
 
 interface EventCardProps {
   event: CampusEvent;
@@ -24,8 +14,6 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, isActive = false, onSelect }: EventCardProps) {
-  const { variant, label } = categoryConfig[event.category];
-
   return (
     <article
       className={cn(
@@ -51,7 +39,9 @@ export function EventCard({ event, isActive = false, onSelect }: EventCardProps)
           sizes="(max-width: 768px) 100vw, 480px"
         />
         <div className="absolute top-3 left-3">
-          <Badge variant={variant}>{label}</Badge>
+          <span className="inline-flex px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded uppercase tracking-wider">
+            Event
+          </span>
         </div>
       </div>
 

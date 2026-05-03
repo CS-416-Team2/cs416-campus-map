@@ -1,23 +1,63 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Plus, Minus, MapPin } from "lucide-react";
+import { Search } from "lucide-react";
 import { EventCard } from "@/components/events/EventCard";
 import { EventFilters } from "@/components/events/EventFilters";
 import { MapContainer } from "@/components/map/mapContainer";
+import { MapMarker } from "@/components/map/MapMarker";
+import { MapLayerController } from "@/components/map/MapLayerController";
 import { useEvents } from "@/hooks/use-events";
 import { useMapStore } from "@/hooks/use-map-store";
-import type { CampusEvent, EventTag } from "@/types";
+import type { CampusEvent, EventTag, MapMarkerData } from "@/types";
 
 type FilterValue = "all" | EventTag;
+const CAMPUS_CENTER: [number, number] = [-87.4732, 41.5834];
+const CAMPUS_RADIUS_MILES = 1.5;
+
+function toRadians(value: number) {
+  return (value * Math.PI) / 180;
+}
+
+function distanceMiles(
+  from: [number, number],
+  to: [number, number],
+): number {
+  const earthRadiusMiles = 3958.8;
+  const dLat = toRadians(to[1] - from[1]);
+  const dLng = toRadians(to[0] - from[0]);
+  const lat1 = toRadians(from[1]);
+  const lat2 = toRadians(to[1]);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1) *
+      Math.cos(lat2) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return earthRadiusMiles * c;
+}
+
+function isOnCampusEvent(coords: [number, number]) {
+  return distanceMiles(coords, CAMPUS_CENTER) <= CAMPUS_RADIUS_MILES;
+}
 
 export default function EventsPage() {
   const [filter, setFilter] = useState<FilterValue>("all");
   const [search, setSearch] = useState("");
   const [activeEvent, setActiveEvent] = useState<CampusEvent | null>(null);
+  const [showOffCampusEvents, setShowOffCampusEvents] = useState(true);
 
   const { data: events = [], isLoading } = useEvents(filter);
-  const { setSelectedDestination } = useMapStore();
+  const {
+    activeLayers,
+    toggleLayer,
+    setSelectedDestination,
+    setSelectedEvent,
+    setViewState,
+  } = useMapStore();
 
   const filtered = search.trim()
     ? events.filter(
@@ -27,9 +67,28 @@ export default function EventsPage() {
       )
     : events;
 
+  const eventMarkers: MapMarkerData[] = filtered.map((event) => ({
+    id: event.id,
+    type: "event",
+    name: event.title,
+    coordinates: event.coordinates,
+    color: "#f59e0b",
+    eventId: event.id,
+  }));
+
+  const visibleEventMarkers = showOffCampusEvents
+    ? eventMarkers
+    : eventMarkers.filter((marker) => isOnCampusEvent(marker.coordinates));
+
   const handleSelect = (event: CampusEvent) => {
     setActiveEvent((prev) => (prev?.id === event.id ? null : event));
+    setSelectedEvent(event);
     setSelectedDestination(event.coordinates);
+    setViewState({
+      longitude: event.coordinates[0],
+      latitude: event.coordinates[1],
+      zoom: 16,
+    });
   };
 
   return (
@@ -88,33 +147,63 @@ export default function EventsPage() {
         className="flex-1 relative hidden md:block"
         aria-label="Events map"
       >
-        <MapContainer />
+        <MapContainer>
+          <MapLayerController includeLocalAreas={false} />
+          {activeLayers.events &&
+            visibleEventMarkers.map((marker) => (
+              <MapMarker
+                key={marker.id}
+                marker={marker}
+                isActive={activeEvent?.id === marker.eventId}
+                onClick={() => {
+                  const event = filtered.find((e) => e.id === marker.eventId);
+                  if (event) handleSelect(event);
+                }}
+              />
+            ))}
+        </MapContainer>
 
         {/* Map legend */}
         <div className="absolute top-lg right-16 z-20">
           <div className="bg-white/90 backdrop-blur-md p-md rounded-xl shadow-lg border border-outline-variant w-48">
             <h5 className="text-label-md mb-2 text-on-surface">Map Layers</h5>
             <div className="space-y-sm">
-              {[
-                { label: "Active Events", checked: true },
-                { label: "Parking Lots", checked: true },
-                { label: "Campus Transit", checked: false },
-              ].map(({ label }) => (
-                <label
-                  key={label}
-                  className="flex items-center gap-3 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    defaultChecked={label !== "Campus Transit"}
-                    aria-label={label}
-                    className="w-4 h-4 rounded border-outline text-secondary focus:ring-secondary accent-secondary"
-                  />
-                  <span className="text-label-sm text-on-surface-variant">
-                    {label}
-                  </span>
-                </label>
-              ))}
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={activeLayers.events}
+                  onChange={() => toggleLayer("events")}
+                  aria-label="Active Events"
+                  className="w-4 h-4 rounded border-outline text-secondary focus:ring-secondary accent-secondary"
+                />
+                <span className="text-label-sm text-on-surface-variant">
+                  Active Events
+                </span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={activeLayers.parking}
+                  onChange={() => toggleLayer("parking")}
+                  aria-label="Parking Lots"
+                  className="w-4 h-4 rounded border-outline text-secondary focus:ring-secondary accent-secondary"
+                />
+                <span className="text-label-sm text-on-surface-variant">
+                  Parking Lots
+                </span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showOffCampusEvents}
+                  onChange={() => setShowOffCampusEvents((prev) => !prev)}
+                  aria-label="On / Off Campus"
+                  className="w-4 h-4 rounded border-outline text-secondary focus:ring-secondary accent-secondary"
+                />
+                <span className="text-label-sm text-on-surface-variant">
+                  On / Off Campus
+                </span>
+              </label>
             </div>
           </div>
         </div>

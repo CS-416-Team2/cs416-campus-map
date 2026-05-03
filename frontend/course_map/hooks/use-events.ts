@@ -1,7 +1,57 @@
 import { useQuery } from "@tanstack/react-query";
 import type { CampusEvent, EventCategory, EventTag, ParkingSpot } from "@/types";
+import { CAMPUS_EVENTS } from "@/data/events";
 
 type FilterCategory = "all" | EventTag;
+
+function startOfToday() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
+
+function parseEventDate(dateText: string): Date | null {
+  const parsed = new Date(dateText);
+  if (Number.isNaN(parsed.getTime())) return null;
+  parsed.setHours(0, 0, 0, 0);
+  return parsed;
+}
+
+function applyEventListRules(
+  events: CampusEvent[],
+  category: FilterCategory,
+): CampusEvent[] {
+  const today = startOfToday();
+
+  return events
+    .filter((event) => category === "all" || event.tags.includes(category))
+    .filter((event) => {
+      const eventDate = parseEventDate(event.date);
+      // Keep undated events visible instead of dropping them.
+      if (!eventDate) return true;
+      return eventDate >= today;
+    })
+    .sort((a, b) => {
+      const dateA = parseEventDate(a.date)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      const dateB = parseEventDate(b.date)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      return dateA - dateB;
+    });
+}
+
+function mergeEvents(primary: CampusEvent[], fallback: CampusEvent[]): CampusEvent[] {
+  const merged = [...primary, ...fallback];
+  const seen = new Set<string>();
+
+  return merged.filter((event) => {
+    const key = `${event.title}|${event.date}|${event.time}|${event.location}`
+      .toLowerCase()
+      .trim();
+
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapDbEvent(raw: any): CampusEvent {
@@ -48,9 +98,12 @@ async function fetchEvents(category: FilterCategory): Promise<CampusEvent[]> {
   if (!res.ok) throw new Error("Failed to fetch events");
   const json = await res.json();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return ((json.data ?? []) as any[])
+  const dbEvents = ((json.data ?? []) as any[])
     .filter((r) => !(r.tags ?? []).includes("pending_review"))
     .map(mapDbEvent);
+
+  const combinedEvents = mergeEvents(dbEvents, CAMPUS_EVENTS);
+  return applyEventListRules(combinedEvents, category);
 }
 
 export function useEvents(category: FilterCategory = "all") {
@@ -58,6 +111,7 @@ export function useEvents(category: FilterCategory = "all") {
     queryKey: ["events", category],
     queryFn: () => fetchEvents(category),
     staleTime: 1000 * 60 * 5,
+    refetchOnMount: "always",
   });
 }
 

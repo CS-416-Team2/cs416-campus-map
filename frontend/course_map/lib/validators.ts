@@ -16,6 +16,18 @@ export const AuthCredentialsSchema = z.object({
 });
 export type AuthCredentials = z.infer<typeof AuthCredentialsSchema>;
 
+export const AuthSignupSchema = AuthCredentialsSchema.extend({
+  firstName: z.string().trim().max(100).optional().default(""),
+  lastName: z.string().trim().max(100).optional().default(""),
+  studentId: z
+    .string()
+    .regex(/^\d{8}$/, "Student ID must be exactly 8 digits")
+    .optional()
+    .nullable(),
+  isAdmin: z.boolean().optional().default(false),
+});
+export type AuthSignupValues = z.infer<typeof AuthSignupSchema>;
+
 // ─── Events ────────────────────────────────────────────────────
 export const EventInsertSchema = z.object({
   title: z.string().min(1, "Title is required").max(500),

@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 const PROTECTED_PATHS = ["/eventSchedule", "/admin", "/eventNew"];
 const AUTH_ONLY_PATHS = ["/login", "/signup"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // 1. Initialize response
   let response = NextResponse.next({
     request: { headers: request.headers },

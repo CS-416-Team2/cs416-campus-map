@@ -26,8 +26,8 @@ interface MapState {
 
 export const useMapStore = create<MapState>((set) => ({
   viewState: {
-    longitude: -122.1697,
-    latitude: 37.4275,
+    longitude: -87.4732,
+    latitude: 41.5834,
     zoom: 15.5,
     pitch: 45,
     bearing: 0,

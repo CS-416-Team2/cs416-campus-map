@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
-import { AuthCredentialsSchema } from "@/lib/validators";
+import { AuthSignupSchema } from "@/lib/validators";
 import { handleApiError, ApiError } from "@/lib/api-error";
 import { rateLimit } from "@/lib/rate-limit";
 import { withSecurityHeaders } from "@/lib/security-headers";
@@ -12,10 +12,22 @@ export async function POST(request: NextRequest) {
     if (limited) return withSecurityHeaders(limited);
 
     const body = await request.json();
-    const { email, password } = AuthCredentialsSchema.parse(body);
+    const { email, password, firstName, lastName, studentId, isAdmin } =
+      AuthSignupSchema.parse(body);
 
     const supabase = getSupabaseAdmin();
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          student_id: isAdmin ? null : studentId ?? null,
+          role: isAdmin ? "admin" : "student",
+        },
+      },
+    });
 
     if (error) {
       throw new ApiError(400, error.message);
@@ -25,6 +37,7 @@ export async function POST(request: NextRequest) {
       NextResponse.json(
         {
           message: "Sign-up successful. Check your email for confirmation.",
+          requiresEmailConfirmation: !data.session,
           user: data.user
             ? { id: data.user.id, email: data.user.email }
             : null,

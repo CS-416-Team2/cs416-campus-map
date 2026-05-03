@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { MapContainer } from "@/components/map/mapContainer";
 import { RouteOverlay } from "@/components/map/routeOverlay";
 import { useDirections } from "@/hooks/use-directions";
+import { useEvents } from "@/hooks/use-events";
 import { useMapStore } from "@/hooks/use-map-store";
 import { cn } from "@/lib/utils";
 
@@ -63,9 +64,11 @@ function getGPSLocation(): Promise<[number, number] | null> {
 
 export default function RoutingPage() {
   const { data: routeData, isLoading: isRouteLoading } = useDirections();
+  const { data: events = [], isLoading: isEventsLoading } = useEvents();
   const {
     setUserLocation,
     setSelectedDestination,
+    setSelectedEvent,
     selectedEvent,
     userLocation,
     setViewState,
@@ -90,6 +93,17 @@ export default function RoutingPage() {
     const tmp = origin;
     setOrigin(destination);
     setDestination(tmp);
+  };
+
+  const handleSelectEvent = (event: (typeof events)[number]) => {
+    setSelectedEvent(event);
+    setSelectedDestination(event.coordinates);
+    setDestination(event.location);
+    setViewState({
+      longitude: event.coordinates[0],
+      latitude: event.coordinates[1],
+      zoom: 16,
+    });
   };
 
   const handleUseGPS = async () => {
@@ -229,6 +243,49 @@ export default function RoutingPage() {
                 placeholder="Enter destination…"
                 className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface placeholder:text-on-surface-variant/50"
               />
+            </div>
+          </div>
+
+          {/* Event explorer */}
+          <div className="mt-5">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-label-md text-on-surface">Event Explorer</h3>
+              <span className="text-[11px] text-on-surface-variant">
+                {events.length} events
+              </span>
+            </div>
+            <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
+              {isEventsLoading ? (
+                <div className="flex items-center gap-2 text-body-sm text-on-surface-variant p-2">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                  Loading events...
+                </div>
+              ) : events.length === 0 ? (
+                <p className="text-body-sm text-on-surface-variant p-2">
+                  No events available.
+                </p>
+              ) : (
+                events.map((event) => (
+                  <button
+                    key={event.id}
+                    onClick={() => handleSelectEvent(event)}
+                    className={cn(
+                      "w-full text-left rounded-lg border px-3 py-2 transition-colors",
+                      selectedEvent?.id === event.id
+                        ? "border-secondary bg-teal-50"
+                        : "border-outline-variant bg-white hover:bg-surface-container-low",
+                    )}
+                    aria-label={`Select ${event.title} as destination`}
+                  >
+                    <p className="text-body-sm text-on-surface font-medium truncate">
+                      {event.title}
+                    </p>
+                    <p className="text-[11px] text-on-surface-variant truncate">
+                      {event.date} • {event.time}
+                    </p>
+                  </button>
+                ))
+              )}
             </div>
           </div>
 
