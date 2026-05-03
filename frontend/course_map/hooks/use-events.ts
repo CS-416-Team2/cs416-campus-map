@@ -47,7 +47,7 @@ function mapDbEvent(raw: any): CampusEvent {
     time: raw.time,
     location: raw.location,
     category: (raw.category as EventCategory) ?? "blue",
-    imageUrl: raw.image_url,
+    imageUrl: "/placeholder.jpg",
     coordinates: [raw.coordinates[0], raw.coordinates[1]] as [number, number],
     capacity: raw.capacity,
     registered: raw.registered,
@@ -111,3 +111,4 @@ export function useEvent(id: string) {
     enabled: !!id,
   });
 }
+
