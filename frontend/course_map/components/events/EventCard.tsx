@@ -11,6 +11,7 @@ interface EventCardProps {
   event: CampusEvent;
   isActive?: boolean;
   onSelect?: (event: CampusEvent) => void;
+  onRegister?: (event: CampusEvent) => void;
   eagerImage?: boolean;
 }
 
@@ -18,6 +19,7 @@ export function EventCard({
   event,
   isActive = false,
   onSelect,
+  onRegister,
   eagerImage = false,
 }: EventCardProps) {
   return (
@@ -83,10 +85,10 @@ export function EventCard({
         {/* Actions */}
         <div className="flex gap-2 pt-1">
           <Button
-            className="flex-1"
+            className="flex-1 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
-              onSelect?.(event);
+              onRegister?.(event);
             }}
             aria-label={`Register for ${event.title}`}
           >

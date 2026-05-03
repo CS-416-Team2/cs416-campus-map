@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send, Info, AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +32,7 @@ import { useEvents } from "@/hooks/use-events";
 
 export default function EventCreatorPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isLoading: authLoading } = useAuth();
   const { data: events = [], isLoading: eventsLoading } = useEvents();
   const [submitted, setSubmitted] = useState(false);
@@ -42,16 +43,41 @@ export default function EventCreatorPage() {
     handleSubmit,
     reset,
     setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<RegistrationFormValues>({
     resolver: zodResolver(RegistrationSchema),
+    defaultValues: {
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      studentId: "",
+      eventId: "",
+    },
   });
+
+  const queryEventId = searchParams.get("eventId") ?? "";
+  const selectedEventId = useWatch({ control, name: "eventId" });
+  const effectiveEventId = selectedEventId || queryEventId;
+  const selectedEvent = events.find((e) => e.id === effectiveEventId);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.replace("/login?next=/eventCreator");
+      const nextPath = queryEventId
+        ? `/eventCreator?eventId=${encodeURIComponent(queryEventId)}`
+        : "/eventCreator";
+      router.replace(`/login?next=${encodeURIComponent(nextPath)}`);
     }
-  }, [authLoading, user, router]);
+  }, [authLoading, user, router, queryEventId]);
+
+  useEffect(() => {
+    if (!queryEventId || effectiveEventId === queryEventId) return;
+
+    setValue("eventId", queryEventId, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  }, [queryEventId, effectiveEventId, setValue]);
 
   const onSubmit = async (data: RegistrationFormValues) => {
     setApiError(null);
@@ -243,38 +269,47 @@ export default function EventCreatorPage() {
 
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="eventId">Selected Event</Label>
-                  <Select
-                    onValueChange={(val) =>
-                      setValue("eventId", val, { shouldValidate: true })
-                    }
-                  >
-                    <SelectTrigger
-                      id="eventId"
-                      aria-invalid={!!errors.eventId}
-                      aria-describedby={
-                        errors.eventId ? "eventId-error" : undefined
-                      }
-                    >
-                      <SelectValue placeholder="Choose an event" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {eventsLoading ? (
-                        <SelectItem value="loading" disabled>
-                          Loading events...
-                        </SelectItem>
-                      ) : events.length > 0 ? (
-                        events.map((event) => (
-                          <SelectItem key={event.id} value={event.id}>
-                            {event.title} — {event.date}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="no-events" disabled>
-                          No events available
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="eventId"
+                    render={({ field }) => (
+                      <Select
+                        value={String(field.value || queryEventId || "")}
+                        onValueChange={(val) => field.onChange(val)}
+                      >
+                        <SelectTrigger
+                          id="eventId"
+                          aria-invalid={!!errors.eventId}
+                          aria-describedby={
+                            errors.eventId ? "eventId-error" : undefined
+                          }
+                        >
+                          <SelectValue placeholder="Choose an event">
+                            {selectedEvent
+                              ? `${selectedEvent.title} — ${selectedEvent.date}`
+                              : undefined}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {eventsLoading ? (
+                            <SelectItem value="loading" disabled>
+                              Loading events...
+                            </SelectItem>
+                          ) : events.length > 0 ? (
+                            events.map((event) => (
+                              <SelectItem key={event.id} value={String(event.id)}>
+                                {event.title} — {event.date}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="no-events" disabled>
+                              No events available
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                   {errors.eventId && (
                     <p
                       id="eventId-error"
@@ -384,3 +419,6 @@ export default function EventCreatorPage() {
     </div>
   );
 }
+
+
+

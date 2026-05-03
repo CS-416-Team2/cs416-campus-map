@@ -40,7 +40,7 @@ function applyEventListRules(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapDbEvent(raw: any): CampusEvent {
   return {
-    id: raw.id,
+    id: String(raw.id),
     title: raw.title,
     description: raw.description,
     date: raw.date,
@@ -57,7 +57,7 @@ function mapDbEvent(raw: any): CampusEvent {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parking: ((raw.event_parking_suggestions ?? []) as any[]).map(
       (s): ParkingSpot => ({
-        id: s.id,
+        id: String(s.id),
         name: s.parking_lots?.name ?? "Parking",
         distance:
           s.distance_miles != null ? `${s.distance_miles} mi away` : "Nearby",

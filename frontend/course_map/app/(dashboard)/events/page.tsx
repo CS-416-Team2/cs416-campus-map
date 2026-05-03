@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { EventCard } from "@/components/events/EventCard";
 import { EventFilters } from "@/components/events/EventFilters";
@@ -8,6 +9,7 @@ import { MapContainer } from "@/components/map/mapContainer";
 import { MapMarker } from "@/components/map/MapMarker";
 import { MapLayerController } from "@/components/map/MapLayerController";
 import { useEvents } from "@/hooks/use-events";
+import { useAuth } from "@/hooks/use-auth";
 import { useMapStore } from "@/hooks/use-map-store";
 import type { CampusEvent, EventTag, MapMarkerData } from "@/types";
 
@@ -45,6 +47,8 @@ function isOnCampusEvent(coords: [number, number]) {
 }
 
 export default function EventsPage() {
+  const router = useRouter();
+  const { user } = useAuth();
   const [filter, setFilter] = useState<FilterValue>("all");
   const [search, setSearch] = useState("");
   const [activeEvent, setActiveEvent] = useState<CampusEvent | null>(null);
@@ -99,6 +103,14 @@ export default function EventsPage() {
     }
   };
 
+  const handleRegister = (event: CampusEvent) => {
+    if (!user) {
+      router.push("/signup");
+      return;
+    }
+    router.push(`/eventCreator?eventId=${encodeURIComponent(event.id)}`);
+  };
+
   return (
     <div className="flex h-full overflow-hidden bg-surface">
       {/* ── Left panel: event list ────────────────────────────────────── */}
@@ -149,6 +161,7 @@ export default function EventsPage() {
                   event={event}
                   isActive={activeEvent?.id === event.id}
                   onSelect={handleSelect}
+                  onRegister={handleRegister}
                   eagerImage={index === 0}
                 />
               </div>
