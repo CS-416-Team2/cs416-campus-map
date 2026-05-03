@@ -134,6 +134,8 @@ export default function RoutingPage() {
   const handleStartNavigation = async () => {
     if (!MAPBOX_TOKEN) return;
     setIsGeocoding(true);
+    let startCoords = userLocation;
+
     try {
       // ── Origin ────────────────────────────────────────────────────────────
       if (origin === "Current Location") {
@@ -141,13 +143,17 @@ export default function RoutingPage() {
         const coords = await getGPSLocation();
         if (coords) {
           setUserLocation(coords);
+          startCoords = coords;
         } else if (!userLocation) {
           // GPS unavailable and no cached location — can't navigate
           return;
         }
       } else {
         const coords = await geocodeAddress(origin);
-        if (coords) setUserLocation(coords);
+        if (coords) {
+          setUserLocation(coords);
+          startCoords = coords;
+        }
       }
 
       // ── Destination ───────────────────────────────────────────────────────
@@ -174,6 +180,18 @@ export default function RoutingPage() {
     // Force a fresh directions fetch even if the store values haven't changed
     // (e.g. user clicked the button a second time with the same origin/dest).
     refetchRoute();
+
+    // Transition to navigation view
+    if (startCoords) {
+      setViewState({
+        longitude: startCoords[0],
+        latitude: startCoords[1],
+        zoom: 18,
+        pitch: 60,
+        bearing: 0,
+      });
+      setPanelOpen(false);
+    }
   };
 
   return (
