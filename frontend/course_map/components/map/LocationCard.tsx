@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, Share2, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -20,12 +21,20 @@ const categoryBadgeVariant: Record<EventCategory, "orange" | "green" | "blue"> =
   };
 
 const categoryLabel: Record<EventCategory, string> = {
-  orange: "Event â€“ Orange",
-  green: "Event â€“ Green",
-  blue: "Event â€“ Blue",
+  orange: "Event – Orange",
+  green: "Event – Green",
+  blue: "Event – Blue",
 };
 
 export function LocationCard({ event, onClose, onNavigate }: LocationCardProps) {
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [event.id, event.imageUrl]);
+
+  const imageSrc = !event.imageUrl || imageError ? "/placeholder.jpg" : event.imageUrl;
+
   return (
     <div
       className="w-80 bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-2xl space-y-3"
@@ -42,7 +51,7 @@ export function LocationCard({ event, onClose, onNavigate }: LocationCardProps) 
             {event.title}
           </h3>
           <p className="text-body-sm text-on-surface-variant">
-            {event.location} â€¢ {event.date}
+            {event.location} • {event.date}
           </p>
         </div>
         <button
@@ -57,11 +66,12 @@ export function LocationCard({ event, onClose, onNavigate }: LocationCardProps) 
       {/* Image */}
       <div className="relative w-full h-32 rounded-lg overflow-hidden">
         <Image
-          src={event.imageUrl}
+          src={imageSrc}
           alt={event.title}
           fill
           className="object-cover"
           sizes="320px"
+          onError={() => setImageError(true)}
         />
       </div>
 

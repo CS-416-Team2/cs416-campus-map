@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Calendar, MapPin, Share2, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,14 @@ export function EventCard({
   onRegister,
   eagerImage = false,
 }: EventCardProps) {
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [event.id, event.imageUrl]);
+
+  const imageSrc = !event.imageUrl || imageError ? "/placeholder.jpg" : event.imageUrl;
+
   return (
     <article
       onClick={() => onSelect?.(event)}
@@ -41,13 +50,14 @@ export function EventCard({
         )}
       >
         <Image
-          src={event.imageUrl}
+          src={imageSrc}
           alt={event.title}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 480px"
           loading={eagerImage ? "eager" : "lazy"}
           priority={eagerImage}
+          onError={() => setImageError(true)}
         />
         <div className="absolute top-3 left-3">
           <span className="inline-flex px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded uppercase tracking-wider">
@@ -64,7 +74,7 @@ export function EventCard({
             <div className="flex items-center gap-1.5 text-secondary text-label-md mt-1">
               <Calendar className="w-4 h-4 shrink-0" aria-hidden="true" />
               <span>
-                {event.date} â€¢ {event.time}
+                {event.date} • {event.time}
               </span>
             </div>
           </div>
