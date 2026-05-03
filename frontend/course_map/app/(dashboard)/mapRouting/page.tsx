@@ -74,6 +74,21 @@ function getGPSLocation(): Promise<[number, number] | null> {
   });
 }
 
+function getBearing(start: [number, number], end: [number, number]) {
+  if (!start || !end) return 0;
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const toDeg = (rad: number) => (rad * 180) / Math.PI;
+
+  const lat1 = toRad(start[1]);
+  const lat2 = toRad(end[1]);
+  const dLng = toRad(end[0] - start[0]);
+
+  const y = Math.sin(dLng) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+  let brng = toDeg(Math.atan2(y, x));
+  return (brng + 360) % 360;
+}
+
 export default function RoutingPage() {
   const { data: routeData, isLoading: isRouteLoading, refetch: refetchRoute } = useDirections();
   const { data: events = [], isLoading: isEventsLoading } = useEvents();
@@ -209,17 +224,29 @@ export default function RoutingPage() {
 
     // Force a fresh directions fetch even if the store values haven't changed
     // (e.g. user clicked the button a second time with the same origin/dest).
-    refetchRoute();
+    const result = await refetchRoute();
+    const newRouteData = result.data;
 
     // Transition to navigation view
     if (startCoords) {
       setIsNavigating(true);
+      
+      let initialBearing = 0;
+      if (newRouteData?.geoJson?.geometry?.coordinates?.length) {
+        const coordsList = newRouteData.geoJson.geometry.coordinates as [number, number][];
+        if (coordsList.length > 1) {
+          // Pick a point slightly ahead to get a stable initial bearing
+          const nextCoord = coordsList[Math.min(3, coordsList.length - 1)];
+          initialBearing = getBearing(startCoords, nextCoord);
+        }
+      }
+
       setViewState({
         longitude: startCoords[0],
         latitude: startCoords[1],
         zoom: 18,
         pitch: 60,
-        bearing: 0,
+        bearing: initialBearing,
       });
       setPanelOpen(false);
     }
@@ -234,7 +261,7 @@ export default function RoutingPage() {
           {userLocation && (
             <Marker longitude={userLocation[0]} latitude={userLocation[1]} anchor="center">
               <div className="bg-white p-2.5 rounded-full shadow-lg border-[3px] border-secondary flex items-center justify-center animate-pulse-slow">
-                <Navigation className="w-5 h-5 text-secondary fill-secondary" style={{ transform: "rotate(45deg)" }} aria-hidden="true" />
+                <Navigation className="w-5 h-5 text-secondary fill-secondary" style={{ transform: "rotate(-45deg)" }} aria-hidden="true" />
               </div>
             </Marker>
           )}
