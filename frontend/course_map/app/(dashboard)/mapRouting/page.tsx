@@ -130,7 +130,7 @@ export default function RoutingPage() {
           });
         },
         (err) => console.warn("Navigation tracking error:", err),
-        { enableHighAccuracy: true, maximumAge: 1000, timeout: 5000 }
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
       );
     }
     return () => {
@@ -256,7 +256,7 @@ export default function RoutingPage() {
     <div className="relative flex h-full overflow-hidden">
       {/* Map */}
       <div className="absolute inset-0">
-        <MapContainer mapStyle={isNavigating ? "mapbox://styles/mapbox/navigation-night-v1" : undefined}>
+        <MapContainer>
           <RouteOverlay />
           {userLocation && (
             <Marker longitude={userLocation[0]} latitude={userLocation[1]} anchor="center">
