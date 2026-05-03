@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { UserCircle, Search, LogOut, LogIn } from "lucide-react";
+import { UserCircle, LogOut, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -39,19 +39,7 @@ export function Navbar() {
           CampusNav
         </span>
 
-        {/* Search bar (desktop) */}
-        <div className="hidden md:flex relative items-center max-w-sm w-full">
-          <Search
-            className="absolute left-3 text-on-surface-variant w-4 h-4"
-            aria-hidden="true"
-          />
-          <input
-            type="search"
-            placeholder="Search buildings, events..."
-            aria-label="Search campus"
-            className="w-full bg-surface-container-low border-none rounded-lg py-2 pl-9 pr-4 text-body-sm focus:ring-2 focus:ring-secondary/20 focus:outline-none placeholder:text-on-surface-variant"
-          />
-        </div>
+
 
         {/* Desktop nav links (for non-sidebar pages) */}
         <nav
