@@ -1,107 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase-admin";
-import {
-  EventInsertSchema,
-  EventFilterSchema,
-  PaginationSchema,
-} from "@/lib/validators";
-import { handleApiError } from "@/lib/api-error";
-import { rateLimit } from "@/lib/rate-limit";
-import { withSecurityHeaders } from "@/lib/security-headers";
-import {
-  requireAuth,
-  requireAdmin,
-  paginationRange,
-  paginatedResponse,
-} from "@/lib/api-helpers";
+import { CAMPUS_EVENTS } from "@/data/events";
 
-/**
- * GET /api/events
- * Public — list events with optional filters and pagination.
- * Eager-loads event_parking_suggestions to prevent N+1.
- */
 export async function GET(request: NextRequest) {
-  try {
-    const limited = rateLimit(request);
-    if (limited) return withSecurityHeaders(limited);
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get("category");
 
-    const { searchParams } = new URL(request.url);
-    const filters = EventFilterSchema.parse({
-      category: searchParams.get("category") ?? undefined,
-      tag: searchParams.get("tag") ?? undefined,
-      search: searchParams.get("search") ?? undefined,
-    });
-    const pagination = PaginationSchema.parse({
-      page: searchParams.get("page") ?? undefined,
-      limit: searchParams.get("limit") ?? undefined,
-      orderBy: searchParams.get("orderBy") ?? "created_at",
-      direction: searchParams.get("direction") ?? undefined,
-    });
+  const events =
+    category && category !== "all"
+      ? CAMPUS_EVENTS.filter((e) => e.tags.includes(category as never))
+      : CAMPUS_EVENTS;
 
-    const supabase = getSupabaseAdmin();
-    const { from, to } = paginationRange(pagination.page, pagination.limit);
-
-    let query = supabase
-      .from("events")
-      .select(
-        "*, event_parking_suggestions(*, parking_lots(*))",
-        { count: "exact" },
-      )
-      .order(pagination.orderBy ?? "created_at", {
-        ascending: pagination.direction === "asc",
-      })
-      .range(from, to);
-
-    if (filters.category) {
-      query = query.eq("category", filters.category);
-    }
-    if (filters.tag) {
-      query = query.contains("tags", [filters.tag]);
-    }
-    if (filters.search) {
-      query = query.ilike("title", `%${filters.search}%`);
-    }
-
-    const { data, error, count } = await query;
-
-    if (error) throw error;
-
-    return withSecurityHeaders(
-      paginatedResponse(data ?? [], count, pagination.page, pagination.limit),
-    );
-  } catch (error) {
-    return withSecurityHeaders(handleApiError(error));
-  }
-}
-
-/**
- * POST /api/events
- * Admin-only — create a new event.
- */
-export async function POST(request: NextRequest) {
-  try {
-    const limited = rateLimit(request, 30, 60_000);
-    if (limited) return withSecurityHeaders(limited);
-
-    const user = await requireAuth(request);
-    await requireAdmin(user.id);
-
-    const body = await request.json();
-    const validated = EventInsertSchema.parse(body);
-
-    const supabase = getSupabaseAdmin();
-    const { data, error } = await supabase
-      .from("events")
-      .insert(validated)
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    return withSecurityHeaders(
-      NextResponse.json({ data }, { status: 201 }),
-    );
-  } catch (error) {
-    return withSecurityHeaders(handleApiError(error));
-  }
+  return NextResponse.json({ events, count: events.length });
 }
