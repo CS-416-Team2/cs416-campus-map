@@ -28,7 +28,7 @@ export const useMapStore = create<MapState>((set) => ({
   viewState: {
     longitude: -87.47357432996594,
     latitude: 41.58392629103461,
-    zoom: 15.8,
+    zoom: 16.1,
     pitch: 0,
     bearing: 0,
   },
