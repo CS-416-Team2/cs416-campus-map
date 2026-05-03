@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   X,
   ArrowUpDown,
@@ -12,7 +12,9 @@ import {
   Sun,
   LocateFixed,
   Loader2,
+  MapPin,
 } from "lucide-react";
+import { Marker } from "react-map-gl";
 import { Button } from "@/components/ui/button";
 import { MapContainer } from "@/components/map/mapContainer";
 import { RouteOverlay } from "@/components/map/routeOverlay";
@@ -94,6 +96,32 @@ export default function RoutingPage() {
   const [showSteps, setShowSteps] = useState(true);
   const [panelOpen, setPanelOpen] = useState(true);
   const [isGeocoding, setIsGeocoding] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  // Active navigation tracking
+  useEffect(() => {
+    let watchId: number;
+    if (isNavigating && origin === "Current Location" && navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const coords: [number, number] = [pos.coords.longitude, pos.coords.latitude];
+          setUserLocation(coords);
+          setViewState({
+            longitude: coords[0],
+            latitude: coords[1],
+            zoom: 18,
+            pitch: 60,
+            ...(pos.coords.heading !== null && !isNaN(pos.coords.heading) && { bearing: pos.coords.heading })
+          });
+        },
+        (err) => console.warn("Navigation tracking error:", err),
+        { enableHighAccuracy: true, maximumAge: 1000, timeout: 5000 }
+      );
+    }
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
+  }, [isNavigating, origin, setUserLocation, setViewState]);
 
   const hasRoute = !!routeData;
   const metrics = routeData?.metrics;
@@ -101,12 +129,14 @@ export default function RoutingPage() {
   const isBusy = isGeocoding || isRouteLoading;
 
   const swapLocations = () => {
+    setIsNavigating(false);
     const tmp = origin;
     setOrigin(destination);
     setDestination(tmp);
   };
 
   const handleSelectEvent = (event: (typeof events)[number]) => {
+    setIsNavigating(false);
     setSelectedEvent(event);
     setSelectedDestination(event.coordinates);
     setDestination(event.location);
@@ -134,6 +164,8 @@ export default function RoutingPage() {
   const handleStartNavigation = async () => {
     if (!MAPBOX_TOKEN) return;
     setIsGeocoding(true);
+    let startCoords = userLocation;
+
     try {
       // ── Origin ────────────────────────────────────────────────────────────
       if (origin === "Current Location") {
@@ -141,13 +173,17 @@ export default function RoutingPage() {
         const coords = await getGPSLocation();
         if (coords) {
           setUserLocation(coords);
+          startCoords = coords;
         } else if (!userLocation) {
           // GPS unavailable and no cached location — can't navigate
           return;
         }
       } else {
         const coords = await geocodeAddress(origin);
-        if (coords) setUserLocation(coords);
+        if (coords) {
+          setUserLocation(coords);
+          startCoords = coords;
+        }
       }
 
       // ── Destination ───────────────────────────────────────────────────────
@@ -174,6 +210,19 @@ export default function RoutingPage() {
     // Force a fresh directions fetch even if the store values haven't changed
     // (e.g. user clicked the button a second time with the same origin/dest).
     refetchRoute();
+
+    // Transition to navigation view
+    if (startCoords) {
+      setIsNavigating(true);
+      setViewState({
+        longitude: startCoords[0],
+        latitude: startCoords[1],
+        zoom: 18,
+        pitch: 60,
+        bearing: 0,
+      });
+      setPanelOpen(false);
+    }
   };
 
   return (
@@ -182,6 +231,20 @@ export default function RoutingPage() {
       <div className="absolute inset-0">
         <MapContainer>
           <RouteOverlay />
+          {userLocation && (
+            <Marker longitude={userLocation[0]} latitude={userLocation[1]} anchor="center">
+              <div className="bg-white p-2.5 rounded-full shadow-lg border-[3px] border-secondary flex items-center justify-center animate-pulse-slow">
+                <Navigation className="w-5 h-5 text-secondary fill-secondary" style={{ transform: "rotate(45deg)" }} aria-hidden="true" />
+              </div>
+            </Marker>
+          )}
+          {selectedDestination && (
+            <Marker longitude={selectedDestination[0]} latitude={selectedDestination[1]} anchor="bottom">
+              <div className="text-error drop-shadow-md">
+                <MapPin className="w-10 h-10 fill-error" aria-hidden="true" />
+              </div>
+            </Marker>
+          )}
         </MapContainer>
       </div>
 
@@ -223,7 +286,10 @@ export default function RoutingPage() {
                 id="route-origin"
                 type="text"
                 value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
+                onChange={(e) => {
+                  setIsNavigating(false);
+                  setOrigin(e.target.value);
+                }}
                 placeholder="Enter start address…"
                 className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface placeholder:text-on-surface-variant/50"
               />
@@ -269,7 +335,10 @@ export default function RoutingPage() {
                 id="route-dest"
                 type="text"
                 value={destination}
-                onChange={(e) => setDestination(e.target.value)}
+                onChange={(e) => {
+                  setIsNavigating(false);
+                  setDestination(e.target.value);
+                }}
                 placeholder="Enter destination…"
                 className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface placeholder:text-on-surface-variant/50"
               />

@@ -36,7 +36,7 @@ export function AuthWindow({
             </div>
             <div className="space-y-1">
               <p className="text-label-md font-semibold text-secondary">
-                University Central
+                Purdue University Northwest
               </p>
               <p className="text-[11px] uppercase tracking-[0.24em] text-on-surface-variant font-bold">
                 Campus Navigation
