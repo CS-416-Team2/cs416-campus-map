@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   X,
   ArrowUpDown,
@@ -96,6 +96,32 @@ export default function RoutingPage() {
   const [showSteps, setShowSteps] = useState(true);
   const [panelOpen, setPanelOpen] = useState(true);
   const [isGeocoding, setIsGeocoding] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  // Active navigation tracking
+  useEffect(() => {
+    let watchId: number;
+    if (isNavigating && origin === "Current Location" && navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const coords: [number, number] = [pos.coords.longitude, pos.coords.latitude];
+          setUserLocation(coords);
+          setViewState({
+            longitude: coords[0],
+            latitude: coords[1],
+            zoom: 18,
+            pitch: 60,
+            ...(pos.coords.heading !== null && !isNaN(pos.coords.heading) && { bearing: pos.coords.heading })
+          });
+        },
+        (err) => console.warn("Navigation tracking error:", err),
+        { enableHighAccuracy: true, maximumAge: 1000, timeout: 5000 }
+      );
+    }
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
+  }, [isNavigating, origin, setUserLocation, setViewState]);
 
   const hasRoute = !!routeData;
   const metrics = routeData?.metrics;
@@ -103,12 +129,14 @@ export default function RoutingPage() {
   const isBusy = isGeocoding || isRouteLoading;
 
   const swapLocations = () => {
+    setIsNavigating(false);
     const tmp = origin;
     setOrigin(destination);
     setDestination(tmp);
   };
 
   const handleSelectEvent = (event: (typeof events)[number]) => {
+    setIsNavigating(false);
     setSelectedEvent(event);
     setSelectedDestination(event.coordinates);
     setDestination(event.location);
@@ -185,6 +213,7 @@ export default function RoutingPage() {
 
     // Transition to navigation view
     if (startCoords) {
+      setIsNavigating(true);
       setViewState({
         longitude: startCoords[0],
         latitude: startCoords[1],
@@ -257,7 +286,10 @@ export default function RoutingPage() {
                 id="route-origin"
                 type="text"
                 value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
+                onChange={(e) => {
+                  setIsNavigating(false);
+                  setOrigin(e.target.value);
+                }}
                 placeholder="Enter start address…"
                 className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface placeholder:text-on-surface-variant/50"
               />
@@ -303,7 +335,10 @@ export default function RoutingPage() {
                 id="route-dest"
                 type="text"
                 value={destination}
-                onChange={(e) => setDestination(e.target.value)}
+                onChange={(e) => {
+                  setIsNavigating(false);
+                  setDestination(e.target.value);
+                }}
                 placeholder="Enter destination…"
                 className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface placeholder:text-on-surface-variant/50"
               />
