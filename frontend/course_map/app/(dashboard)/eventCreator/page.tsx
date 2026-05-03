@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send, Info, AlertCircle } from "lucide-react";
@@ -30,7 +30,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useEvents } from "@/hooks/use-events";
 
-export default function EventCreatorPage() {
+function EventCreatorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoading: authLoading } = useAuth();
@@ -419,6 +419,10 @@ export default function EventCreatorPage() {
     </div>
   );
 }
-
-
-
+export default function EventCreatorPage() {
+  return (
+    <Suspense fallback={<div className="h-full" />}>
+      <EventCreatorContent />
+    </Suspense>
+  );
+}
