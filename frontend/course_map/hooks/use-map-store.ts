@@ -24,6 +24,8 @@ interface MapState {
   resetNavigation: () => void;
   transportMode: "driving" | "walking";
   setTransportMode: (mode: "driving" | "walking") => void;
+  mapStyle: string;
+  setMapStyle: (style: string) => void;
 }
 
 export const useMapStore = create<MapState>((set) => ({
@@ -46,6 +48,7 @@ export const useMapStore = create<MapState>((set) => ({
     grocery: false,
   },
   transportMode: "driving",
+  mapStyle: "mapbox://styles/mapbox/streets-v12",
 
   setViewState: (newViewState) =>
     set((state) => ({ viewState: { ...state.viewState, ...newViewState } })),
@@ -68,4 +71,5 @@ export const useMapStore = create<MapState>((set) => ({
     set({ selectedDestination: null, userLocation: null, selectedEvent: null }),
 
   setTransportMode: (mode) => set({ transportMode: mode }),
+  setMapStyle: (style) => set({ mapStyle: style }),
 }));

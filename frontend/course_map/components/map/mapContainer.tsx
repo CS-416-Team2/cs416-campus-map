@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import Map, { NavigationControl, GeolocateControl } from "react-map-gl";
+import { Layers } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useMapStore } from "@/hooks/use-map-store";
 import { ParkingLotsOverlay } from "./ParkingLotsOverlay";
@@ -14,8 +15,18 @@ interface MapContainerProps {
   mapStyle?: string;
 }
 
-export function MapContainer({ children, className, mapStyle = "mapbox://styles/mapbox/streets-v12" }: MapContainerProps) {
-  const { viewState, setViewState } = useMapStore();
+export function MapContainer({ children, className, mapStyle: propMapStyle }: MapContainerProps) {
+  const { viewState, setViewState, mapStyle: storeMapStyle, setMapStyle } = useMapStore();
+
+  const activeMapStyle = propMapStyle || storeMapStyle;
+
+  const toggleStyle = () => {
+    setMapStyle(
+      storeMapStyle === "mapbox://styles/mapbox/streets-v12"
+        ? "mapbox://styles/mapbox/satellite-streets-v12"
+        : "mapbox://styles/mapbox/streets-v12"
+    );
+  };
 
   const handleMove = useCallback(
     (evt: { viewState: typeof viewState }) => {
@@ -67,7 +78,7 @@ export function MapContainer({ children, className, mapStyle = "mapbox://styles/
       <Map
         {...viewState}
         onMove={handleMove}
-        mapStyle={mapStyle}
+        mapStyle={activeMapStyle}
         mapboxAccessToken={MAPBOX_TOKEN}
         style={{ width: "100%", height: "100%" }}
         reuseMaps
@@ -82,6 +93,16 @@ export function MapContainer({ children, className, mapStyle = "mapbox://styles/
         <NavigationControl position="top-right" />
         <ParkingLotsOverlay />
         {children}
+
+        {/* Satellite Toggle Button */}
+        <button
+          onClick={toggleStyle}
+          className="absolute bottom-8 right-2.5 p-2 bg-white rounded-md shadow-md text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors z-10 ring-1 ring-black/5"
+          title="Toggle Satellite View"
+          aria-label="Toggle Satellite View"
+        >
+          <Layers className="w-5 h-5" />
+        </button>
       </Map>
     </div>
   );
