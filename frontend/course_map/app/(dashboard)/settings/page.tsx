@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,17 @@ import { Label } from "@/components/ui/label";
 import { MapPin, CheckCircle, AlertCircle, Navigation } from "lucide-react";
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, defaultAddress, isLoading: authLoading } = useAuth();
   const [address, setAddress] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Initialize address from user profile once loaded
+  useEffect(() => {
+    if (defaultAddress && !address) {
+      setAddress(defaultAddress);
+    }
+  }, [defaultAddress, address]);
 
   const handleCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -82,7 +89,6 @@ export default function SettingsPage() {
       }
 
       setStatus("success");
-      setAddress("");
       setTimeout(() => setStatus("idle"), 3000);
     } catch (err: any) {
       setStatus("error");
@@ -115,7 +121,7 @@ export default function SettingsPage() {
                   placeholder="123 Main St, Hammond, IN 46323"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  disabled={status === "loading"}
+                  disabled={status === "loading" || authLoading}
                   className="flex-1"
                 />
                 <Button
@@ -124,7 +130,7 @@ export default function SettingsPage() {
                   size="icon"
                   className="shrink-0 text-secondary border-secondary/30 hover:bg-secondary/10"
                   onClick={handleCurrentLocation}
-                  disabled={status === "loading"}
+                  disabled={status === "loading" || authLoading}
                   title="Use current location"
                 >
                   <Navigation className="w-4 h-4" />
