@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Suspense, useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -33,7 +33,7 @@ import { useEvents } from "@/hooks/use-events";
 function EventCreatorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, role, studentId, isLoading: authLoading } = useAuth();
   const { data: events = [], isLoading: eventsLoading } = useEvents();
   const [submitted, setSubmitted] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -51,7 +51,6 @@ function EventCreatorContent() {
       firstName: "",
       middleName: "",
       lastName: "",
-      studentId: "",
       eventId: "",
     },
   });
@@ -71,22 +70,25 @@ function EventCreatorContent() {
   }, [authLoading, user, router, queryEventId]);
 
   useEffect(() => {
-    if (!queryEventId || effectiveEventId === queryEventId) return;
+    if (!queryEventId) return;
+    if (effectiveEventId && effectiveEventId !== queryEventId) return;
 
     setValue("eventId", queryEventId, {
       shouldValidate: true,
-      shouldDirty: true,
+      shouldDirty: false,
     });
   }, [queryEventId, effectiveEventId, setValue]);
 
   const onSubmit = async (data: RegistrationFormValues) => {
     setApiError(null);
 
-    const studentId = user?.user_metadata?.student_id as string | undefined;
+    if (role === "admin") {
+      setApiError("Admin accounts do not need a student ID and cannot submit student registrations.");
+      return;
+    }
+
     if (!studentId) {
-      setApiError(
-        "Your account must have a student ID to register for events.",
-      );
+      setApiError("Your profile must include a student ID to register for events.");
       return;
     }
 
@@ -109,7 +111,8 @@ function EventCreatorContent() {
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
         throw new Error(
-          payload?.message ||
+          payload?.error ||
+            payload?.message ||
             "Unable to submit registration. Please try again.",
         );
       }
@@ -123,18 +126,19 @@ function EventCreatorContent() {
 
   if (submitted) {
     return (
-      <div className="h-full overflow-y-auto flex items-center justify-center p-container-margin">
-        <div className="text-center space-y-4 max-w-md">
+      <div className="w-full min-h-full flex items-center justify-center px-6 py-10 min-w-0">
+        <div className="shrink-0 w-[min(560px,92vw)] min-w-[320px] rounded-xl border border-outline-variant bg-surface-container-lowest shadow-xl p-8 text-center space-y-5">
           <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto">
             <Send className="w-8 h-8 text-secondary" aria-hidden="true" />
           </div>
           <h2 className="text-headline-md text-primary">
             Registration Submitted!
           </h2>
-          <p className="text-body-md text-on-surface-variant">
+          <p className="text-body-md text-on-surface-variant leading-relaxed">
             A confirmation will be sent to your student email once processed.
           </p>
           <Button
+            className="w-full cursor-pointer whitespace-nowrap"
             onClick={() => {
               setSubmitted(false);
               reset();
@@ -151,7 +155,7 @@ function EventCreatorContent() {
     <div className="h-full overflow-y-auto">
       <div className="pt-8 pb-20 px-6 min-h-full flex flex-col items-center">
         <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* ── Registration form ──────────────────────────────── */}
+          {/* â”€â”€ Registration form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <div className="lg:col-span-7 bg-surface-container-lowest rounded-xl shadow-xl overflow-hidden border border-outline-variant">
             <div className="p-8 border-b border-surface-container-highest bg-surface-container-low">
               <h1 className="text-display-lg text-primary mb-2">
@@ -244,27 +248,17 @@ function EventCreatorContent() {
               {/* Student ID + Event select */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="studentId">Student ID</Label>
+                  <Label htmlFor="studentId">Student ID (from profile)</Label>
                   <Input
                     id="studentId"
-                    placeholder="8-digit ID"
-                    maxLength={8}
-                    aria-invalid={!!errors.studentId}
-                    aria-describedby={
-                      errors.studentId ? "studentId-error" : undefined
+                    value={studentId ?? ""}
+                    readOnly
+                    placeholder={
+                      role === "admin"
+                        ? "Not required for admins"
+                        : "No student ID on profile"
                     }
-                    {...register("studentId")}
                   />
-                  {errors.studentId && (
-                    <p
-                      id="studentId-error"
-                      className="text-label-sm text-error flex items-center gap-1"
-                      role="alert"
-                    >
-                      <AlertCircle className="w-3 h-3" aria-hidden="true" />
-                      {errors.studentId.message}
-                    </p>
-                  )}
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -284,11 +278,8 @@ function EventCreatorContent() {
                             errors.eventId ? "eventId-error" : undefined
                           }
                         >
-                          <SelectValue placeholder="Choose an event">
-                            {selectedEvent
-                              ? `${selectedEvent.title} — ${selectedEvent.date}`
-                              : undefined}
-                          </SelectValue>
+                          <SelectValue placeholder="Choose an event" />
+
                         </SelectTrigger>
                         <SelectContent>
                           {eventsLoading ? (
@@ -298,7 +289,7 @@ function EventCreatorContent() {
                           ) : events.length > 0 ? (
                             events.map((event) => (
                               <SelectItem key={event.id} value={String(event.id)}>
-                                {event.title} — {event.date}
+                                {event.title} - {event.date}
                               </SelectItem>
                             ))
                           ) : (
@@ -319,6 +310,31 @@ function EventCreatorContent() {
                       <AlertCircle className="w-3 h-3" aria-hidden="true" />
                       {errors.eventId.message}
                     </p>
+                  )}
+
+                  {selectedEvent && selectedEvent.parking.length > 0 && (
+                    <div className="mt-2 rounded-lg border border-outline-variant bg-surface-container-low p-3">
+                      <p className="text-label-sm font-semibold text-on-surface mb-2">
+                        Parking lot suggestions
+                      </p>
+                      <div className="space-y-2">
+                        {selectedEvent.parking.slice(0, 3).map((spot) => (
+                          <div
+                            key={spot.id}
+                            className="flex items-center justify-between gap-3 text-body-sm"
+                          >
+                            <div>
+                              <p className="text-on-surface font-medium">{spot.name}</p>
+                              <p className="text-on-surface-variant">{spot.distance}</p>
+                            </div>
+                            <div className="text-right text-on-surface-variant">
+                              <p>{spot.spotsLeft} spots</p>
+                              <p>{spot.price}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -357,9 +373,9 @@ function EventCreatorContent() {
                   className="gap-2"
                 >
                   {isSubmitting
-                    ? "Submitting…"
+                    ? "Submitting..."
                     : eventsLoading
-                      ? "Loading events…"
+                      ? "Loading events..."
                       : events.length === 0
                         ? "No events available"
                         : "Submit Registration"}
@@ -371,7 +387,7 @@ function EventCreatorContent() {
             </form>
           </div>
 
-          {/* ── Sidebar ────────────────────────────────────────── */}
+          {/* â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <div className="lg:col-span-5 space-y-6">
             {/* Registration status */}
             <Card>
@@ -391,7 +407,7 @@ function EventCreatorContent() {
                       Not Registered
                     </span>
                   </div>
-                  <Badge variant="error">ID: —</Badge>
+                  <Badge variant="error">ID: -</Badge>
                 </div>
                 <div className="border-t border-surface-container-highest pt-4">
                   <p className="text-body-sm text-on-surface-variant italic">
@@ -426,3 +442,17 @@ export default function EventCreatorPage() {
     </Suspense>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

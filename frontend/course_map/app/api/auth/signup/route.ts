@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { AuthSignupSchema } from "@/lib/validators";
 import { handleApiError, ApiError } from "@/lib/api-error";
@@ -16,6 +16,8 @@ export async function POST(request: NextRequest) {
       AuthSignupSchema.parse(body);
 
     const supabase = getSupabaseAdmin();
+    const normalizedStudentId = isAdmin ? null : studentId ?? null;
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -23,7 +25,6 @@ export async function POST(request: NextRequest) {
         data: {
           first_name: firstName,
           last_name: lastName,
-          student_id: isAdmin ? null : studentId ?? null,
           role: isAdmin ? "admin" : "student",
         },
       },
@@ -31,6 +32,17 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       throw new ApiError(400, error.message);
+    }
+
+    if (data.user) {
+      const { error: profileError } = await supabase.from("user_profiles").upsert({
+        user_id: data.user.id,
+        student_id: normalizedStudentId,
+      });
+
+      if (profileError) {
+        throw new ApiError(400, profileError.message);
+      }
     }
 
     return withSecurityHeaders(
@@ -49,3 +61,4 @@ export async function POST(request: NextRequest) {
     return withSecurityHeaders(handleApiError(error));
   }
 }
+

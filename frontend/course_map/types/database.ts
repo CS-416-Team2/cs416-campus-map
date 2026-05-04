@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -334,18 +334,21 @@ export type Database = {
         Row: {
           default_address: string | null
           default_city: string | null
+          student_id: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           default_address?: string | null
           default_city?: string | null
+          student_id?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           default_address?: string | null
           default_city?: string | null
+          student_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -529,3 +532,6 @@ export const Constants = {
     },
   },
 } as const
+
+
+

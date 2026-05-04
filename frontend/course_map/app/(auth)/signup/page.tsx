@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -41,8 +41,8 @@ export default function SignupPage() {
       setError("Password must be at least 6 characters.");
       return;
     }
-    if (!isAdmin && studentId && !/^\d{8}$/.test(studentId)) {
-      setError("Student ID must be exactly 8 digits.");
+    if (!isAdmin && !/^\d{8}$/.test(studentId)) {
+      setError("Student ID is required for students and must be exactly 8 digits.");
       return;
     }
 
@@ -100,7 +100,7 @@ export default function SignupPage() {
       }
 
       if (signInData.session) {
-        // Email confirmation disabled — user is immediately signed in
+        // Email confirmation disabled â€” user is immediately signed in
         router.push("/map");
         router.refresh();
       } else {
@@ -347,9 +347,12 @@ export default function SignupPage() {
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
           ) : null}
-          {isLoading ? "Creating account…" : "Create account"}
+          {isLoading ? "Creating accountâ€¦" : "Create account"}
         </button>
       </form>
     </AuthWindow>
   );
 }
+
+
+

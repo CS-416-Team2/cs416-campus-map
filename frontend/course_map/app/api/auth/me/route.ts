@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { handleApiError, ApiError } from "@/lib/api-error";
 import { rateLimit } from "@/lib/rate-limit";
@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
     const token = authHeader.slice(7);
     const supabase = getSupabaseAdmin();
 
-    // Verify user from token
     const {
       data: { user },
       error: userError,
@@ -27,19 +26,40 @@ export async function GET(request: NextRequest) {
       throw new ApiError(401, "Invalid or expired token");
     }
 
-    // Fetch role from user_roles table
     const { data: roleData } = await supabase
       .from("user_roles")
       .select("role, created_at")
       .eq("user_id", user.id)
       .single();
 
-    // Fetch profile if exists
-    const { data: profileData } = await supabase
+    const { data: rawProfile } = await supabase
       .from("user_profiles")
-      .select("default_address, default_city")
+      .select("*")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
+
+    const profile = (rawProfile ?? null) as Record<string, unknown> | null;
+    const metadataStudentId =
+      (user.user_metadata?.student_id as string | undefined) ?? null;
+    const profileStudentId =
+      (profile?.student_id as string | null | undefined) ??
+      (profile?.studentID as string | null | undefined) ??
+      null;
+
+    const resolvedStudentId = profileStudentId ?? metadataStudentId;
+
+    // Keep profile table aligned for legacy accounts created before profile student_id existed.
+    if (!profile && metadataStudentId) {
+      await supabase.from("user_profiles").upsert({
+        user_id: user.id,
+        student_id: metadataStudentId,
+      });
+    } else if (profile && !profileStudentId && metadataStudentId) {
+      await supabase
+        .from("user_profiles")
+        .update({ student_id: metadataStudentId })
+        .eq("user_id", user.id);
+    }
 
     return withSecurityHeaders(
       NextResponse.json({
@@ -48,7 +68,11 @@ export async function GET(request: NextRequest) {
           email: user.email,
           role: roleData?.role ?? "student",
           roleSince: roleData?.created_at ?? null,
-          profile: profileData ?? null,
+          profile: {
+            default_address: (profile?.default_address as string | null) ?? null,
+            default_city: (profile?.default_city as string | null) ?? null,
+            student_id: resolvedStudentId,
+          },
         },
       }),
     );

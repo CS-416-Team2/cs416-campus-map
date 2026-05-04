@@ -1,6 +1,6 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
-// ─── Pagination ────────────────────────────────────────────────
+// â”€â”€â”€ Pagination â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const PaginationSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
@@ -9,7 +9,7 @@ export const PaginationSchema = z.object({
 });
 export type PaginationParams = z.infer<typeof PaginationSchema>;
 
-// ─── Auth ──────────────────────────────────────────────────────
+// â”€â”€â”€ Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const AuthCredentialsSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -25,10 +25,18 @@ export const AuthSignupSchema = AuthCredentialsSchema.extend({
     .optional()
     .nullable(),
   isAdmin: z.boolean().optional().default(false),
+}).superRefine((val, ctx) => {
+  if (!val.isAdmin && !val.studentId) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Student ID is required for student accounts",
+      path: ["studentId"],
+    });
+  }
 });
 export type AuthSignupValues = z.infer<typeof AuthSignupSchema>;
 
-// ─── Events ────────────────────────────────────────────────────
+// â”€â”€â”€ Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const EventInsertSchema = z.object({
   title: z.string().min(1, "Title is required").max(500),
   description: z.string().min(1, "Description is required"),
@@ -58,7 +66,7 @@ export const EventFilterSchema = z.object({
   search: z.string().max(200).optional(),
 });
 
-// ─── Registrations ─────────────────────────────────────────────
+// â”€â”€â”€ Registrations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const RegistrationInsertSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   middle_name: z.string().optional().nullable(),
@@ -79,14 +87,11 @@ export const RegistrationSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   middleName: z.string().optional(),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  studentId: z
-    .string()
-    .regex(/^\d{8}$/, "Student ID must be exactly 8 digits"),
   eventId: z.string().min(1, "Please select an event"),
 });
 export type RegistrationFormValues = z.infer<typeof RegistrationSchema>;
 
-// ─── Parking Lots ──────────────────────────────────────────────
+// â”€â”€â”€ Parking Lots â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const ParkingLotInsertSchema = z.object({
   name: z.string().min(1, "Name is required"),
   campus: z.string().min(1, "Campus is required"),
@@ -102,7 +107,7 @@ export type ParkingLotInsertValues = z.infer<typeof ParkingLotInsertSchema>;
 export const ParkingLotUpdateSchema = ParkingLotInsertSchema.partial();
 export type ParkingLotUpdateValues = z.infer<typeof ParkingLotUpdateSchema>;
 
-// ─── Event Parking Suggestions ─────────────────────────────────
+// â”€â”€â”€ Event Parking Suggestions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const EventParkingSuggestionInsertSchema = z.object({
   event_id: z.string().uuid("Invalid event ID"),
   parking_lot_id: z.string().uuid("Invalid parking lot ID"),
@@ -113,7 +118,7 @@ export type EventParkingSuggestionInsertValues = z.infer<
   typeof EventParkingSuggestionInsertSchema
 >;
 
-// ─── Route Queries ─────────────────────────────────────────────
+// â”€â”€â”€ Route Queries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const RouteQueryInsertSchema = z.object({
   origin_address: z.string().min(1, "Origin address is required"),
   destination_address: z.string().min(1, "Destination address is required"),
@@ -127,7 +132,7 @@ export const RouteQueryInsertSchema = z.object({
 });
 export type RouteQueryInsertValues = z.infer<typeof RouteQueryInsertSchema>;
 
-// ─── User Address Inputs ───────────────────────────────────────
+// â”€â”€â”€ User Address Inputs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const UserAddressInputInsertSchema = z.object({
   input_address: z.string().min(1, "Address is required"),
   input_type: z.string().min(1, "Input type is required"),
@@ -138,9 +143,14 @@ export type UserAddressInputInsertValues = z.infer<
   typeof UserAddressInputInsertSchema
 >;
 
-// ─── User Profiles ─────────────────────────────────────────────
+// â”€â”€â”€ User Profiles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const UserProfileInsertSchema = z.object({
   user_id: z.string().uuid("Invalid user ID"),
+  student_id: z
+    .string()
+    .regex(/^\d{8}$/, "Student ID must be exactly 8 digits")
+    .optional()
+    .nullable(),
   default_address: z.string().optional().nullable(),
   default_city: z.string().optional().nullable(),
 });
@@ -151,14 +161,14 @@ export const UserProfileUpdateSchema = UserProfileInsertSchema.omit({
 }).partial();
 export type UserProfileUpdateValues = z.infer<typeof UserProfileUpdateSchema>;
 
-// ─── User Roles ────────────────────────────────────────────────
+// â”€â”€â”€ User Roles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const UserRoleUpdateSchema = z.object({
   role: z.enum(["student", "admin"]),
   invited_by: z.string().uuid().optional().nullable(),
 });
 export type UserRoleUpdateValues = z.infer<typeof UserRoleUpdateSchema>;
 
-// ─── Event Search (legacy, kept for frontend) ──────────────────
+// â”€â”€â”€ Event Search (legacy, kept for frontend) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const EventSearchSchema = z.object({
   query: z.string().max(200),
   category: z
@@ -167,7 +177,8 @@ export const EventSearchSchema = z.object({
 });
 export type EventSearchValues = z.infer<typeof EventSearchSchema>;
 
-// ─── UUID param validator ──────────────────────────────────────
+// â”€â”€â”€ UUID param validator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const UuidParamSchema = z.object({
   id: z.string().uuid("Invalid ID format"),
 });
+

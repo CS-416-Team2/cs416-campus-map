@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
@@ -9,6 +9,7 @@ export type AppRole = "student" | "admin";
 export interface AuthState {
   user: User | null;
   role: AppRole | null;
+  studentId: string | null;
   isLoading: boolean;
   signOut: () => Promise<void>;
 }
@@ -16,26 +17,50 @@ export interface AuthState {
 export function useAuth(): AuthState {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
+  const [studentId, setStudentId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const supabase = createClient();
 
-    async function loadRole(userId: string) {
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .single();
-      setRole((data?.role as AppRole) ?? "student");
+    async function hydrateUser(accessToken: string, fallbackUser: User | null) {
+      try {
+        const response = await fetch("/api/auth/me", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        if (!response.ok) {
+          setRole("student");
+          setStudentId(null);
+          return;
+        }
+
+        const payload = await response.json();
+        const roleFromApi = payload?.user?.role as AppRole | undefined;
+        const studentIdFromApi = payload?.user?.profile?.student_id as
+          | string
+          | null
+          | undefined;
+
+        setRole(roleFromApi ?? "student");
+        setStudentId(studentIdFromApi ?? null);
+      } catch {
+        setRole("student");
+        setStudentId(null);
+      } finally {
+        setUser(fallbackUser);
+        setIsLoading(false);
+      }
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        loadRole(currentUser.id).finally(() => setIsLoading(false));
+      if (currentUser && session?.access_token) {
+        void hydrateUser(session.access_token, currentUser);
       } else {
+        setUser(currentUser);
+        setRole(null);
+        setStudentId(null);
         setIsLoading(false);
       }
     });
@@ -44,11 +69,14 @@ export function useAuth(): AuthState {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        loadRole(currentUser.id);
+      if (currentUser && session?.access_token) {
+        setIsLoading(true);
+        void hydrateUser(session.access_token, currentUser);
       } else {
+        setUser(currentUser);
         setRole(null);
+        setStudentId(null);
+        setIsLoading(false);
       }
     });
 
@@ -60,5 +88,5 @@ export function useAuth(): AuthState {
     await supabase.auth.signOut();
   };
 
-  return { user, role, isLoading, signOut };
+  return { user, role, studentId, isLoading, signOut };
 }

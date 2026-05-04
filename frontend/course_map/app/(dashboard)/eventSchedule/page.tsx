@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -52,7 +52,7 @@ function safeBadgeVariant(cat: string): "orange" | "green" | "blue" {
 
 export default function SchedulePage() {
   const router = useRouter();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, role, studentId, isLoading: authLoading } = useAuth();
   const [registrations, setRegistrations] = useState<RegistrationWithEvent[]>(
     [],
   );
@@ -70,8 +70,14 @@ export default function SchedulePage() {
   useEffect(() => {
     if (!user) return;
 
-    const studentId = user.user_metadata?.student_id as string | undefined;
+    if (role === "admin") {
+      setRegistrations([]);
+      setRegLoading(false);
+      return;
+    }
+
     if (!studentId) {
+      setRegistrations([]);
       setRegLoading(false);
       return;
     }
@@ -88,7 +94,7 @@ export default function SchedulePage() {
         setRegistrations((data as RegistrationWithEvent[]) ?? []);
         setRegLoading(false);
       });
-  }, [user]);
+  }, [user, role, studentId]);
 
   const registeredEventIds = new Set(registrations.map((r) => r.event_id));
 
@@ -145,7 +151,7 @@ export default function SchedulePage() {
           ) : (
             <div className="space-y-4" role="list">
               {registrations.map((reg) => {
-                const ev = reg.events?.[0];
+                const ev = reg.events;
                 if (!ev) return null;
                 return (
                   <Card
@@ -288,3 +294,10 @@ export default function SchedulePage() {
     </div>
   );
 }
+
+
+
+
+
+
+
