@@ -9,6 +9,7 @@ import {
   CheckCircle,
   Circle,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,6 +23,16 @@ interface RegistrationWithEvent {
   event_id: string;
   status: string;
   events:
+    | {
+        id: string;
+        title: string;
+        date: string;
+        time: string;
+        location: string;
+        category: string;
+        capacity: number;
+        registered: number;
+      }
     | {
         id: string;
         title: string;
@@ -57,6 +68,8 @@ export default function SchedulePage() {
     [],
   );
   const [regLoading, setRegLoading] = useState(true);
+  const [deletingRegistrationId, setDeletingRegistrationId] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
   const { data: allEvents = [] } = useEvents();
 
   // Redirect unauthenticated users
@@ -96,6 +109,31 @@ export default function SchedulePage() {
       });
   }, [user, role, studentId]);
 
+  const handleRemoveRegistration = async (registrationId: string) => {
+    setApiError(null);
+    setDeletingRegistrationId(registrationId);
+
+    try {
+      const response = await fetch(`/api/registrations/${registrationId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(
+          payload?.error ?? payload?.message ?? "Unable to remove registration.",
+        );
+      }
+
+      setRegistrations((prev) => prev.filter((reg) => reg.id !== registrationId));
+    } catch (error) {
+      setApiError(
+        error instanceof Error ? error.message : "Unable to remove registration.",
+      );
+    } finally {
+      setDeletingRegistrationId(null);
+    }
+  };
   const registeredEventIds = new Set(registrations.map((r) => r.event_id));
 
   const suggestedEvents = allEvents
@@ -124,6 +162,11 @@ export default function SchedulePage() {
         </div>
 
         {/* Registered events */}
+        {apiError && (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-body-sm text-red-700">
+            {apiError}
+          </div>
+        )}
         <section aria-labelledby="registered-heading">
           <h2
             id="registered-heading"
@@ -151,7 +194,9 @@ export default function SchedulePage() {
           ) : (
             <div className="space-y-4" role="list">
               {registrations.map((reg) => {
-                const ev = reg.events;
+                const ev = Array.isArray(reg.events)
+                  ? reg.events[0]
+                  : reg.events;
                 if (!ev) return null;
                 return (
                   <Card
@@ -183,12 +228,23 @@ export default function SchedulePage() {
                             <h3 className="text-headline-sm text-on-surface leading-tight">
                               {ev.title}
                             </h3>
+                          </div>                          <div className="flex items-center gap-2 shrink-0">
+                            <Badge variant="secondary">
+                              {reg.status === "registered"
+                                ? "Confirmed"
+                                : reg.status}
+                            </Badge>
+                            <button
+                              type="button"
+                              onClick={() => void handleRemoveRegistration(reg.id)}
+                              disabled={deletingRegistrationId === reg.id}
+                              className="inline-flex items-center gap-1 rounded-md border border-outline-variant bg-surface px-2 py-1 text-label-sm text-on-surface-variant hover:text-error hover:border-error/40 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                              aria-label={`Remove registration for ${ev.title}`}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                              {deletingRegistrationId === reg.id ? "Removing..." : "Remove"}
+                            </button>
                           </div>
-                          <Badge variant="secondary" className="shrink-0">
-                            {reg.status === "registered"
-                              ? "Confirmed"
-                              : reg.status}
-                          </Badge>
                         </div>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-body-sm text-on-surface-variant">
                           <span className="flex items-center gap-1.5">
@@ -294,6 +350,12 @@ export default function SchedulePage() {
     </div>
   );
 }
+
+
+
+
+
+
 
 
 
