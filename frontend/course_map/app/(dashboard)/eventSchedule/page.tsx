@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ import {
   Circle,
   Loader2,
   Trash2,
+  Car,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,6 +33,16 @@ interface RegistrationWithEvent {
         category: string;
         capacity: number;
         registered: number;
+        event_parking_suggestions?: {
+          distance_miles: number | null;
+          estimated_walk_minutes: number | null;
+          parking_lots: {
+            name: string;
+            address: string;
+            available_spots: number | null;
+            total_spots: number | null;
+          } | null;
+        }[];
       }
     | {
         id: string;
@@ -42,6 +53,16 @@ interface RegistrationWithEvent {
         category: string;
         capacity: number;
         registered: number;
+        event_parking_suggestions?: {
+          distance_miles: number | null;
+          estimated_walk_minutes: number | null;
+          parking_lots: {
+            name: string;
+            address: string;
+            available_spots: number | null;
+            total_spots: number | null;
+          } | null;
+        }[];
       }[]
     | null;
 }
@@ -99,7 +120,7 @@ export default function SchedulePage() {
     supabase
       .from("registrations")
       .select(
-        "id, event_id, status, events(id, title, date, time, location, category, capacity, registered)",
+        "id, event_id, status, events(id, title, date, time, location, category, capacity, registered, event_parking_suggestions(distance_miles, estimated_walk_minutes, parking_lots(name, address, available_spots, total_spots)))",
       )
       .eq("student_id", studentId)
       .order("created_at", { ascending: false })
@@ -282,6 +303,36 @@ export default function SchedulePage() {
                             {ev.registered}/{ev.capacity} registered
                           </span>
                         </div>
+                        {ev.event_parking_suggestions && ev.event_parking_suggestions.length > 0 && (
+                          <div className="pt-3 mt-3 border-t border-outline-variant/50">
+                            <h4 className="text-label-sm font-semibold text-on-surface-variant mb-2">Suggested Parking</h4>
+                            <div className="space-y-2">
+                              {ev.event_parking_suggestions.map((suggestion, idx) => (
+                                suggestion.parking_lots && (
+                                  <div key={idx} className="flex items-start gap-2 bg-surface-container-lowest rounded-lg p-2 border border-outline-variant/30">
+                                    <div className="mt-0.5 p-1 bg-secondary/10 text-secondary rounded-md">
+                                      <Car className="w-3.5 h-3.5" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-body-sm font-medium text-on-surface truncate">{suggestion.parking_lots.name}</p>
+                                      <div className="flex items-center gap-3 text-label-sm text-on-surface-variant mt-0.5">
+                                        {suggestion.estimated_walk_minutes != null && (
+                                          <span>{suggestion.estimated_walk_minutes} min walk</span>
+                                        )}
+                                        {suggestion.distance_miles != null && (
+                                          <span>{suggestion.distance_miles.toFixed(1)} mi</span>
+                                        )}
+                                        {suggestion.parking_lots.available_spots != null && (
+                                          <span className="text-secondary font-medium">{suggestion.parking_lots.available_spots} spots left</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Card>
