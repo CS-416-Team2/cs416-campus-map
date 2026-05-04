@@ -15,11 +15,11 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabaseAdmin();
 
     const { data, error } = await supabase
-      .from("user_address_inputs")
-      .insert({
-        input_address,
-        input_type,
+      .from("user_profiles")
+      .upsert({
         user_id,
+        default_address: input_address,
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
