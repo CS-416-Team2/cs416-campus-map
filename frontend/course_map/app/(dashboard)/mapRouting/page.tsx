@@ -13,6 +13,8 @@ import {
   LocateFixed,
   Loader2,
   MapPin,
+  Car,
+  Footprints,
 } from "lucide-react";
 import { Marker } from "react-map-gl";
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,7 @@ import { RouteOverlay } from "@/components/map/routeOverlay";
 import { useDirections } from "@/hooks/use-directions";
 import { useEvents } from "@/hooks/use-events";
 import { useMapStore } from "@/hooks/use-map-store";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -100,7 +103,10 @@ export default function RoutingPage() {
     userLocation,
     selectedDestination,
     setViewState,
+    transportMode,
+    setTransportMode,
   } = useMapStore();
+  const { defaultAddress, isLoading: authLoading } = useAuth();
 
   const [origin, setOrigin] = useState(() =>
     userLocation ? "Current Location" : "",
@@ -112,6 +118,13 @@ export default function RoutingPage() {
   const [panelOpen, setPanelOpen] = useState(true);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+
+  // Set default address if it loads and origin is empty
+  useEffect(() => {
+    if (!authLoading && defaultAddress && !origin && !userLocation) {
+      setOrigin(defaultAddress);
+    }
+  }, [defaultAddress, authLoading, origin, userLocation]);
 
   // Active navigation tracking
   useEffect(() => {
@@ -372,6 +385,42 @@ export default function RoutingPage() {
                 className="bg-transparent border-none focus:ring-0 text-body-sm w-full outline-none text-on-surface placeholder:text-on-surface-variant/50"
               />
             </div>
+          </div>
+
+          {/* Transport Mode Selector */}
+          <div className="flex bg-surface-container-low p-1 rounded-lg mt-4 border border-outline-variant">
+            <button
+              onClick={() => {
+                setIsNavigating(false);
+                setTransportMode("driving");
+              }}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-label-sm font-medium transition-all",
+                transportMode === "driving"
+                  ? "bg-white text-secondary shadow-sm ring-1 ring-black/5"
+                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
+              )}
+              aria-label="Drive"
+            >
+              <Car className="w-4 h-4" />
+              Drive
+            </button>
+            <button
+              onClick={() => {
+                setIsNavigating(false);
+                setTransportMode("walking");
+              }}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-label-sm font-medium transition-all",
+                transportMode === "walking"
+                  ? "bg-white text-secondary shadow-sm ring-1 ring-black/5"
+                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
+              )}
+              aria-label="Walk"
+            >
+              <Footprints className="w-4 h-4" />
+              Walk
+            </button>
           </div>
 
           {/* Event explorer */}
