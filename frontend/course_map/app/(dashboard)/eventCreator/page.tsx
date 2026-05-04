@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Suspense, useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -390,33 +390,7 @@ function EventCreatorContent() {
           {/* â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <div className="lg:col-span-5 space-y-6">
             {/* Registration status */}
-            <Card>
-              <CardHeader>
-                <CardDescription className="text-[10px] uppercase tracking-widest font-black text-on-surface-variant">
-                  Your Status
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-lg border-l-4 border-error">
-                  <div className="flex items-center gap-3">
-                    <AlertCircle
-                      className="w-5 h-5 text-error"
-                      aria-hidden="true"
-                    />
-                    <span className="text-body-md font-medium">
-                      Not Registered
-                    </span>
-                  </div>
-                  <Badge variant="error">ID: -</Badge>
-                </div>
-                <div className="border-t border-surface-container-highest pt-4">
-                  <p className="text-body-sm text-on-surface-variant italic">
-                    &ldquo;Success is the result of preparation meeting
-                    opportunity.&rdquo;
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+
 
 
           </div>

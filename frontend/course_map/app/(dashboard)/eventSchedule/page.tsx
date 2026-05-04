@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -364,48 +364,7 @@ export default function SchedulePage() {
           )}
         </section>
 
-        {suggestedEvents.length > 0 && (
-          <section aria-labelledby="upcoming-heading">
-            <h2 id="upcoming-heading" className="text-headline-md text-on-surface mb-4">
-              Suggested for You
-            </h2>
-            <div className="space-y-3" role="list">
-              {suggestedEvents.map((event) => (
-                <Card
-                  key={event.id}
-                  className="overflow-hidden hover:shadow-md transition-shadow"
-                  role="listitem"
-                >
-                  <div className="flex gap-4 p-4">
-                    <div className="flex flex-col items-center gap-1 shrink-0">
-                      <Circle className="w-5 h-5 text-outline" aria-label="Not registered" />
-                    </div>
-                    <div className="flex-1 min-w-0 space-y-1.5">
-                      <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-body-md font-semibold text-on-surface leading-tight">
-                          {event.title}
-                        </h3>
-                        <Badge variant="outline" className="shrink-0 text-[10px]">
-                          Open
-                        </Badge>
-                      </div>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-body-sm text-on-surface-variant">
-                        <span className="flex items-center gap-1.5">
-                          <CalendarDays className="w-3.5 h-3.5" aria-hidden="true" />
-                          {event.date}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5" aria-hidden="true" />
-                          {event.location}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </section>
-        )}
+
       </div>
     </div>
   );
