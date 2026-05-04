@@ -5,6 +5,7 @@ import Map, { NavigationControl, GeolocateControl } from "react-map-gl";
 import { Layers } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useMapStore } from "@/hooks/use-map-store";
+import { useTheme } from "next-themes";
 import { ParkingLotsOverlay } from "./ParkingLotsOverlay";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -17,15 +18,23 @@ interface MapContainerProps {
 
 export function MapContainer({ children, className, mapStyle: propMapStyle }: MapContainerProps) {
   const { viewState, setViewState, mapStyle: storeMapStyle, setMapStyle } = useMapStore();
+  const { resolvedTheme } = useTheme();
 
-  const activeMapStyle = propMapStyle || storeMapStyle;
+  const isDark = resolvedTheme === "dark";
+  const defaultBaseStyle = isDark 
+    ? "mapbox://styles/mapbox/dark-v11" 
+    : "mapbox://styles/mapbox/streets-v12";
+  
+  const isSatellite = storeMapStyle === "mapbox://styles/mapbox/satellite-streets-v12";
+
+  const activeMapStyle = propMapStyle || (isSatellite ? storeMapStyle : defaultBaseStyle);
 
   const toggleStyle = () => {
-    setMapStyle(
-      storeMapStyle === "mapbox://styles/mapbox/streets-v12"
-        ? "mapbox://styles/mapbox/satellite-streets-v12"
-        : "mapbox://styles/mapbox/streets-v12"
-    );
+    if (isSatellite) {
+      setMapStyle(defaultBaseStyle);
+    } else {
+      setMapStyle("mapbox://styles/mapbox/satellite-streets-v12");
+    }
   };
 
   const handleMove = useCallback(
