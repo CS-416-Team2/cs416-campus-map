@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { UserCircle, LogOut, LogIn } from "lucide-react";
+import { UserCircle, LogOut, LogIn, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -84,6 +84,13 @@ export function Navbar() {
                     {displayName}
                   </span>
                 </div>
+                <Link
+                  href="/settings"
+                  aria-label="Settings"
+                  className="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95"
+                >
+                  <Settings className="w-5 h-5 text-on-surface-variant hover:text-secondary" aria-hidden="true" />
+                </Link>
                 <button
                   onClick={handleSignOut}
                   aria-label="Sign out"
