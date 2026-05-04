@@ -23,6 +23,7 @@ import { RouteOverlay } from "@/components/map/routeOverlay";
 import { useDirections } from "@/hooks/use-directions";
 import { useEvents } from "@/hooks/use-events";
 import { useMapStore } from "@/hooks/use-map-store";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -105,6 +106,7 @@ export default function RoutingPage() {
     transportMode,
     setTransportMode,
   } = useMapStore();
+  const { defaultAddress, isLoading: authLoading } = useAuth();
 
   const [origin, setOrigin] = useState(() =>
     userLocation ? "Current Location" : "",
@@ -116,6 +118,13 @@ export default function RoutingPage() {
   const [panelOpen, setPanelOpen] = useState(true);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+
+  // Set default address if it loads and origin is empty
+  useEffect(() => {
+    if (!authLoading && defaultAddress && !origin && !userLocation) {
+      setOrigin(defaultAddress);
+    }
+  }, [defaultAddress, authLoading, origin, userLocation]);
 
   // Active navigation tracking
   useEffect(() => {

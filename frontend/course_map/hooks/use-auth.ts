@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
@@ -10,6 +10,7 @@ export interface AuthState {
   user: User | null;
   role: AppRole | null;
   studentId: string | null;
+  defaultAddress: string | null;
   isLoading: boolean;
   signOut: () => Promise<void>;
 }
@@ -18,6 +19,7 @@ export function useAuth(): AuthState {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [studentId, setStudentId] = useState<string | null>(null);
+  const [defaultAddress, setDefaultAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,12 +43,18 @@ export function useAuth(): AuthState {
           | string
           | null
           | undefined;
+        const defaultAddressFromApi = payload?.user?.profile?.default_address as
+          | string
+          | null
+          | undefined;
 
         setRole(roleFromApi ?? "student");
         setStudentId(studentIdFromApi ?? null);
+        setDefaultAddress(defaultAddressFromApi ?? null);
       } catch {
         setRole("student");
         setStudentId(null);
+        setDefaultAddress(null);
       } finally {
         setUser(fallbackUser);
         setIsLoading(false);
@@ -61,6 +69,7 @@ export function useAuth(): AuthState {
         setUser(currentUser);
         setRole(null);
         setStudentId(null);
+        setDefaultAddress(null);
         setIsLoading(false);
       }
     });
@@ -76,6 +85,7 @@ export function useAuth(): AuthState {
         setUser(currentUser);
         setRole(null);
         setStudentId(null);
+        setDefaultAddress(null);
         setIsLoading(false);
       }
     });
@@ -88,5 +98,5 @@ export function useAuth(): AuthState {
     await supabase.auth.signOut();
   };
 
-  return { user, role, studentId, isLoading, signOut };
+  return { user, role, studentId, defaultAddress, isLoading, signOut };
 }
