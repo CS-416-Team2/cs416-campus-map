@@ -5,13 +5,53 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, CheckCircle, AlertCircle } from "lucide-react";
+import { MapPin, CheckCircle, AlertCircle, Navigation } from "lucide-react";
 
 export default function SettingsPage() {
   const { user } = useAuth();
   const [address, setAddress] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const handleCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setErrorMessage("Geolocation is not supported by your browser");
+      setStatus("error");
+      return;
+    }
+
+    setStatus("loading");
+    setErrorMessage("");
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+          if (!token) throw new Error("Mapbox token missing");
+
+          const res = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${token}`
+          );
+          const data = await res.json();
+          
+          if (data.features && data.features.length > 0) {
+            setAddress(data.features[0].place_name);
+            setStatus("idle");
+          } else {
+            throw new Error("Could not determine address");
+          }
+        } catch (error) {
+          setAddress(`${latitude}, ${longitude}`); // Fallback to raw coords
+          setStatus("idle");
+        }
+      },
+      (error) => {
+        setStatus("error");
+        setErrorMessage("Could not get your location. Please check permissions.");
+      }
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,13 +109,27 @@ export default function SettingsPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="address">Home Address</Label>
-              <Input
-                id="address"
-                placeholder="123 Main St, Hammond, IN 46323"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                disabled={status === "loading"}
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="address"
+                  placeholder="123 Main St, Hammond, IN 46323"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  disabled={status === "loading"}
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0 text-secondary border-secondary/30 hover:bg-secondary/10"
+                  onClick={handleCurrentLocation}
+                  disabled={status === "loading"}
+                  title="Use current location"
+                >
+                  <Navigation className="w-4 h-4" />
+                </Button>
+              </div>
               <p className="text-label-sm text-on-surface-variant">
                 We'll use this as the default starting point for your routes.
               </p>
