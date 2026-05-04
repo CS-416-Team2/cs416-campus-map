@@ -78,7 +78,7 @@ export function Sidebar({ className }: SidebarProps) {
  className={cn(
  "flex items-center gap-3 px-4 py-3 rounded-lg text-body-sm transition-all select-none",
  isActive
- ? "bg-secondary-container 50 text-secondary border-l-4 border-secondary font-bold rounded-l-none"
+ ? "bg-surface-container-highest text-on-surface border-l-4 border-on-surface font-bold rounded-l-none"
  : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface",
  )}
  >
