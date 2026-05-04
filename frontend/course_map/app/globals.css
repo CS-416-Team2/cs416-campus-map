@@ -128,11 +128,11 @@
   --color-on-error-container: #ffdad6;
 
   /* Surface */
-  --color-background: #111111;
+  --color-background: #080808;
   --color-on-background: #e3e3e3;
-  --color-surface: #111111;
+  --color-surface: #080808;
   --color-surface-bright: #303030;
-  --color-surface-dim: #111111;
+  --color-surface-dim: #080808;
   --color-surface-variant: #444444;
   --color-surface-container-lowest: #0e0e0e;
   --color-surface-container-low: #1a1a1a;

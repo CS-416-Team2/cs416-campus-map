@@ -47,8 +47,9 @@ export function useDirections() {
       const [startLng, startLat] = userLocation;
       const [endLng, endLat] = selectedDestination;
 
+      const profile = transportMode === "driving" ? "driving-traffic" : transportMode;
       const url =
-        `https://api.mapbox.com/directions/v5/mapbox/${transportMode}/` +
+        `https://api.mapbox.com/directions/v5/mapbox/${profile}/` +
         `${startLng},${startLat};${endLng},${endLat}` +
         `?geometries=geojson&steps=true&access_token=${MAPBOX_TOKEN}`;
 

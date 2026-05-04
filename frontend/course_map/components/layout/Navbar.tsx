@@ -7,119 +7,119 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 
 const navLinks = [
-  { label: "Map Dashboard", href: "/map" },
-  { label: "Event Explorer", href: "/events" },
-  { label: "Navigation", href: "/mapRouting" },
-  { label: "My Schedule", href: "/eventSchedule" },
+ { label: "Map Dashboard", href: "/map" },
+ { label: "Event Explorer", href: "/events" },
+ { label: "Navigation", href: "/mapRouting" },
+ { label: "My Schedule", href: "/eventSchedule" },
 ];
 
 export function Navbar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { user, isLoading, signOut } = useAuth();
+ const pathname = usePathname();
+ const router = useRouter();
+ const { user, isLoading, signOut } = useAuth();
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push("/login");
-    router.refresh();
-  };
+ const handleSignOut = async () => {
+ await signOut();
+ router.push("/login");
+ router.refresh();
+ };
 
-  const displayName = user?.user_metadata?.first_name
-    ? `${user.user_metadata.first_name} ${user.user_metadata.last_name ?? ""}`.trim()
-    : user?.email ?? "";
+ const displayName = user?.user_metadata?.first_name
+ ? `${user.user_metadata.first_name} ${user.user_metadata.last_name ?? ""}`.trim()
+ : user?.email ?? "";
 
-  return (
-    <header
-      className="fixed top-0 right-0 left-0 lg:left-sidebar-width z-50 flex items-center justify-between h-navbar-height px-6 bg-surface-container-lowest/ backdrop-blur-md border-b border-outline-variant shadow-sm"
-      role="banner"
-    >
-      {/* Logo (visible only on mobile since sidebar is hidden) */}
-      <div className="flex items-center gap-6">
-        <span className="text-xl font-black text-on-surface tracking-tight lg:hidden">
-          PNW Event Map
-        </span>
-
-
-
-        {/* Desktop nav links (for non-sidebar pages) */}
-        <nav
-          className="hidden md:flex gap-6 lg:hidden items-center"
-          aria-label="Main navigation"
-        >
-          {navLinks.map(({ label, href }) => {
-            const isActive = pathname === href || pathname.startsWith(href + "/");
-            return (
-              <Link
-                key={href}
-                href={href}
-                aria-current={isActive ? "page" : undefined}
-                className={cn(
-                  "text-body-sm font-medium tracking-tight transition-colors h-navbar-height flex items-center border-b-2",
-                  isActive
-                    ? "text-secondary border-secondary font-bold"
-                    : "text-on-surface-variant border-transparent hover:text-secondary",
-                )}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-
-      {/* Right actions */}
-      <div className="flex items-center gap-1">
+ return (
+ <header
+ className="fixed top-0 right-0 left-0 lg:left-sidebar-width z-50 flex items-center justify-between h-navbar-height px-6 bg-surface-container-lowest/ border-b border-outline-variant shadow-sm"
+ role="banner"
+ >
+ {/* Logo (visible only on mobile since sidebar is hidden) */}
+ <div className="flex items-center gap-6">
+ <span className="text-xl font-black text-on-surface tracking-tight lg:hidden">
+ PNW Event Map
+ </span>
 
 
-        {!isLoading && (
-          <>
-            {user ? (
-              <div className="flex items-center gap-1">
-                <div
-                  className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-surface-container transition-colors"
-                  title={displayName}
-                >
-                  <UserCircle className="w-7 h-7 text-secondary" aria-hidden="true" />
-                  <span className="hidden md:block text-body-sm font-medium text-on-surface max-w-[120px] truncate">
-                    {displayName}
-                  </span>
-                </div>
-                <Link
-                  href="/settings"
-                  aria-label="Settings"
-                  className="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95"
-                >
-                  <Settings className="w-5 h-5 text-on-surface-variant hover:text-secondary" aria-hidden="true" />
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  aria-label="Sign out"
-                  className="p-2 rounded-full hover:bg-red-50 hover:text-error transition-colors active:scale-95"
-                >
-                  <LogOut className="w-5 h-5 text-on-surface-variant" aria-hidden="true" />
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/login"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-on-secondary text-label-sm font-semibold hover:opacity-90 transition-opacity"
-              >
-                <LogIn className="w-4 h-4" aria-hidden="true" />
-                Sign In
-              </Link>
-            )}
-          </>
-        )}
 
-        {isLoading && (
-          <button
-            aria-label="Account"
-            className="p-1 rounded-full hover:bg-surface-container transition-colors active:scale-95"
-          >
-            <UserCircle className="w-7 h-7 text-on-surface-variant" aria-hidden="true" />
-          </button>
-        )}
-      </div>
-    </header>
-  );
+ {/* Desktop nav links (for non-sidebar pages) */}
+ <nav
+ className="hidden md:flex gap-6 lg:hidden items-center"
+ aria-label="Main navigation"
+ >
+ {navLinks.map(({ label, href }) => {
+ const isActive = pathname === href || pathname.startsWith(href + "/");
+ return (
+ <Link
+ key={href}
+ href={href}
+ aria-current={isActive ? "page" : undefined}
+ className={cn(
+ "text-body-sm font-medium tracking-tight transition-colors h-navbar-height flex items-center border-b-2",
+ isActive
+ ? "text-secondary border-secondary font-bold"
+ : "text-on-surface-variant border-transparent hover:text-secondary",
+ )}
+ >
+ {label}
+ </Link>
+ );
+ })}
+ </nav>
+ </div>
+
+ {/* Right actions */}
+ <div className="flex items-center gap-1">
+
+
+ {!isLoading && (
+ <>
+ {user ? (
+ <div className="flex items-center gap-1">
+ <div
+ className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-surface-container transition-colors"
+ title={displayName}
+ >
+ <UserCircle className="w-7 h-7 text-secondary" aria-hidden="true" />
+ <span className="hidden md:block text-body-sm font-medium text-on-surface max-w-[120px] truncate">
+ {displayName}
+ </span>
+ </div>
+ <Link
+ href="/settings"
+ aria-label="Settings"
+ className="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95"
+ >
+ <Settings className="w-5 h-5 text-on-surface-variant hover:text-secondary" aria-hidden="true" />
+ </Link>
+ <button
+ onClick={handleSignOut}
+ aria-label="Sign out"
+ className="p-2 rounded-full hover:bg-red-50 hover:text-error transition-colors active:scale-95"
+ >
+ <LogOut className="w-5 h-5 text-on-surface-variant" aria-hidden="true" />
+ </button>
+ </div>
+ ) : (
+ <Link
+ href="/login"
+ className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-on-secondary text-label-sm font-semibold hover:opacity-90 transition-opacity"
+ >
+ <LogIn className="w-4 h-4" aria-hidden="true" />
+ Sign In
+ </Link>
+ )}
+ </>
+ )}
+
+ {isLoading && (
+ <button
+ aria-label="Account"
+ className="p-1 rounded-full hover:bg-surface-container transition-colors active:scale-95"
+ >
+ <UserCircle className="w-7 h-7 text-on-surface-variant" aria-hidden="true" />
+ </button>
+ )}
+ </div>
+ </header>
+ );
 }
