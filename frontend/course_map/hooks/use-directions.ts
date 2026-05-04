@@ -37,10 +37,10 @@ function formatDistance(meters: number): string {
 }
 
 export function useDirections() {
-  const { userLocation, selectedDestination } = useMapStore();
+  const { userLocation, selectedDestination, transportMode } = useMapStore();
 
   return useQuery<NavigationRoute | null>({
-    queryKey: ["directions", userLocation, selectedDestination],
+    queryKey: ["directions", userLocation, selectedDestination, transportMode],
     queryFn: async () => {
       if (!userLocation || !selectedDestination || !MAPBOX_TOKEN) return null;
 
@@ -48,7 +48,7 @@ export function useDirections() {
       const [endLng, endLat] = selectedDestination;
 
       const url =
-        `https://api.mapbox.com/directions/v5/mapbox/walking/` +
+        `https://api.mapbox.com/directions/v5/mapbox/${transportMode}/` +
         `${startLng},${startLat};${endLng},${endLat}` +
         `?geometries=geojson&steps=true&access_token=${MAPBOX_TOKEN}`;
 

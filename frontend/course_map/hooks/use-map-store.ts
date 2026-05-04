@@ -22,6 +22,8 @@ interface MapState {
   setSelectedDestination: (coords: [number, number] | null) => void;
   toggleLayer: (layerId: MapLayerId) => void;
   resetNavigation: () => void;
+  transportMode: "driving" | "walking";
+  setTransportMode: (mode: "driving" | "walking") => void;
 }
 
 export const useMapStore = create<MapState>((set) => ({
@@ -43,6 +45,7 @@ export const useMapStore = create<MapState>((set) => ({
     banks: false,
     grocery: false,
   },
+  transportMode: "driving",
 
   setViewState: (newViewState) =>
     set((state) => ({ viewState: { ...state.viewState, ...newViewState } })),
@@ -63,4 +66,6 @@ export const useMapStore = create<MapState>((set) => ({
 
   resetNavigation: () =>
     set({ selectedDestination: null, userLocation: null, selectedEvent: null }),
+
+  setTransportMode: (mode) => set({ transportMode: mode }),
 }));
