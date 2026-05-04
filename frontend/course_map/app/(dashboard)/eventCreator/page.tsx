@@ -147,7 +147,7 @@ function EventCreatorContent() {
  Registration Submitted!
  </h2>
  <p className="text-body-md text-on-surface-variant leading-relaxed">
- A confirmation will be sent to your student email once processed.
+ Your registration has been successfully recorded.
  </p>
  <Button
  className="w-full cursor-pointer whitespace-nowrap"
@@ -351,21 +351,6 @@ function EventCreatorContent() {
  </div>
  </div>
 
- {/* Info banner */}
- <div
- className="bg-secondary-container 10 border border-secondary-container p-4 rounded-lg flex gap-3 items-start"
- role="note"
- >
- <Info
- className="w-5 h-5 text-secondary shrink-0 mt-0.5"
- aria-hidden="true"
- />
- <p className="text-body-sm text-on-secondary-container">
- By registering, you agree to our campus event attendance
- policy. A confirmation email will be sent to your student
- address once processed.
- </p>
- </div>
 
  {/* Form actions */}
  <div className="pt-2 flex flex-col sm:flex-row gap-4 justify-end">
