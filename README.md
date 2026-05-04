@@ -11,30 +11,30 @@ An interactive, high-performance campus map and event management platform for Pu
 
 ## 🌟 Key Features
 
-- **Interactive Campus Explorer** — Full Mapbox integration with custom markers for events and campus buildings.
-- **Smart Routing & Navigation** — Get precise driving or walking directions from your home address directly to campus events.
-- **Event Management** — Browse, search, and register for student life events with one click.
-- **Personalized Experience** — Save your home address to your profile for instant, one-click routing every time you plan a trip.
-- **Real-Time Parking Intelligence** — Suggested parking lots appear automatically for every event, showing distance, walk time, and spot availability.
-- **Mobile First Design** — Fully responsive interface optimized for student use on the go.
+- **Interactive Campus Explorer** - Full Mapbox integration with custom markers for events and campus buildings.
+- **Smart Routing & Navigation** - Get precise driving or walking directions from your home address directly to campus events.
+- **Event Management** - Browse, search, and register for student life events with one click.
+- **Personalized Experience** - Save your home address to your profile for instant, one-click routing every time you plan a trip.
+- **Real-Time Parking Intelligence** - Suggested parking lots appear automatically for every event, showing distance, walk time, and spot availability.
+- **Mobile First Design** - Fully responsive interface optimized for student use on the go.
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### Core Framework
-- **[Next.js 15+](https://nextjs.org/)** — React framework for the modern web (App Router).
-- **[TypeScript](https://www.typescriptlang.org/)** — Strict type safety for robust application logic.
+- **[Next.js 15+](https://nextjs.org/)** - React framework for the modern web (App Router).
+- **[TypeScript](https://www.typescriptlang.org/)** - Strict type safety for robust application logic.
 
 ### Data & Infrastructure
-- **[Supabase](https://supabase.com/)** — PostgreSQL database with integrated Auth and real-time capabilities.
-- **[Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction)** — Lightweight, performant state management for map and navigation state.
-- **[TanStack Query](https://tanstack.com/query/latest)** — Asynchronous state management for server data fetching.
+- **[Supabase](https://supabase.com/)** - PostgreSQL database with integrated Auth and real-time capabilities.
+- **[Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction)** - Lightweight, performant state management for map and navigation state.
+- **[TanStack Query](https://tanstack.com/query/latest)** - Asynchronous state management for server data fetching.
 
 ### Mapping & UI
-- **[Mapbox GL JS](https://www.mapbox.com/mapbox-gljs)** — Industry-standard vector maps and routing engine.
-- **[Tailwind CSS](https://tailwindcss.com/)** — Modern utility-first styling with high performance.
-- **[Lucide React](https://lucide.dev/)** — Clean, consistent iconography.
+- **[Mapbox GL JS](https://www.mapbox.com/mapbox-gljs)** - Industry-standard vector maps and routing engine.
+- **[Tailwind CSS](https://tailwindcss.com/)** - Modern utility-first styling with high performance.
+- **[Lucide React](https://lucide.dev/)** - Clean, consistent iconography.
 
 ---
 
