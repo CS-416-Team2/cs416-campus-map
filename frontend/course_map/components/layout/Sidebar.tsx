@@ -48,7 +48,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col h-full w-sidebar-width bg-slate-50 border-r border-outline-variant shadow-xl overflow-y-auto shrink-0",
+        "hidden lg:flex flex-col h-full w-sidebar-width bg-surface-container-lowest border-r border-outline-variant shadow-xl overflow-y-auto shrink-0",
         className,
       )}
       aria-label="Main navigation"
@@ -83,8 +83,8 @@ export function Sidebar({ className }: SidebarProps) {
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-lg text-body-sm transition-all select-none",
                 isActive
-                  ? "bg-teal-50 text-secondary border-l-4 border-secondary font-bold rounded-l-none"
-                  : "text-on-surface-variant hover:bg-slate-100 hover:text-on-surface",
+                  ? "bg-secondary-container/50 text-secondary border-l-4 border-secondary font-bold rounded-l-none"
+                  : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface",
               )}
             >
               <Icon className="w-5 h-5 shrink-0" aria-hidden="true" />
@@ -119,7 +119,7 @@ export function Sidebar({ className }: SidebarProps) {
                 </p>
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-slate-100 hover:text-error transition-colors"
+                  className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-surface-container-low hover:text-error transition-colors"
                 >
                   <LogOut className="w-4 h-4" aria-hidden="true" />
                   Sign out
@@ -129,7 +129,7 @@ export function Sidebar({ className }: SidebarProps) {
               <div className="border-t border-outline-variant pt-3">
                 <Link
                   href="/login"
-                  className="flex items-center justify-center gap-2 w-full border border-secondary text-secondary py-2.5 px-4 rounded-lg text-label-md font-semibold hover:bg-teal-50 transition-colors"
+                  className="flex items-center justify-center gap-2 w-full border border-secondary text-secondary py-2.5 px-4 rounded-lg text-label-md font-semibold hover:bg-secondary-container/50 transition-colors"
                 >
                   <LogIn className="w-4 h-4" aria-hidden="true" />
                   Sign In
