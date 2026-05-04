@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 // â”€â”€â”€ Pagination â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const PaginationSchema = z.object({
@@ -100,6 +100,8 @@ export const ParkingLotInsertSchema = z.object({
   address: z.string().min(1, "Address is required"),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
+  lat_2: z.number().min(-90).max(90).optional().nullable(),
+  lng_2: z.number().min(-180).max(180).optional().nullable(),
   total_spots: z.number().int().min(0).optional().nullable(),
   available_spots: z.number().int().min(0).optional().nullable(),
   hourly_rate_usd: z.number().min(0).optional().nullable(),

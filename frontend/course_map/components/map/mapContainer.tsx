@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import Map, { NavigationControl, GeolocateControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useMapStore } from "@/hooks/use-map-store";
+import { ParkingLotsOverlay } from "./ParkingLotsOverlay";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -79,6 +80,7 @@ export function MapContainer({ children, className, mapStyle = "mapbox://styles/
           positionOptions={{ enableHighAccuracy: true }}
         />
         <NavigationControl position="top-right" />
+        <ParkingLotsOverlay />
         {children}
       </Map>
     </div>

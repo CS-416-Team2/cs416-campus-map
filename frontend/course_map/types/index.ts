@@ -12,6 +12,25 @@ export type EventCategory = "orange" | "green" | "blue";
 
 export type EventTag = "academic" | "athletics" | "social" | "workshops";
 
+export type MapLayerId =
+  | "buildings"
+  | "events"
+  | "parking"
+  | "restaurants"
+  | "banks"
+  | "grocery";
+
+export interface ParkingLot {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  lat_2?: number | null;
+  lng_2?: number | null;
+  available_spots?: number | null;
+  total_spots?: number | null;
+}
+
 export interface ParkingSpot {
   id: string;
   name: string;
@@ -61,13 +80,7 @@ export interface MapMarkerData {
   eventId?: string;
 }
 
-export type MapLayerId =
-  | "buildings"
-  | "events"
-  | "parking"
-  | "restaurants"
-  | "banks"
-  | "grocery";
+
 
 export interface WeatherInfo {
   temperature: number;

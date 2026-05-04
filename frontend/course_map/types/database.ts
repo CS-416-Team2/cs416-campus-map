@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -152,7 +152,9 @@ export type Database = {
           created_at: string
           hourly_rate_usd: number | null
           id: string
+          lat_2: number | null
           latitude: number
+          lng_2: number | null
           longitude: number
           name: string
           total_spots: number | null
@@ -164,7 +166,9 @@ export type Database = {
           created_at?: string
           hourly_rate_usd?: number | null
           id?: string
+          lat_2?: number | null
           latitude: number
+          lng_2?: number | null
           longitude: number
           name: string
           total_spots?: number | null
@@ -176,7 +180,9 @@ export type Database = {
           created_at?: string
           hourly_rate_usd?: number | null
           id?: string
+          lat_2?: number | null
           latitude?: number
+          lng_2?: number | null
           longitude?: number
           name?: string
           total_spots?: number | null
