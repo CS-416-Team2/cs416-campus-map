@@ -418,17 +418,7 @@ function EventCreatorContent() {
               </CardContent>
             </Card>
 
-            {/* Help card */}
-            <div className="bg-gradient-to-br from-secondary to-primary-container p-8 rounded-xl text-white shadow-xl">
-              <h3 className="text-headline-sm mb-2">Need help?</h3>
-              <p className="text-body-sm opacity-80 mb-6">
-                Our support team is available 24/7 to assist with campus
-                navigation and event registration.
-              </p>
-              <button className="w-full py-3 rounded-lg bg-white/10 border border-white/20 backdrop-blur-sm text-label-md hover:bg-white/20 transition-all">
-                Contact Registrar
-              </button>
-            </div>
+
           </div>
         </div>
       </div>
