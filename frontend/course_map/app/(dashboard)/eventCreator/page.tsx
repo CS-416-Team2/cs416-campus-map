@@ -60,6 +60,18 @@ function EventCreatorContent() {
   const effectiveEventId = selectedEventId || queryEventId;
   const selectedEvent = events.find((e) => e.id === effectiveEventId);
 
+  // Pre-fill user name fields from Supabase metadata
+  useEffect(() => {
+    if (user?.user_metadata) {
+      if (user.user_metadata.first_name) {
+        setValue("firstName", user.user_metadata.first_name, { shouldValidate: true, shouldDirty: false });
+      }
+      if (user.user_metadata.last_name) {
+        setValue("lastName", user.user_metadata.last_name, { shouldValidate: true, shouldDirty: false });
+      }
+    }
+  }, [user, setValue]);
+
   useEffect(() => {
     if (!authLoading && !user) {
       const nextPath = queryEventId

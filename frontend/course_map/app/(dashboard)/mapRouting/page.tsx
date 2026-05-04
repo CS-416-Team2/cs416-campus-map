@@ -457,7 +457,7 @@ export default function RoutingPage() {
                     className={cn(
                       "w-full text-left rounded-lg border px-3 py-2 transition-colors",
                       selectedEvent?.id === event.id
-                        ? "border-secondary bg-teal-50"
+                        ? "border-secondary bg-secondary-container"
                         : "border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low",
                     )}
                     aria-label={`Select ${event.title} as destination`}
