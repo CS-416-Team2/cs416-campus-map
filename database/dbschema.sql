@@ -1,4 +1,4 @@
--- Unified, idempotent schema for your project (Supabase/Postgres, DEV without RLS)
+﻿-- Unified, idempotent schema for your project (Supabase/Postgres, DEV without RLS)
 begin;
 
 -- UUID helpers (Supabase usually already has these, but safe to keep)
@@ -93,11 +93,13 @@ create table if not exists public.pending_admin_invites (
 -- Optional profile table for default address info
 create table if not exists public.user_profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
+  student_id text,
   default_address text,
   default_city text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+alter table public.user_profiles add column if not exists student_id text;
 
 -- =========================================================
 -- 4) MAP / PARKING / ROUTE INPUTS
@@ -268,6 +270,47 @@ create trigger on_auth_user_created_assign_role
 after insert on auth.users
 for each row execute function public.handle_new_auth_user_role();
 
+-- Ensure every auth user also has a profile row
+create or replace function public.handle_new_auth_user_profile()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.user_profiles (user_id, student_id)
+  values (
+    new.id,
+    coalesce(
+      new.raw_user_meta_data->>'student_id',
+      new.raw_user_meta_data->>'studentID'
+    )
+  )
+  on conflict (user_id) do update
+    set student_id = coalesce(public.user_profiles.student_id, excluded.student_id),
+        updated_at = now();
+
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created_profile on auth.users;
+create trigger on_auth_user_created_profile
+after insert on auth.users
+for each row execute function public.handle_new_auth_user_profile();
+
+-- Backfill profile rows for existing users
+insert into public.user_profiles (user_id, student_id)
+select
+  u.id,
+  coalesce(
+    u.raw_user_meta_data->>'student_id',
+    u.raw_user_meta_data->>'studentID'
+  )
+from auth.users u
+on conflict (user_id) do update
+  set student_id = coalesce(public.user_profiles.student_id, excluded.student_id),
+      updated_at = now();
 -- =========================================================
 -- 7) INDEXES
 -- =========================================================
@@ -276,6 +319,7 @@ create index if not exists ix_events_category on public.events(category);
 create index if not exists ix_registrations_event_id on public.registrations(event_id);
 create index if not exists ix_registrations_student_id on public.registrations(student_id);
 create index if not exists ix_user_roles_role on public.user_roles(role);
+create index if not exists ix_user_profiles_student_id on public.user_profiles(student_id);
 create index if not exists ix_user_address_inputs_user_id on public.user_address_inputs(user_id);
 create index if not exists ix_route_queries_event_id on public.route_queries(event_id);
 

@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       .from("user_roles")
       .select("role, created_at")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
 
     const { data: rawProfile } = await supabase
       .from("user_profiles")
@@ -48,16 +48,28 @@ export async function GET(request: NextRequest) {
 
     const resolvedStudentId = profileStudentId ?? metadataStudentId;
 
-    // Keep profile table aligned for legacy accounts created before profile student_id existed.
-    if (!profile && metadataStudentId) {
+    const resolvedRole =
+      (roleData?.role as "student" | "admin" | undefined) ??
+      ((user.user_metadata?.role as "student" | "admin" | undefined) ?? "student");
+
+    // Ensure a role row exists for every user.
+    if (!roleData) {
+      await supabase.from("user_roles").upsert({
+        user_id: user.id,
+        role: resolvedRole,
+      });
+    }
+
+    // Keep profile table aligned and always ensure a user_profiles row exists.
+    if (!profile) {
       await supabase.from("user_profiles").upsert({
         user_id: user.id,
-        student_id: metadataStudentId,
+        student_id: resolvedStudentId,
       });
-    } else if (profile && !profileStudentId && metadataStudentId) {
+    } else if (!profileStudentId && resolvedStudentId) {
       await supabase
         .from("user_profiles")
-        .update({ student_id: metadataStudentId })
+        .update({ student_id: resolvedStudentId })
         .eq("user_id", user.id);
     }
 
@@ -66,7 +78,7 @@ export async function GET(request: NextRequest) {
         user: {
           id: user.id,
           email: user.email,
-          role: roleData?.role ?? "student",
+          role: resolvedRole,
           roleSince: roleData?.created_at ?? null,
           profile: {
             default_address: (profile?.default_address as string | null) ?? null,
@@ -80,3 +92,6 @@ export async function GET(request: NextRequest) {
     return withSecurityHeaders(handleApiError(error));
   }
 }
+
+
+

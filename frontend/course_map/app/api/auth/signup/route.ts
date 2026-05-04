@@ -35,13 +35,26 @@ export async function POST(request: NextRequest) {
     }
 
     if (data.user) {
+      const resolvedRole = isAdmin ? "admin" : "student";
+
       const { error: profileError } = await supabase.from("user_profiles").upsert({
         user_id: data.user.id,
         student_id: normalizedStudentId,
+        default_address: null,
+        default_city: null,
       });
 
       if (profileError) {
         throw new ApiError(400, profileError.message);
+      }
+
+      const { error: roleError } = await supabase.from("user_roles").upsert({
+        user_id: data.user.id,
+        role: resolvedRole,
+      });
+
+      if (roleError) {
+        throw new ApiError(400, roleError.message);
       }
     }
 
@@ -61,4 +74,5 @@ export async function POST(request: NextRequest) {
     return withSecurityHeaders(handleApiError(error));
   }
 }
+
 
