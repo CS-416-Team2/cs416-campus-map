@@ -12,11 +12,21 @@ export async function POST(request: NextRequest) {
     if (limited) return withSecurityHeaders(limited);
 
     const body = await request.json();
-    const { email, password, firstName, lastName, studentId, isAdmin } =
-      AuthSignupSchema.parse(body);
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      studentId,
+      defaultAddress,
+      defaultCity,
+      isAdmin,
+    } = AuthSignupSchema.parse(body);
 
     const supabase = getSupabaseAdmin();
     const normalizedStudentId = isAdmin ? null : studentId ?? null;
+    const normalizedAddress = defaultAddress?.trim() || null;
+    const normalizedCity = defaultCity?.trim() || null;
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -40,8 +50,8 @@ export async function POST(request: NextRequest) {
       const { error: profileError } = await supabase.from("user_profiles").upsert({
         user_id: data.user.id,
         student_id: normalizedStudentId,
-        default_address: null,
-        default_city: null,
+        default_address: normalizedAddress,
+        default_city: normalizedCity,
       });
 
       if (profileError) {
@@ -74,5 +84,3 @@ export async function POST(request: NextRequest) {
     return withSecurityHeaders(handleApiError(error));
   }
 }
-
-

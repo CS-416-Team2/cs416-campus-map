@@ -24,6 +24,8 @@ export const AuthSignupSchema = AuthCredentialsSchema.extend({
     .regex(/^\d{8}$/, "Student ID must be exactly 8 digits")
     .optional()
     .nullable(),
+  defaultAddress: z.string().trim().max(250).optional().nullable(),
+  defaultCity: z.string().trim().max(120).optional().nullable(),
   isAdmin: z.boolean().optional().default(false),
 }).superRefine((val, ctx) => {
   if (!val.isAdmin && !val.studentId) {
@@ -181,4 +183,5 @@ export type EventSearchValues = z.infer<typeof EventSearchSchema>;
 export const UuidParamSchema = z.object({
   id: z.string().uuid("Invalid ID format"),
 });
+
 

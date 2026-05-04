@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  University,
   AlertCircle,
   CheckCircle,
   Loader2,
@@ -20,6 +19,8 @@ export default function SignupPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [defaultAddress, setDefaultAddress] = useState("");
+  const [defaultCity, setDefaultCity] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -58,6 +59,8 @@ export default function SignupPage() {
           firstName: firstName.trim(),
           lastName: lastName.trim(),
           studentId: isAdmin ? null : studentId.trim() || null,
+          defaultAddress: defaultAddress.trim() || null,
+          defaultCity: defaultCity.trim() || null,
           isAdmin,
         }),
       });
@@ -70,8 +73,6 @@ export default function SignupPage() {
         return;
       }
 
-      // Sign in after successful sign-up when email confirmation is disabled.
-      // If confirmation is required, this will fail with "Email not confirmed".
       const { data: signInData, error: signInError } =
         await supabase.auth.signInWithPassword({
           email: email.trim(),
@@ -87,7 +88,6 @@ export default function SignupPage() {
         return;
       }
 
-      // If the role should be admin, call the set-role API when signed in.
       if (isAdmin && signInData.session) {
         await fetch("/api/auth/set-role", {
           method: "POST",
@@ -100,11 +100,9 @@ export default function SignupPage() {
       }
 
       if (signInData.session) {
-        // Email confirmation disabled â€” user is immediately signed in
         router.push("/map");
         router.refresh();
       } else {
-        // Email confirmation required
         setSuccess(true);
       }
     } finally {
@@ -115,27 +113,22 @@ export default function SignupPage() {
   if (success) {
     return (
       <div className="w-full">
-        <div className="">
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-8 text-center space-y-4">
-            <div className="w-14 h-14 bg-secondary/10 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle
-                className="w-7 h-7 text-secondary"
-                aria-hidden="true"
-              />
-            </div>
-            <h1 className="text-headline-md text-primary">Check your email</h1>
-            <p className="text-body-md text-on-surface-variant">
-              We sent a confirmation link to{" "}
-              <span className="font-semibold text-on-surface">{email}</span>.
-              Click it to activate your account.
-            </p>
-            <Link
-              href="/login"
-              className="inline-block text-secondary font-semibold text-body-sm hover:underline"
-            >
-              Back to sign in
-            </Link>
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-8 text-center space-y-4">
+          <div className="w-14 h-14 bg-secondary/10 rounded-full flex items-center justify-center mx-auto">
+            <CheckCircle className="w-7 h-7 text-secondary" aria-hidden="true" />
           </div>
+          <h1 className="text-headline-md text-primary">Check your email</h1>
+          <p className="text-body-md text-on-surface-variant">
+            We sent a confirmation link to{" "}
+            <span className="font-semibold text-on-surface">{email}</span>.
+            Click it to activate your account.
+          </p>
+          <Link
+            href="/login"
+            className="inline-block text-secondary font-semibold text-body-sm hover:underline"
+          >
+            Back to sign in
+          </Link>
         </div>
       </div>
     );
@@ -152,10 +145,7 @@ export default function SignupPage() {
       footer={
         <p className="text-body-sm text-on-surface-variant text-center w-full">
           Already have an account?{" "}
-          <Link
-            href="/login"
-            className="text-secondary font-semibold hover:underline"
-          >
+          <Link href="/login" className="text-secondary font-semibold hover:underline">
             Sign in
           </Link>
         </p>
@@ -174,10 +164,7 @@ export default function SignupPage() {
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="firstName"
-              className="text-label-sm text-on-surface font-medium"
-            >
+            <label htmlFor="firstName" className="text-label-sm text-on-surface font-medium">
               First name
             </label>
             <input
@@ -191,10 +178,7 @@ export default function SignupPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="lastName"
-              className="text-label-sm text-on-surface font-medium"
-            >
+            <label htmlFor="lastName" className="text-label-sm text-on-surface font-medium">
               Last name
             </label>
             <input
@@ -210,10 +194,7 @@ export default function SignupPage() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="email"
-            className="text-label-sm text-on-surface font-medium"
-          >
+          <label htmlFor="email" className="text-label-sm text-on-surface font-medium">
             Email address <span className="text-error">*</span>
           </label>
           <input
@@ -230,14 +211,8 @@ export default function SignupPage() {
 
         {!isAdmin && (
           <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="studentId"
-              className="text-label-sm text-on-surface font-medium"
-            >
-              Student ID{" "}
-              <span className="text-on-surface-variant font-normal">
-                (8 digits)
-              </span>
+            <label htmlFor="studentId" className="text-label-sm text-on-surface font-medium">
+              Student ID <span className="text-on-surface-variant font-normal">(8 digits)</span>
             </label>
             <input
               id="studentId"
@@ -252,11 +227,39 @@ export default function SignupPage() {
           </div>
         )}
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="defaultAddress" className="text-label-sm text-on-surface font-medium">
+              Default address
+            </label>
+            <input
+              id="defaultAddress"
+              type="text"
+              autoComplete="street-address"
+              value={defaultAddress}
+              onChange={(e) => setDefaultAddress(e.target.value)}
+              placeholder="2200 169th St"
+              className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2.5 text-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary transition"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="defaultCity" className="text-label-sm text-on-surface font-medium">
+              Default city
+            </label>
+            <input
+              id="defaultCity"
+              type="text"
+              autoComplete="address-level2"
+              value={defaultCity}
+              onChange={(e) => setDefaultCity(e.target.value)}
+              placeholder="Hammond"
+              className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2.5 text-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary transition"
+            />
+          </div>
+        </div>
+
         <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="password"
-            className="text-label-sm text-on-surface font-medium"
-          >
+          <label htmlFor="password" className="text-label-sm text-on-surface font-medium">
             Password <span className="text-error">*</span>
           </label>
           <div className="relative">
@@ -286,10 +289,7 @@ export default function SignupPage() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="confirmPassword"
-            className="text-label-sm text-on-surface font-medium"
-          >
+          <label htmlFor="confirmPassword" className="text-label-sm text-on-surface font-medium">
             Confirm password <span className="text-error">*</span>
           </label>
           <input
@@ -318,12 +318,7 @@ export default function SignupPage() {
             }`}
           >
             {isAdmin && (
-              <svg
-                className="w-3 h-3 text-white"
-                fill="none"
-                viewBox="0 0 12 12"
-                aria-hidden="true"
-              >
+              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12" aria-hidden="true">
                 <path
                   d="M2 6l3 3 5-5"
                   stroke="currentColor"
@@ -334,9 +329,7 @@ export default function SignupPage() {
               </svg>
             )}
           </div>
-          <span className="text-body-sm text-on-surface">
-            I am a faculty / administrator
-          </span>
+          <span className="text-body-sm text-on-surface">I am a faculty / administrator</span>
         </label>
 
         <button
@@ -344,15 +337,10 @@ export default function SignupPage() {
           disabled={isLoading}
           className="w-full flex items-center justify-center gap-2 bg-secondary text-on-secondary rounded-lg py-2.5 text-label-md font-bold hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed mt-2"
         >
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-          ) : null}
-          {isLoading ? "Creating accountâ€¦" : "Create account"}
+          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : null}
+          {isLoading ? "Creating account..." : "Create account"}
         </button>
       </form>
     </AuthWindow>
   );
 }
-
-
-
