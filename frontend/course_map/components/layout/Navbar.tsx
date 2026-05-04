@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { UserCircle, LogOut, LogIn, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 const navLinks = [
  { label: "Map Dashboard", href: "/map" },
@@ -35,6 +36,7 @@ export function Navbar() {
  >
  {/* Logo (visible only on mobile since sidebar is hidden) */}
  <div className="flex items-center gap-6">
+        <ThemeToggle />
  <span className="text-xl font-black text-on-surface tracking-tight lg:hidden">
  PNW Event Map
  </span>

@@ -170,62 +170,7 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-6 border-b border-outline-variant pb-4">
-            <div className="p-2 bg-secondary/10 rounded-lg">
-              <Palette className="w-5 h-5 text-secondary" />
-            </div>
-            <h2 className="text-headline-sm text-on-surface">Appearance</h2>
-          </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-body-lg text-on-surface">Theme</Label>
-                <p className="text-label-sm text-on-surface-variant">
-                  Select your preferred color theme.
-                </p>
-              </div>
-              
-              {mounted && (
-                <div className="flex bg-surface-container border border-outline-variant rounded-lg p-1">
-                  <button
-                    onClick={() => setTheme("light")}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${
-                      theme === "light"
-                        ? "bg-surface-container-lowest text-primary shadow-sm"
-                        : "text-on-surface-variant hover:text-on-surface"
-                    }`}
-                  >
-                    <Sun className="w-4 h-4" />
-                    Light
-                  </button>
-                  <button
-                    onClick={() => setTheme("dark")}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${
-                      theme === "dark"
-                        ? "bg-surface-container-lowest text-primary shadow-sm"
-                        : "text-on-surface-variant hover:text-on-surface"
-                    }`}
-                  >
-                    <Moon className="w-4 h-4" />
-                    Dark
-                  </button>
-                  <button
-                    onClick={() => setTheme("system")}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${
-                      theme === "system"
-                        ? "bg-surface-container-lowest text-primary shadow-sm"
-                        : "text-on-surface-variant hover:text-on-surface"
-                    }`}
-                  >
-                    System
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
