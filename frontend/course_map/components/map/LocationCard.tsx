@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { X, Share2, Navigation } from "lucide-react";
+import Link from "next/link";
+import { X, Navigation, Ticket } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { CampusEvent, EventCategory } from "@/types";
@@ -85,13 +86,20 @@ export function LocationCard({ event, onClose, onNavigate }: LocationCardProps) 
           <Navigation className="w-4 h-4" aria-hidden="true" />
           Navigate
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Share location"
+        <Link
+          href={`/eventCreator?eventId=${encodeURIComponent(event.id)}`}
+          className="flex-1"
+          tabIndex={-1}
         >
-          <Share2 className="w-4 h-4" aria-hidden="true" />
-        </Button>
+          <Button
+            variant="outline"
+            className="w-full gap-2"
+            aria-label="Register for event"
+          >
+            <Ticket className="w-4 h-4" aria-hidden="true" />
+            Register
+          </Button>
+        </Link>
       </div>
     </div>
   );
