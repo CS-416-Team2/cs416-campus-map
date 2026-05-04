@@ -57,9 +57,9 @@ export function ParkingLotsOverlay() {
         id="parking-lots-outline"
         type="line"
         paint={{
-          "stroke-color": "#D4AF37",
-          "stroke-width": 2,
-          "stroke-opacity": 0.8,
+          "line-color": "#D4AF37",
+          "line-width": 2,
+          "line-opacity": 0.8,
         }}
       />
     </Source>
