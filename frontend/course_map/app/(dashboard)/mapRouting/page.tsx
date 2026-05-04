@@ -281,7 +281,7 @@ export default function RoutingPage() {
           <RouteOverlay />
           {userLocation && (
             <Marker longitude={userLocation[0]} latitude={userLocation[1]} anchor="center">
-              <div className="bg-white p-1 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)] border-[3px] border-white flex items-center justify-center animate-pulse-slow">
+              <div className="bg-surface-container-lowest p-1 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)] border-[3px] border-white flex items-center justify-center animate-pulse-slow">
                 <div className="bg-blue-500 rounded-full p-2 flex items-center justify-center">
                   <Navigation className="w-6 h-6 text-white fill-white" style={{ transform: "rotate(-45deg)" }} aria-hidden="true" />
                 </div>
@@ -301,7 +301,7 @@ export default function RoutingPage() {
       {/* Route panel */}
       {panelOpen && (
         <div
-          className="absolute top-4 left-4 right-4 w-auto md:top-6 md:left-6 md:right-auto md:w-96 max-h-[calc(100%-2rem)] md:max-h-[calc(100%-3rem)] overflow-y-auto bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-200 flex flex-col p-4 md:p-6 z-30"
+          className="absolute top-4 left-4 right-4 w-auto md:top-6 md:left-6 md:right-auto md:w-96 max-h-[calc(100%-2rem)] md:max-h-[calc(100%-3rem)] overflow-y-auto bg-surface-container-lowest/ backdrop-blur-sm rounded-xl shadow-2xl border border-outline-variant flex flex-col p-4 md:p-6 z-30"
           role="complementary"
           aria-label="Route planning panel"
         >
@@ -359,7 +359,7 @@ export default function RoutingPage() {
             <button
               onClick={swapLocations}
               aria-label="Swap origin and destination"
-              className="bg-white border border-outline-variant p-1.5 rounded-full shadow-sm hover:bg-slate-50 transition-colors"
+              className="bg-surface-container-lowest border border-outline-variant p-1.5 rounded-full shadow-sm hover:bg-surface-container-low transition-colors"
             >
               <ArrowUpDown
                 className="w-4 h-4 text-on-surface-variant"
@@ -405,7 +405,7 @@ export default function RoutingPage() {
               className={cn(
                 "flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-label-sm font-medium transition-all",
                 transportMode === "driving"
-                  ? "bg-white text-secondary shadow-sm ring-1 ring-black/5"
+                  ? "bg-surface-container-lowest text-secondary shadow-sm ring-1 ring-black/5"
                   : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
               )}
               aria-label="Drive"
@@ -421,7 +421,7 @@ export default function RoutingPage() {
               className={cn(
                 "flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-label-sm font-medium transition-all",
                 transportMode === "walking"
-                  ? "bg-white text-secondary shadow-sm ring-1 ring-black/5"
+                  ? "bg-surface-container-lowest text-secondary shadow-sm ring-1 ring-black/5"
                   : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
               )}
               aria-label="Walk"
@@ -458,7 +458,7 @@ export default function RoutingPage() {
                       "w-full text-left rounded-lg border px-3 py-2 transition-colors",
                       selectedEvent?.id === event.id
                         ? "border-secondary bg-teal-50"
-                        : "border-outline-variant bg-white hover:bg-surface-container-low",
+                        : "border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low",
                     )}
                     aria-label={`Select ${event.title} as destination`}
                   >
@@ -580,7 +580,7 @@ export default function RoutingPage() {
       {!panelOpen && (
         <button
           onClick={() => setPanelOpen(true)}
-          className="absolute top-4 left-4 md:top-6 md:left-6 z-30 bg-white border border-slate-200 rounded-xl shadow-lg px-4 py-3 text-label-md text-on-surface flex items-center gap-2 hover:shadow-xl transition-all"
+          className="absolute top-4 left-4 md:top-6 md:left-6 z-30 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg px-4 py-3 text-label-md text-on-surface flex items-center gap-2 hover:shadow-xl transition-all"
           aria-label="Open route planning panel"
         >
           <Navigation className="w-4 h-4 text-secondary" aria-hidden="true" />
@@ -590,11 +590,11 @@ export default function RoutingPage() {
 
       {/* Bottom status bar */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30">
-        <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-slate-200 flex items-center gap-2">
+        <div className="bg-surface-container-lowest/ backdrop-blur px-4 py-2 rounded-full shadow-lg border border-outline-variant flex items-center gap-2">
           <Sun className="w-4 h-4 text-yellow-500" aria-hidden="true" />
           <span className="text-label-sm">72°F Sunny</span>
         </div>
-        <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-slate-200 flex items-center gap-2">
+        <div className="bg-surface-container-lowest/ backdrop-blur px-4 py-2 rounded-full shadow-lg border border-outline-variant flex items-center gap-2">
           <span
             className="h-2 w-2 rounded-full bg-green-500"
             aria-hidden="true"

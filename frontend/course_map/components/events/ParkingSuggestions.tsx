@@ -19,7 +19,7 @@ export function ParkingSuggestions({ spots }: ParkingSuggestionsProps) {
         {spots.map((spot) => (
           <div
             key={spot.id}
-            className="flex justify-between items-center bg-white/60 p-2 rounded-lg border border-secondary/10"
+            className="flex justify-between items-center bg-surface-container-lowest/ p-2 rounded-lg border border-secondary/10"
           >
             <div>
               <p className="text-label-sm font-bold text-on-surface">

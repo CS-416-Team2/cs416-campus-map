@@ -113,7 +113,7 @@ export default function SignupPage() {
   if (success) {
     return (
       <div className="w-full">
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-8 text-center space-y-4">
+        <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xl p-8 text-center space-y-4">
           <div className="w-14 h-14 bg-secondary/10 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle className="w-7 h-7 text-secondary" aria-hidden="true" />
           </div>

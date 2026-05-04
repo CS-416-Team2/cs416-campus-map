@@ -35,7 +35,7 @@ export function EventCard({
     <article
       onClick={() => onSelect?.(event)}
       className={cn(
-        "flex flex-col bg-white border rounded-xl overflow-hidden transition-all cursor-pointer",
+        "flex flex-col bg-surface-container-lowest border rounded-xl overflow-hidden transition-all cursor-pointer",
         isActive
           ? "border-2 border-secondary shadow-md ring-2 ring-secondary/10"
           : "border border-outline-variant hover:shadow-lg hover:border-outline",

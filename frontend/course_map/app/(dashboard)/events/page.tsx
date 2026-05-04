@@ -115,7 +115,7 @@ export default function EventsPage() {
     <div className="flex h-full overflow-hidden bg-surface">
       {/* ── Left panel: event list ────────────────────────────────────── */}
       <section
-        className="w-full md:w-[480px] flex flex-col border-r border-outline-variant bg-white z-10 shrink-0"
+        className="w-full md:w-[480px] flex flex-col border-r border-outline-variant bg-surface-container-lowest z-10 shrink-0"
         aria-label="Event list"
       >
         {/* Search & filters */}
@@ -193,7 +193,7 @@ export default function EventsPage() {
 
         {/* Map legend */}
         <div className="absolute top-lg right-16 z-20">
-          <div className="bg-white/90 backdrop-blur-md p-md rounded-xl shadow-lg border border-outline-variant w-48">
+          <div className="bg-surface-container-lowest/ backdrop-blur-md p-md rounded-xl shadow-lg border border-outline-variant w-48">
             <h5 className="text-label-md mb-2 text-on-surface">Map Layers</h5>
             <div className="space-y-sm">
               <label className="flex items-center gap-3 cursor-pointer">

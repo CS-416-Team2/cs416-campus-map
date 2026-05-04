@@ -48,7 +48,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col h-full w-sidebar-width bg-slate-50 border-r border-slate-200 shadow-xl overflow-y-auto shrink-0",
+        "hidden lg:flex flex-col h-full w-sidebar-width bg-slate-50 border-r border-outline-variant shadow-xl overflow-y-auto shrink-0",
         className,
       )}
       aria-label="Main navigation"
@@ -111,7 +111,7 @@ export function Sidebar({ className }: SidebarProps) {
         {!isLoading && (
           <>
             {user ? (
-              <div className="border-t border-slate-200 pt-3 space-y-1">
+              <div className="border-t border-outline-variant pt-3 space-y-1">
                 <p className="px-2 text-[11px] text-on-surface-variant truncate">
                   {user.user_metadata?.first_name
                     ? `${user.user_metadata.first_name} ${user.user_metadata.last_name ?? ""}`
@@ -126,7 +126,7 @@ export function Sidebar({ className }: SidebarProps) {
                 </button>
               </div>
             ) : (
-              <div className="border-t border-slate-200 pt-3">
+              <div className="border-t border-outline-variant pt-3">
                 <Link
                   href="/login"
                   className="flex items-center justify-center gap-2 w-full border border-secondary text-secondary py-2.5 px-4 rounded-lg text-label-md font-semibold hover:bg-teal-50 transition-colors"

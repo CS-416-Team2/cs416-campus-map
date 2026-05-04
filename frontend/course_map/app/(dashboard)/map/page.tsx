@@ -106,7 +106,7 @@ export default function MapPage() {
         <button
           onClick={handleCenterLocation}
           aria-label="Center on my location"
-          className="w-14 h-14 bg-white text-on-surface-variant rounded-full flex items-center justify-center shadow-2xl hover:bg-surface-container-low transition-colors active:scale-90"
+          className="w-14 h-14 bg-surface-container-lowest text-on-surface-variant rounded-full flex items-center justify-center shadow-2xl hover:bg-surface-container-low transition-colors active:scale-90"
         >
           <MapPin className="w-5 h-5" aria-hidden="true" />
         </button>
@@ -122,7 +122,7 @@ export default function MapPage() {
       {/* Layer filter panel (desktop) */}
       <div className="absolute top-4 left-4 z-30 hidden lg:block">
         <div
-          className="bg-white/90 backdrop-blur-md border border-slate-200 rounded-xl shadow-lg p-5 w-60 space-y-6"
+          className="bg-surface-container-lowest/ backdrop-blur-md border border-outline-variant rounded-xl shadow-lg p-5 w-60 space-y-6"
           role="group"
           aria-label="Map layer filters"
         >
@@ -144,7 +144,7 @@ export default function MapPage() {
         <div className="absolute bottom-8 left-4 z-30">
           <button
             onClick={() => setSelectedEvent(events[0])}
-            className="bg-white/90 backdrop-blur-md border border-slate-200 rounded-xl shadow-lg px-4 py-3 flex items-center gap-3 hover:shadow-xl transition-all active:scale-95"
+            className="bg-surface-container-lowest/ backdrop-blur-md border border-outline-variant rounded-xl shadow-lg px-4 py-3 flex items-center gap-3 hover:shadow-xl transition-all active:scale-95"
             aria-label={`View ${events[0].title} event`}
           >
             <span className="inline-flex px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded uppercase tracking-wider">

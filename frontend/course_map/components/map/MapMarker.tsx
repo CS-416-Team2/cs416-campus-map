@@ -62,7 +62,7 @@ export function MapMarker({ marker, isActive = false, onClick }: MapMarkerProps)
         </div>
         <span
           className={cn(
-            "bg-white px-2 py-0.5 rounded shadow-md text-[10px] font-bold uppercase tracking-wider text-slate-800 whitespace-nowrap max-w-[220px] truncate transition-opacity",
+            "bg-surface-container-lowest px-2 py-0.5 rounded shadow-md text-[10px] font-bold uppercase tracking-wider text-on-surface whitespace-nowrap max-w-[220px] truncate transition-opacity",
             isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100",
           )}
         >

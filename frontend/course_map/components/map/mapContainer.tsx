@@ -106,7 +106,7 @@ export function MapContainer({ children, className, mapStyle: propMapStyle }: Ma
         {/* Satellite Toggle Button */}
         <button
           onClick={toggleStyle}
-          className="absolute top-[158px] right-2.5 p-2 bg-white rounded-md shadow-md text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors z-10 ring-1 ring-black/5"
+          className="absolute top-[158px] right-2.5 p-2 bg-surface-container-lowest rounded-md shadow-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors z-10 ring-1 ring-black/5"
           title="Toggle Satellite View"
           aria-label="Toggle Satellite View"
         >

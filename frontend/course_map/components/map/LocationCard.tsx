@@ -38,7 +38,7 @@ export function LocationCard({ event, onClose, onNavigate }: LocationCardProps) 
 
   return (
     <div
-      className="w-80 bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-2xl space-y-3"
+      className="w-80 bg-surface-container-lowest/ backdrop-blur-md border border-outline-variant p-4 rounded-xl shadow-2xl space-y-3"
       role="dialog"
       aria-label={`Location details: ${event.title}`}
     >

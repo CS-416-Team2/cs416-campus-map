@@ -17,7 +17,7 @@ export function MobileNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 bg-white border-t border-outline-variant flex lg:hidden h-16 z-50"
+      className="fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant flex lg:hidden h-16 z-50"
       aria-label="Mobile navigation"
     >
       {mobileNavItems.map(({ label, href, icon: Icon }) => {
