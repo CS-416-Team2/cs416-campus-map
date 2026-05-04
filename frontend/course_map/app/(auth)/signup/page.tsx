@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -24,7 +24,6 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -42,8 +41,8 @@ export default function SignupPage() {
       setError("Password must be at least 6 characters.");
       return;
     }
-    if (!isAdmin && !/^\d{8}$/.test(studentId)) {
-      setError("Student ID is required for students and must be exactly 8 digits.");
+    if (!/^\d{8}$/.test(studentId)) {
+      setError("Student ID is required and must be exactly 8 digits.");
       return;
     }
 
@@ -58,10 +57,10 @@ export default function SignupPage() {
           password,
           firstName: firstName.trim(),
           lastName: lastName.trim(),
-          studentId: isAdmin ? null : studentId.trim() || null,
+          studentId: studentId.trim() || null,
           defaultAddress: defaultAddress.trim() || null,
           defaultCity: defaultCity.trim() || null,
-          isAdmin,
+          isAdmin: false,
         }),
       });
 
@@ -86,17 +85,6 @@ export default function SignupPage() {
       if (signInError && !confirmationRequired) {
         setError(signInError.message);
         return;
-      }
-
-      if (isAdmin && signInData.session) {
-        await fetch("/api/auth/set-role", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${signInData.session.access_token}`,
-          },
-          body: JSON.stringify({ role: "admin" }),
-        });
       }
 
       if (signInData.session) {
@@ -209,23 +197,21 @@ export default function SignupPage() {
           />
         </div>
 
-        {!isAdmin && (
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="studentId" className="text-label-sm text-on-surface font-medium">
-              Student ID <span className="text-on-surface-variant font-normal">(8 digits)</span>
-            </label>
-            <input
-              id="studentId"
-              type="text"
-              inputMode="numeric"
-              maxLength={8}
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value.replace(/\D/g, ""))}
-              placeholder="12345678"
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2.5 text-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary transition"
-            />
-          </div>
-        )}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="studentId" className="text-label-sm text-on-surface font-medium">
+            Student ID <span className="text-on-surface-variant font-normal">(8 digits)</span>
+          </label>
+          <input
+            id="studentId"
+            type="text"
+            inputMode="numeric"
+            maxLength={8}
+            value={studentId}
+            onChange={(e) => setStudentId(e.target.value.replace(/\D/g, ""))}
+            placeholder="12345678"
+            className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2.5 text-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary transition"
+          />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
@@ -304,33 +290,7 @@ export default function SignupPage() {
           />
         </div>
 
-        <label className="flex items-center gap-3 cursor-pointer group">
-          <div
-            role="checkbox"
-            aria-checked={isAdmin}
-            tabIndex={0}
-            onClick={() => setIsAdmin((v) => !v)}
-            onKeyDown={(e) => e.key === " " && setIsAdmin((v) => !v)}
-            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-              isAdmin
-                ? "bg-secondary border-secondary"
-                : "border-outline-variant group-hover:border-secondary"
-            }`}
-          >
-            {isAdmin && (
-              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12" aria-hidden="true">
-                <path
-                  d="M2 6l3 3 5-5"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            )}
-          </div>
-          <span className="text-body-sm text-on-surface">I am a faculty / administrator</span>
-        </label>
+
 
         <button
           type="submit"

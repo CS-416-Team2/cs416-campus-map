@@ -32,12 +32,7 @@ export function Sidebar({ className }: SidebarProps) {
   const router = useRouter();
   const { user, role, isLoading, signOut } = useAuth();
 
-  const navItems = [
-    ...baseNavItems,
-    ...(role === "admin"
-      ? [{ label: "Admin Dashboard", href: "/admin", icon: ShieldCheck }]
-      : []),
-  ];
+  const navItems = [...baseNavItems];
 
   const handleSignOut = async () => {
     await signOut();
