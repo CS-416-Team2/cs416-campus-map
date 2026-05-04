@@ -88,7 +88,7 @@ export default function MapPage() {
  <MapContainer>
  <RouteOverlay />
  <MapLayerController />
- <WeatherWidget className="absolute top-4 right-4 lg:right-4 z-30" />
+ <WeatherWidget className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30" />
  {activeLayers.events &&
  eventMarkers.map((marker) => (
  <MapMarker

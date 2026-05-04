@@ -37,7 +37,7 @@ export function EventCard({
       className={cn(
         "flex flex-col bg-surface-container-lowest border rounded-xl overflow-hidden transition-all cursor-pointer",
         isActive
-          ? "border-2 border-secondary shadow-md ring-2 ring-secondary/10"
+          ? "border-2 border-outline bg-surface-container-highest shadow-md"
           : "border border-outline-variant hover:shadow-lg hover:border-outline",
       )}
       aria-label={event.title}

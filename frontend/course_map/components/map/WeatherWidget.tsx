@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from "lucide-react";
 import { useMapStore } from "@/hooks/use-map-store";
 
-export function WeatherWidget({ className = "absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30" }: { className?: string }) {
+export function WeatherWidget({ className = "" }: { className?: string }) {
   const { userLocation } = useMapStore();
   const [weather, setWeather] = useState({ temp: 72, desc: "Sunny", Icon: Sun, color: "text-yellow-500" });
 

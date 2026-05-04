@@ -191,7 +191,7 @@ export default function EventsPage() {
  />
  ))}
  </MapContainer>
-  <WeatherWidget className="absolute top-4 left-4 z-30" />
+  <WeatherWidget className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30" />
 
  {/* Map legend */}
  <div className="absolute top-lg right-16 z-20">
@@ -204,7 +204,7 @@ export default function EventsPage() {
  checked={activeLayers.events}
  onChange={() => toggleLayer("events")}
  aria-label="Active Events"
- className="w-4 h-4 rounded border-outline text-secondary focus:ring-secondary accent-secondary"
+ className="w-4 h-4 rounded border-outline text-black dark:text-white focus:ring-black dark:focus:ring-white accent-black dark:accent-white"
  />
  <span className="text-label-sm text-on-surface-variant">
  Active Events
@@ -216,7 +216,7 @@ export default function EventsPage() {
  checked={activeLayers.parking}
  onChange={() => toggleLayer("parking")}
  aria-label="Parking Lots"
- className="w-4 h-4 rounded border-outline text-secondary focus:ring-secondary accent-secondary"
+ className="w-4 h-4 rounded border-outline text-black dark:text-white focus:ring-black dark:focus:ring-white accent-black dark:accent-white"
  />
  <span className="text-label-sm text-on-surface-variant">
  Parking Lots
@@ -228,7 +228,7 @@ export default function EventsPage() {
  checked={showOffCampusEvents}
  onChange={() => setShowOffCampusEvents((prev) => !prev)}
  aria-label="On / Off Campus"
- className="w-4 h-4 rounded border-outline text-secondary focus:ring-secondary accent-secondary"
+ className="w-4 h-4 rounded border-outline text-black dark:text-white focus:ring-black dark:focus:ring-white accent-black dark:accent-white"
  />
  <span className="text-label-sm text-on-surface-variant">
  On / Off Campus
