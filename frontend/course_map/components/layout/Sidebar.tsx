@@ -64,7 +64,7 @@ export function Sidebar({ className }: SidebarProps) {
               Purdue University Northwest
             </h2>
             <p className="text-[10px] uppercase tracking-widest text-on-surface-variant mt-1 font-bold">
-              Campus Navigation
+              PNW Event Map
             </p>
           </div>
         </div>

@@ -11,11 +11,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "CampusNav",
-    template: "%s | CampusNav",
+    default: "PNW Event Map",
+    template: "%s | PNW Event Map",
   },
   description:
-    "A scalable campus navigation and event management platform for university communities.",
+    "Interactive campus map and event management platform for Purdue University Northwest.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
