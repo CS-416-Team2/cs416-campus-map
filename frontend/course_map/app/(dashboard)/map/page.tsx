@@ -142,22 +142,6 @@ export default function MapPage() {
  onNavigate={handleNavigate}
  />
  </div>
- ) : events.length > 0 ? (
- <div className="absolute bottom-8 left-4 z-30">
- <button
- onClick={() => setSelectedEvent(events[0])}
- className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg px-4 py-3 flex items-center gap-3 hover:shadow-xl transition-all active:scale-95"
- aria-label={`View ${events[0].title} event`}
- >
- <span className="inline-flex px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded uppercase tracking-wider">
- Event
- </span>
- <div className="text-left">
- <p className="text-label-md text-on-surface">{events[0].title}</p>
- <p className="text-body-sm text-on-surface-variant">{events[0].location}</p>
- </div>
- </button>
- </div>
  ) : null}
  </div>
  );
