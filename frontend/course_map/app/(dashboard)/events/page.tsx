@@ -11,6 +11,7 @@ import { MapLayerController } from "@/components/map/MapLayerController";
 import { useEvents } from "@/hooks/use-events";
 import { useAuth } from "@/hooks/use-auth";
 import { useMapStore } from "@/hooks/use-map-store";
+import { WeatherWidget } from "@/components/map/WeatherWidget";
 import type { CampusEvent, EventTag, MapMarkerData } from "@/types";
 
 type FilterValue = "all" | EventTag;
@@ -190,10 +191,11 @@ export default function EventsPage() {
  />
  ))}
  </MapContainer>
+  <WeatherWidget className="absolute top-4 left-4 z-30" />
 
  {/* Map legend */}
  <div className="absolute top-lg right-16 z-20">
- <div className="bg-surface-container-lowest/ p-md rounded-xl shadow-lg border border-outline-variant w-48">
+ <div className="bg-surface-container-lowest p-md rounded-xl shadow-lg border border-outline-variant w-48">
  <h5 className="text-label-md mb-2 text-on-surface">Map Layers</h5>
  <div className="space-y-sm">
  <label className="flex items-center gap-3 cursor-pointer">

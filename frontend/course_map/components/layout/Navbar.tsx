@@ -30,7 +30,7 @@ export function Navbar() {
 
  return (
  <header
- className="fixed top-0 right-0 left-0 lg:left-sidebar-width z-50 flex items-center justify-between h-navbar-height px-6 bg-surface-container-lowest/ border-b border-outline-variant shadow-sm"
+ className="fixed top-0 right-0 left-0 lg:left-sidebar-width z-50 flex items-center justify-between h-navbar-height px-6 bg-surface-container-lowest border-b border-outline-variant shadow-sm"
  role="banner"
  >
  {/* Logo (visible only on mobile since sidebar is hidden) */}

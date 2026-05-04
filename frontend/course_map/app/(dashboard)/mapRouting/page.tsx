@@ -15,16 +15,12 @@ import {
  MapPin,
  Car,
  Footprints,
- Cloud,
- CloudRain,
- CloudSnow,
- CloudLightning,
- CloudFog,
 } from "lucide-react";
 import { Marker } from "react-map-gl";
 import { Button } from "@/components/ui/button";
 import { MapContainer } from "@/components/map/mapContainer";
 import { RouteOverlay } from "@/components/map/routeOverlay";
+import { WeatherWidget } from "@/components/map/WeatherWidget";
 import { useDirections } from "@/hooks/use-directions";
 import { useEvents } from "@/hooks/use-events";
 import { useMapStore } from "@/hooks/use-map-store";
@@ -123,36 +119,6 @@ export default function RoutingPage() {
  const [panelOpen, setPanelOpen] = useState(true);
  const [isGeocoding, setIsGeocoding] = useState(false);
  const [isNavigating, setIsNavigating] = useState(false);
- const [weather, setWeather] = useState({ temp: 72, desc: "Sunny", Icon: Sun, color: "text-yellow-500" });
-
- useEffect(() => {
-   async function fetchWeather() {
-     try {
-       const lat = userLocation ? userLocation[1] : 41.5839;
-       const lng = userLocation ? userLocation[0] : -87.4735;
-       const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`);
-       if (!res.ok) return;
-       const data = await res.json();
-       const code = data.current.weather_code;
-       const temp = Math.round(data.current.temperature_2m);
-       
-       let desc = "Clear";
-       let Icon = Sun;
-       let color = "text-yellow-500";
-       
-       if (code >= 1 && code <= 3) { desc = "Cloudy"; Icon = Cloud; color = "text-gray-400"; }
-       else if (code === 45 || code === 48) { desc = "Foggy"; Icon = CloudFog; color = "text-gray-400"; }
-       else if (code >= 51 && code <= 67) { desc = "Rainy"; Icon = CloudRain; color = "text-blue-400"; }
-       else if (code >= 71 && code <= 82) { desc = "Snowy"; Icon = CloudSnow; color = "text-blue-200"; }
-       else if (code >= 95) { desc = "Stormy"; Icon = CloudLightning; color = "text-yellow-600"; }
-       
-       setWeather({ temp, desc, Icon, color });
-     } catch (e) {
-       // keep default if fails
-     }
-   }
-   fetchWeather();
- }, [userLocation]);
 
  // Set default address if it loads and origin is empty, then geocode it
  useEffect(() => {
@@ -336,7 +302,7 @@ export default function RoutingPage() {
  {/* Route panel */}
  {panelOpen && (
  <div
- className="absolute top-4 left-4 right-4 w-auto md:top-6 md:left-6 md:right-auto md:w-96 max-h-[calc(100%-2rem)] md:max-h-[calc(100%-3rem)] overflow-y-auto bg-surface-container-lowest/ rounded-xl shadow-2xl border border-outline-variant flex flex-col p-4 md:p-6 z-30"
+ className="absolute top-4 left-4 right-4 w-auto md:top-6 md:left-6 md:right-auto md:w-96 max-h-[calc(100%-2rem)] md:max-h-[calc(100%-3rem)] overflow-y-auto bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant flex flex-col p-4 md:p-6 z-30"
  role="complementary"
  aria-label="Route planning panel"
  >
@@ -560,7 +526,7 @@ export default function RoutingPage() {
  onClick={() => {
  const dest = destination || (selectedEvent ? selectedEvent.location : "");
  if (!dest) return;
- const gMapsOrigin = origin === "Current Location" ? "My Location" : origin;
+ const gMapsOrigin = origin === "Current Location" && userLocation ? `${userLocation[1]},${userLocation[0]}` : (origin === "Current Location" ? "My Location" : origin);
  const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(gMapsOrigin)}&destination=${encodeURIComponent(dest)}`;
  window.open(url, "_blank");
  }}
@@ -642,10 +608,7 @@ export default function RoutingPage() {
 
  {/* Bottom status bar */}
  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30">
- <div className="bg-surface-container-lowest px-4 py-2 rounded-full shadow-lg border border-outline-variant flex items-center gap-2">
- <weather.Icon className={`w-4 h-4 ${weather.color}`} aria-hidden="true" />
- <span className="text-label-sm">{weather.temp}°F {weather.desc}</span>
- </div>
+ <WeatherWidget />
  <div className="bg-surface-container-lowest px-4 py-2 rounded-full shadow-lg border border-outline-variant flex items-center gap-2">
  <span
  className="h-2 w-2 rounded-full bg-green-500 animate-pulse"
