@@ -495,7 +495,7 @@ export default function RoutingPage() {
             ].map(({ label, value }) => (
               <div
                 key={label}
-                className="bg-slate-50 p-3 rounded-lg text-center border border-slate-100"
+                className="bg-surface-container-low p-3 rounded-lg text-center border border-outline-variant"
               >
                 <p className="text-label-sm text-on-surface-variant uppercase">
                   {label}
@@ -522,7 +522,7 @@ export default function RoutingPage() {
 
           {/* Step-by-step directions */}
           {steps.length > 0 && (
-            <div className="mt-8 border-t border-slate-100 pt-6">
+            <div className="mt-8 border-t border-outline-variant pt-6">
               <button
                 className="flex items-center justify-between w-full mb-4"
                 onClick={() => setShowSteps((s) => !s)}
@@ -554,7 +554,7 @@ export default function RoutingPage() {
                         </span>
                         {i < steps.length - 1 && (
                           <div
-                            className="w-px flex-1 bg-slate-100 mt-2"
+                            className="w-px flex-1 bg-outline-variant mt-2"
                             aria-hidden="true"
                           />
                         )}
