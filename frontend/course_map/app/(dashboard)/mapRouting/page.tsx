@@ -119,12 +119,20 @@ export default function RoutingPage() {
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
 
-  // Set default address if it loads and origin is empty
+  // Set default address if it loads and origin is empty, then geocode it
   useEffect(() => {
     if (!authLoading && defaultAddress && !origin && !userLocation) {
       setOrigin(defaultAddress);
+      // Geocode the saved address to set the map location pin
+      void geocodeAddress(defaultAddress).then((coords) => {
+        if (coords) {
+          setUserLocation(coords);
+          setViewState({ longitude: coords[0], latitude: coords[1], zoom: 14 });
+        }
+      });
     }
-  }, [defaultAddress, authLoading, origin, userLocation]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultAddress, authLoading]);
 
   // Active navigation tracking
   useEffect(() => {
