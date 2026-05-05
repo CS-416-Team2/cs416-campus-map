@@ -46,13 +46,31 @@ export function MapLayerController({
         source="composite"
         source-layer="poi_label"
         filter={[
-          "any",
-          ["==", ["get", "class"], "building"],
-          ["==", ["get", "maki"], "college"],
-          ["==", ["get", "maki"], "university"]
+          "all",
+          [
+            "any",
+            ["==", ["get", "class"], "building"],
+            ["==", ["get", "maki"], "college"],
+            ["==", ["get", "maki"], "university"]
+          ],
+          ["!=", ["get", "name"], "Purdue University Northwest"]
         ]}
         layout={{
-          "text-field": ["get", "name"],
+          "text-field": [
+            "match",
+            ["get", "name"],
+            "Edward D Anderson Building", "ANDR",
+            "Purdue University Northwest Library", "SULB",
+            "Donald S Powers Computer Education Building", "POWERS",
+            "Andrey A Potter Laboratory Building", "POTTER",
+            "Gene Stratton Porter Hall", "PORTER",
+            "Nils K Nelson Bioscience Innovation Building", "NILS",
+            "C H Lawshe Hall", "LAWSHE",
+            "Millard E Gyte Building", "GYTE",
+            "Millard E. Gyte Building", "GYTE",
+            "Classroom Office Building", "CLO",
+            ["get", "name"]
+          ],
           "text-size": [
             "interpolate",
             ["linear"],
@@ -66,7 +84,7 @@ export function MapLayerController({
           "text-letter-spacing": 0.05,
           "text-max-width": 10,
           "text-allow-overlap": false,
-          "text-padding": 2,
+          "text-padding": 10,
         }}
         paint={{
           "text-color": "#334155",
