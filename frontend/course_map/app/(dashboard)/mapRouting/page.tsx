@@ -609,13 +609,15 @@ export default function RoutingPage() {
  {/* Bottom status bar */}
  <div className="absolute bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30">
  <WeatherWidget />
+ {transportMode === "driving" && (
  <div className="bg-surface-container-lowest px-4 py-2 rounded-full shadow-lg border border-outline-variant flex items-center gap-2">
  <span
  className="h-2 w-2 rounded-full bg-green-500 animate-pulse"
  aria-hidden="true"
  />
- <span className="text-label-sm">{transportMode === "driving" ? "Traffic: Live" : "Traffic: N/A (Walk)"}</span>
+ <span className="text-label-sm">Traffic: Live</span>
  </div>
+ )}
  </div>
  </div>
  );
