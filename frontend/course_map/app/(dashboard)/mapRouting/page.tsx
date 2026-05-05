@@ -302,7 +302,7 @@ export default function RoutingPage() {
  {/* Route panel */}
  {panelOpen && (
  <div
- className="absolute top-4 left-4 right-4 w-auto md:top-6 md:left-6 md:right-auto md:w-96 max-h-[calc(100%-2rem)] md:max-h-[calc(100%-3rem)] overflow-y-auto bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant flex flex-col p-4 md:p-6 z-30"
+ className="absolute top-4 left-4 right-4 w-auto md:top-6 md:left-6 md:right-auto md:w-96 max-h-[calc(100%-8rem)] md:max-h-[calc(100%-3rem)] overflow-y-auto bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant flex flex-col p-4 md:p-6 z-30"
  role="complementary"
  aria-label="Route planning panel"
  >
@@ -607,7 +607,7 @@ export default function RoutingPage() {
  )}
 
  {/* Bottom status bar */}
- <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30">
+ <div className="absolute bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30">
  <WeatherWidget />
  <div className="bg-surface-container-lowest px-4 py-2 rounded-full shadow-lg border border-outline-variant flex items-center gap-2">
  <span

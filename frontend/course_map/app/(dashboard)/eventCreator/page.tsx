@@ -355,14 +355,6 @@ function EventCreatorContent() {
  {/* Form actions */}
  <div className="pt-2 flex flex-col sm:flex-row gap-4 justify-end">
  <Button
- type="reset"
- variant="outline"
- className="border-secondary text-secondary hover:bg-secondary-container 20"
- onClick={() => reset()}
- >
- Clear Form
- </Button>
- <Button
  type="submit"
  disabled={
  isSubmitting || eventsLoading || events.length === 0

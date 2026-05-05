@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { University } from "lucide-react";
+import { University, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export interface AuthWindowTab {
@@ -26,11 +27,21 @@ export function AuthWindow({
   children,
   footer,
 }: AuthWindowProps) {
+  const router = useRouter();
+
   return (
-    <div className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-10">
-      <Card className="w-full max-w-3xl overflow-hidden">
-        <div className="bg-surface-container-low px-6 py-6 border-b border-outline-variant">
-          <div className="flex items-center gap-3">
+    <div className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-10 relative">
+      <Card className="w-full max-w-3xl overflow-hidden relative">
+        <button
+          onClick={() => router.back()}
+          className="absolute top-6 left-6 z-10 p-2 rounded-full bg-surface-container-low border border-outline-variant text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+
+        <div className="bg-surface-container-low px-6 py-6 border-b border-outline-variant pt-20 sm:pt-6">
+          <div className="flex items-center gap-3 ml-0 sm:ml-12">
             <div className="w-11 h-11 rounded-2xl bg-secondary flex items-center justify-center text-on-secondary">
               <University className="w-5 h-5" aria-hidden="true" />
             </div>

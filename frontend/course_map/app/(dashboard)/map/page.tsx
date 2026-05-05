@@ -88,7 +88,7 @@ export default function MapPage() {
  <MapContainer>
  <RouteOverlay />
  <MapLayerController />
- <WeatherWidget className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30" />
+ <WeatherWidget className="absolute bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 z-30" />
  {activeLayers.events &&
  eventMarkers.map((marker) => (
  <MapMarker
@@ -104,7 +104,7 @@ export default function MapPage() {
  </MapContainer>
 
  {/* Floating action buttons */}
- <div className="absolute bottom-8 right-8 flex flex-col gap-4 z-30">
+ <div className="absolute bottom-24 lg:bottom-8 right-8 flex flex-col gap-4 z-30">
  <button
  onClick={handleCenterLocation}
  aria-label="Center on my location"
@@ -135,7 +135,7 @@ export default function MapPage() {
 
  {/* Selected location card / event preview */}
  {selectedEvent ? (
- <div className="absolute bottom-8 left-4 z-30">
+ <div className="absolute bottom-24 lg:bottom-8 left-4 z-30">
  <LocationCard
  event={selectedEvent}
  onClose={() => setSelectedEvent(null)}
