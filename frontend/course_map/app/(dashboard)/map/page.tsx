@@ -135,7 +135,7 @@ export default function MapPage() {
 
  {/* Selected location card / event preview */}
  {selectedEvent ? (
- <div className="absolute bottom-24 lg:bottom-8 left-4 z-30">
+ <div className="absolute bottom-32 lg:bottom-8 left-4 z-30">
  <LocationCard
  event={selectedEvent}
  onClose={() => setSelectedEvent(null)}

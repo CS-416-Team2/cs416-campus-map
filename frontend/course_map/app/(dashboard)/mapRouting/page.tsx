@@ -302,7 +302,7 @@ export default function RoutingPage() {
  {/* Route panel */}
  {panelOpen && (
  <div
- className="absolute top-4 left-4 right-4 w-auto md:top-6 md:left-6 md:right-auto md:w-96 max-h-[calc(100%-8rem)] md:max-h-[calc(100%-3rem)] overflow-y-auto bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant flex flex-col p-4 md:p-6 z-30"
+ className="absolute top-4 left-4 right-4 w-auto md:top-6 md:left-6 md:right-auto md:w-96 max-h-[calc(100%-10rem)] md:max-h-[calc(100%-3rem)] overflow-y-auto bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant flex flex-col p-4 md:p-6 z-30"
  role="complementary"
  aria-label="Route planning panel"
  >
