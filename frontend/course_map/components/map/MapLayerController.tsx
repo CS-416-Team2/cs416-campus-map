@@ -53,7 +53,8 @@ export function MapLayerController({
             ["==", ["get", "maki"], "college"],
             ["==", ["get", "maki"], "university"]
           ],
-          ["!=", ["get", "name"], "Purdue University Northwest"]
+          ["!=", ["get", "name"], "Purdue University Northwest"],
+          ["!=", ["get", "name"], "Gyte Annex"]
         ]}
         layout={{
           "text-field": [
@@ -84,7 +85,7 @@ export function MapLayerController({
           "text-letter-spacing": 0.05,
           "text-max-width": 10,
           "text-allow-overlap": false,
-          "text-padding": 10,
+          "text-padding": 50,
         }}
         paint={{
           "text-color": "#334155",
