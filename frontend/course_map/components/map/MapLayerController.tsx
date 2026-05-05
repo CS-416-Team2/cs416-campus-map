@@ -39,6 +39,43 @@ export function MapLayerController({
 
   return (
     <>
+      {/* Building Labels — Increased size for campus buildings */}
+      <Layer
+        id="campus-building-labels"
+        type="symbol"
+        source="composite"
+        source-layer="poi_label"
+        filter={[
+          "any",
+          ["==", ["get", "class"], "building"],
+          ["==", ["get", "maki"], "college"],
+          ["==", ["get", "maki"], "university"]
+        ]}
+        layout={{
+          "text-field": ["get", "name"],
+          "text-size": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            14, 13,
+            16, 18,
+            18, 22
+          ],
+          "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+          "text-transform": "uppercase",
+          "text-letter-spacing": 0.05,
+          "text-max-width": 10,
+          "text-allow-overlap": false,
+          "text-padding": 2,
+        }}
+        paint={{
+          "text-color": "#334155",
+          "text-halo-color": "rgba(255, 255, 255, 0.95)",
+          "text-halo-width": 2.5,
+          "text-halo-blur": 0.5,
+        }}
+      />
+
       {/* 3D building extrusions — Mapbox Streets composite/building source layer */}
       {activeLayers.buildings && (
         <Layer
