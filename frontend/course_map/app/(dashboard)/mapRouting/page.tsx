@@ -607,7 +607,7 @@ export default function RoutingPage() {
  )}
 
  {/* Bottom status bar */}
- <div className="absolute bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30">
+ <div className="absolute bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-30">
  <WeatherWidget />
  <div className="bg-surface-container-lowest px-4 py-2 rounded-full shadow-lg border border-outline-variant flex items-center gap-2">
  <span
