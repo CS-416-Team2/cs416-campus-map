@@ -382,7 +382,7 @@ export function RestrictedZonesOverlay() {
             type="line"
             paint={{
               "line-color": "#78350f", // Brown
-              "line-width": 2,
+              "line-width": 4,
               "line-dasharray": [2, 2], // Dotted/short dashes
               "line-opacity": 0.8,
             }}

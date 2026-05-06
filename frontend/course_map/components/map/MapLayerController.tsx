@@ -43,7 +43,7 @@ const MANUAL_LABELS: FeatureCollection = {
     },
     {
       type: "Feature",
-      properties: { label: "GRIFFIN" },
+      properties: { label: "GRIFFIN HALL" },
       geometry: { type: "Point", coordinates: [-87.47095380558099, 41.5804483944474] },
     },
   ],
