@@ -151,6 +151,20 @@ const RESTRICTED_ZONES = [
   },
 ];
 
+const CONSTRUCTION_ZONES = [
+  {
+    id: "construction-zone-1",
+    name: "Construction",
+    coordinates: [
+      [-87.47587873210026, 41.58197755921748],
+      [-87.47495068779787, 41.58198558446015],
+      [-87.47495068779787, 41.58137165051621],
+      [-87.47588007320473, 41.58137165051621],
+      [-87.47587873210026, 41.58197755921748], // Close loop
+    ],
+  },
+];
+
 const OPEN_PARKING_ZONES = [
   {
     id: "open-parking-1",
@@ -295,6 +309,17 @@ export function RestrictedZonesOverlay() {
     },
   }));
 
+  const constructionFeatures = CONSTRUCTION_ZONES.map((zone) => ({
+    type: "Feature",
+    properties: {
+      name: zone.name,
+    },
+    geometry: {
+      type: "Polygon",
+      coordinates: [zone.coordinates],
+    },
+  }));
+
   const restrictedGeojson: GeoJSON.FeatureCollection = {
     type: "FeatureCollection",
     features: restrictedFeatures as any,
@@ -303,6 +328,11 @@ export function RestrictedZonesOverlay() {
   const openGeojson: GeoJSON.FeatureCollection = {
     type: "FeatureCollection",
     features: openFeatures as any,
+  };
+
+  const constructionGeojson: GeoJSON.FeatureCollection = {
+    type: "FeatureCollection",
+    features: constructionFeatures as any,
   };
 
   return (
@@ -323,6 +353,29 @@ export function RestrictedZonesOverlay() {
             type="line"
             paint={{
               "line-color": "#b91c1c",
+              "line-width": 2,
+              "line-opacity": 0.8,
+            }}
+          />
+        </Source>
+      )}
+
+      {activeLayers.permittedParking && (
+        <Source id="construction-zones-source" type="geojson" data={constructionGeojson}>
+          <Layer
+            id="construction-zones-fill"
+            type="fill"
+            paint={{
+              "fill-color": "#eab308", // Yellow-500
+              "fill-opacity": 0.4,
+              "fill-outline-color": "#a16207", // Yellow-700
+            }}
+          />
+          <Layer
+            id="construction-zones-outline"
+            type="line"
+            paint={{
+              "line-color": "#a16207",
               "line-width": 2,
               "line-opacity": 0.8,
             }}

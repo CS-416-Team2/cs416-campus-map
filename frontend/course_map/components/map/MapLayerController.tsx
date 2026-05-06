@@ -93,6 +93,7 @@ export function MapLayerController({
           ["!=", ["get", "name"], "Classroom Office Building"],
           ["!=", ["get", "name"], "Classroom-Office Building"],
           ["!=", ["get", "name"], "Griffin Hall"],
+          ["!=", ["get", "name"], "Griffin"],
           ["!=", ["get", "name"], "University Village Griffin Hall"]
         ]}
         layout={{
@@ -148,36 +149,7 @@ export function MapLayerController({
         }}
       />
 
-      {/* Manual Building Labels */}
-      <Source id="manual-building-labels-src" type="geojson" data={MANUAL_LABELS}>
-        <Layer
-          id="manual-campus-labels"
-          type="symbol"
-          layout={{
-            "text-field": ["get", "label"],
-            "text-size": [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              14, 13,
-              16, 18,
-              18, 22
-            ],
-            "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-            "text-transform": "uppercase",
-            "text-letter-spacing": 0.05,
-            "text-max-width": 10,
-            "text-allow-overlap": true,
-            "text-ignore-placement": true,
-          }}
-          paint={{
-            "text-color": "#334155",
-            "text-halo-color": "rgba(255, 255, 255, 0.95)",
-            "text-halo-width": 2.5,
-            "text-halo-blur": 0.5,
-          }}
-        />
-      </Source>
+
 
       {/* 3D building extrusions — Mapbox Streets composite/building source layer */}
       {activeLayers.buildings && (
@@ -272,6 +244,39 @@ export function MapLayerController({
               ]
             : [],
       )}
+
+      {/* Manual Building Labels — Placed last to overlay on 3D buildings */}
+      <Source id="manual-building-labels-src" type="geojson" data={MANUAL_LABELS}>
+        <Layer
+          id="manual-campus-labels"
+          type="symbol"
+          layout={{
+            "text-field": ["get", "label"],
+            "text-size": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              14, 13,
+              16, 18,
+              18, 22
+            ],
+            "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+            "text-transform": "uppercase",
+            "text-letter-spacing": 0.05,
+            "text-max-width": 10,
+            "text-allow-overlap": true,
+            "text-ignore-placement": true,
+            "text-pitch-alignment": "map",
+            "text-rotation-alignment": "map",
+          }}
+          paint={{
+            "text-color": "#334155",
+            "text-halo-color": "rgba(255, 255, 255, 0.95)",
+            "text-halo-width": 2.5,
+            "text-halo-blur": 0.5,
+          }}
+        />
+      </Source>
     </>
   );
 }
