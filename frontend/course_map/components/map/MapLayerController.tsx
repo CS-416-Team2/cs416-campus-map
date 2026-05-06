@@ -113,8 +113,8 @@ export function MapLayerController({
             "Gene Stratton Porter Hall", "PORTER",
             "Porter Hall", "PORTER",
             "Porter", "PORTER",
-            "C H Lawshe Hall", "LAWSHE",
-            "Lawshe Hall", "LAWSHE",
+            "C H Lawshe Hall", "LAWS",
+            "Lawshe Hall", "LAWS",
             ["get", "name"]
           ],
           "symbol-sort-key": [

@@ -362,22 +362,36 @@ export function RestrictedZonesOverlay() {
 
       {activeLayers.construction && (
         <Source id="construction-zones-source" type="geojson" data={constructionGeojson}>
+          {/* Main yellow fill */}
           <Layer
             id="construction-zones-fill"
             type="fill"
             paint={{
-              "fill-color": "#eab308", // Yellow-500
-              "fill-opacity": 0.4,
-              "fill-outline-color": "#a16207", // Yellow-700
+              "fill-color": "#facc15", // Vibrant Yellow
+              "fill-opacity": 0.5,
+              "fill-outline-color": "#854d0e", // Dark brown/yellow
             }}
           />
+          {/* Thick outer glow for "cartoon" emphasis */}
+          <Layer
+            id="construction-zones-glow"
+            type="line"
+            paint={{
+              "line-color": "#facc15",
+              "line-width": 12,
+              "line-opacity": 0.4,
+              "line-blur": 8,
+            }}
+          />
+          {/* Dashed "caution tape" border */}
           <Layer
             id="construction-zones-outline"
             type="line"
             paint={{
-              "line-color": "#a16207",
-              "line-width": 2,
-              "line-opacity": 0.8,
+              "line-color": "#854d0e",
+              "line-width": 4,
+              "line-dasharray": [2, 1],
+              "line-opacity": 0.9,
             }}
           />
         </Source>
