@@ -314,7 +314,7 @@ export function RestrictedZonesOverlay() {
             type="fill"
             paint={{
               "fill-color": "#ef4444", // Red-500
-              "fill-opacity": 0.4,
+              "fill-opacity": 0.3,
               "fill-outline-color": "#b91c1c", // Red-700
             }}
           />
@@ -337,7 +337,7 @@ export function RestrictedZonesOverlay() {
             type="fill"
             paint={{
               "fill-color": "#10b981", // Emerald-500 (Green)
-              "fill-opacity": 0.4,
+              "fill-opacity": 0.3,
               "fill-outline-color": "#059669", // Emerald-600
             }}
           />

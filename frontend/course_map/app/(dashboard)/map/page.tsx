@@ -2,14 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import {
- Building2,
- CalendarCheck,
- ParkingSquare,
- ShoppingCart,
- Utensils,
- Landmark,
- MapPin,
- Footprints,
+  Building2,
+  CalendarCheck,
+  ParkingSquare,
+  ShoppingCart,
+  Utensils,
+  Landmark,
+  MapPin,
+  Footprints,
+  Phone,
 } from "lucide-react";
 import { MapContainer } from "@/components/map/mapContainer";
 import { LocationCard } from "@/components/map/LocationCard";
@@ -24,10 +25,11 @@ import type { MapLayerId, MapMarkerData } from "@/types";
 import { WeatherWidget } from "@/components/map/WeatherWidget";
 
 const campusLayers = [
- { id: "buildings" as MapLayerId, label: "Buildings", Icon: Building2, color: "text-secondary" },
- { id: "events" as MapLayerId, label: "Events", Icon: CalendarCheck, color: "text-[#f59e0b]" },
- { id: "parking" as MapLayerId, label: "Parking", Icon: ParkingSquare, color: "text-[#3b82f6]" },
- { id: "permittedParking" as MapLayerId, label: "Permitted Parking", Icon: ParkingSquare, color: "text-[#ef4444]" },
+  { id: "buildings" as MapLayerId, label: "Buildings", Icon: Building2, color: "text-secondary" },
+  { id: "events" as MapLayerId, label: "Events", Icon: CalendarCheck, color: "text-[#f59e0b]" },
+  { id: "parking" as MapLayerId, label: "Parking", Icon: ParkingSquare, color: "text-[#3b82f6]" },
+  { id: "permittedParking" as MapLayerId, label: "Permitted Parking", Icon: ParkingSquare, color: "text-[#ef4444]" },
+  { id: "callStations" as MapLayerId, label: "Call Stations", Icon: Phone, color: "text-[#facc15]" },
 ];
 
 const localLayers = [

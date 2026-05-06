@@ -50,7 +50,7 @@ export function ParkingLotsOverlay() {
         type="fill"
         paint={{
           "fill-color": "#D4AF37", // PNW Gold
-          "fill-opacity": 0.35,
+          "fill-opacity": 0.25,
         }}
       />
       <Layer

@@ -8,6 +8,7 @@ import { useMapStore } from "@/hooks/use-map-store";
 import { useTheme } from "next-themes";
 import { ParkingLotsOverlay } from "./ParkingLotsOverlay";
 import { RestrictedZonesOverlay } from "./RestrictedZonesOverlay";
+import { CallStationsOverlay } from "./CallStationsOverlay";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -103,6 +104,7 @@ export function MapContainer({ children, className, mapStyle: propMapStyle }: Ma
         <NavigationControl position="top-right" />
         <ParkingLotsOverlay />
         <RestrictedZonesOverlay />
+        <CallStationsOverlay />
         {children}
 
         {/* Satellite Toggle Button */}

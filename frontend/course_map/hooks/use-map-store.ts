@@ -47,6 +47,7 @@ export const useMapStore = create<MapState>((set) => ({
     banks: false,
     grocery: false,
     permittedParking: true,
+    callStations: true,
   },
   transportMode: "driving",
   mapStyle: "mapbox://styles/mapbox/streets-v12",

@@ -19,7 +19,8 @@ export type MapLayerId =
   | "restaurants"
   | "banks"
   | "grocery"
-  | "permittedParking";
+  | "permittedParking"
+  | "callStations";
 
 export interface ParkingLot {
   id: string;
