@@ -35,7 +35,49 @@ export function MapLayerController({
 
   return (
     <>
-      {/* Building Labels — Increased size for campus buildings */}
+      {/* 3D building extrusions — Mapbox Streets composite/building source layer */}
+      {activeLayers.buildings && (
+        <Layer
+          id="campus-buildings-3d"
+          type="fill-extrusion"
+          source="composite"
+          source-layer="building"
+          minzoom={14}
+          filter={["==", "extrude", "true"]}
+          paint={{
+            "fill-extrusion-color": [
+              "interpolate",
+              ["linear"],
+              ["get", "height"],
+              0,
+              "#cfd8dc",
+              100,
+              "#90a4ae",
+            ],
+            "fill-extrusion-height": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              14,
+              0,
+              16,
+              ["get", "height"],
+            ],
+            "fill-extrusion-base": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              14,
+              0,
+              16,
+              ["get", "min_height"],
+            ],
+            "fill-extrusion-opacity": 0.8,
+          }}
+        />
+      )}
+
+      {/* Building Labels — Moved after 3D buildings and enabled overlap */}
       <Layer
         id="campus-building-labels"
         type="symbol"
@@ -84,7 +126,9 @@ export function MapLayerController({
           "text-transform": "uppercase",
           "text-letter-spacing": 0.05,
           "text-max-width": 10,
-          "text-allow-overlap": false,
+          "text-allow-overlap": true,
+          "text-ignore-placement": true,
+          "text-pitch-alignment": "viewport",
           "text-padding": 50,
         }}
         paint={{
@@ -94,48 +138,6 @@ export function MapLayerController({
           "text-halo-blur": 0.5,
         }}
       />
-
-      {/* 3D building extrusions — Mapbox Streets composite/building source layer */}
-      {activeLayers.buildings && (
-        <Layer
-          id="campus-buildings-3d"
-          type="fill-extrusion"
-          source="composite"
-          source-layer="building"
-          minzoom={14}
-          filter={["==", "extrude", "true"]}
-          paint={{
-            "fill-extrusion-color": [
-              "interpolate",
-              ["linear"],
-              ["get", "height"],
-              0,
-              "#cfd8dc",
-              100,
-              "#90a4ae",
-            ],
-            "fill-extrusion-height": [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              14,
-              0,
-              16,
-              ["get", "height"],
-            ],
-            "fill-extrusion-base": [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              14,
-              0,
-              16,
-              ["get", "min_height"],
-            ],
-            "fill-extrusion-opacity": 0.8,
-          }}
-        />
-      )}
 
       {/* POI layers — Mapbox Streets composite/poi_label source layer */}
       {poiEntries.flatMap(
