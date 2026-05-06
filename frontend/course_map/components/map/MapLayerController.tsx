@@ -1,6 +1,6 @@
 "use client";
 
-import { Layer } from "react-map-gl";
+import { Layer, Source } from "react-map-gl";
 import { useMapStore } from "@/hooks/use-map-store";
 import type { MapLayerId } from "@/types";
 
@@ -19,6 +19,32 @@ const POI_CONFIG: Record<PoiLayerId, { maki: string[]; color: string }> = {
     maki: ["grocery", "convenience"],
     color: "#10b981",
   },
+};
+
+const MANUAL_LABELS = {
+  type: "FeatureCollection",
+  features: [
+    {
+      type: "Feature",
+      properties: { label: "CLO" },
+      geometry: { type: "Point", coordinates: [-87.47540001656243, 41.58691862772451] },
+    },
+    {
+      type: "Feature",
+      properties: { label: "GYTE" },
+      geometry: { type: "Point", coordinates: [-87.47502749082149, 41.585284647080044] },
+    },
+    {
+      type: "Feature",
+      properties: { label: "NILS" },
+      geometry: { type: "Point", coordinates: [-87.47408419663778, 41.58349477827398] },
+    },
+    {
+      type: "Feature",
+      properties: { label: "GRIFFIN" },
+      geometry: { type: "Point", coordinates: [-87.47095380558099, 41.5804483944474] },
+    },
+  ],
 };
 
 interface MapLayerControllerProps {
@@ -56,7 +82,16 @@ export function MapLayerController({
           ["!=", ["get", "name"], "Purdue University Northwest"],
           ["!=", ["get", "name"], "Gyte Annex"],
           ["!=", ["get", "name"], "GYTE ANNEX"],
-          ["!=", ["get", "name"], "Millard E Gyte Building Annex"]
+          ["!=", ["get", "name"], "Millard E Gyte Building Annex"],
+          ["!=", ["get", "name"], "Millard E Gyte Building"],
+          ["!=", ["get", "name"], "Gyte Building"],
+          ["!=", ["get", "name"], "GYTE"],
+          ["!=", ["get", "name"], "Nils K Nelson Bioscience Innovation Building"],
+          ["!=", ["get", "name"], "Nils K. Nelson Bioscience Innovation Building"],
+          ["!=", ["get", "name"], "Classroom Office Building"],
+          ["!=", ["get", "name"], "Classroom-Office Building"],
+          ["!=", ["get", "name"], "Griffin Hall"],
+          ["!=", ["get", "name"], "University Village Griffin Hall"]
         ]}
         layout={{
           "text-field": [
@@ -75,21 +110,8 @@ export function MapLayerController({
             "Gene Stratton Porter Hall", "PORTER",
             "Porter Hall", "PORTER",
             "Porter", "PORTER",
-            "Nils K Nelson Bioscience Innovation Building", "NILS",
-            "Nils K. Nelson Bioscience Innovation Building", "NILS",
-            "Nils K. Nelson", "NILS",
-            "NILS K NELSON BIOSCIENCE INNOVATION BUILDING", "NILS",
-            "NILS K. NELSON BIOSCIENCE INNOVATION BUILDING", "NILS",
             "C H Lawshe Hall", "LAWSHE",
             "Lawshe Hall", "LAWSHE",
-            "Millard E Gyte Building", "GYTE",
-            "Gyte Building", "GYTE",
-            "Gyte Hall", "GYTE",
-            "GYTE", "GYTE",
-            "Classroom Office Building", "CLO",
-            "Classroom-Office Building", "CLO",
-            "CLASSROOM OFFICE BUILDING", "CLO",
-            "CLASSROOM-OFFICE BUILDING", "CLO",
             ["get", "name"]
           ],
           "symbol-sort-key": [
@@ -97,11 +119,7 @@ export function MapLayerController({
             ["get", "name"],
             "Edward D Anderson Building", 1,
             "Purdue University Northwest Library", 1,
-            "Nils K Nelson Bioscience Innovation Building", 1,
-            "Nils K. Nelson Bioscience Innovation Building", 1,
-            "Classroom Office Building", 1,
             "Gene Stratton Porter Hall", 1,
-            "Millard E Gyte Building", 1,
             "C H Lawshe Hall", 1,
             10
           ],
@@ -127,6 +145,37 @@ export function MapLayerController({
           "text-halo-blur": 0.5,
         }}
       />
+
+      {/* Manual Building Labels */}
+      <Source id="manual-building-labels-src" type="geojson" data={MANUAL_LABELS}>
+        <Layer
+          id="manual-campus-labels"
+          type="symbol"
+          layout={{
+            "text-field": ["get", "label"],
+            "text-size": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              14, 13,
+              16, 18,
+              18, 22
+            ],
+            "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+            "text-transform": "uppercase",
+            "text-letter-spacing": 0.05,
+            "text-max-width": 10,
+            "text-allow-overlap": true,
+            "text-ignore-placement": true,
+          }}
+          paint={{
+            "text-color": "#334155",
+            "text-halo-color": "rgba(255, 255, 255, 0.95)",
+            "text-halo-width": 2.5,
+            "text-halo-blur": 0.5,
+          }}
+        />
+      </Source>
 
       {/* 3D building extrusions — Mapbox Streets composite/building source layer */}
       {activeLayers.buildings && (
