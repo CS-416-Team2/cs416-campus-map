@@ -4,6 +4,8 @@ import { Layer, Source } from "react-map-gl";
 import { useMapStore } from "@/hooks/use-map-store";
 import type { MapLayerId } from "@/types";
 
+import type { FeatureCollection } from "geojson";
+
 type PoiLayerId = Extract<MapLayerId, "restaurants" | "banks" | "grocery">;
 
 const POI_CONFIG: Record<PoiLayerId, { maki: string[]; color: string }> = {
@@ -21,7 +23,7 @@ const POI_CONFIG: Record<PoiLayerId, { maki: string[]; color: string }> = {
   },
 };
 
-const MANUAL_LABELS = {
+const MANUAL_LABELS: FeatureCollection = {
   type: "FeatureCollection",
   features: [
     {
