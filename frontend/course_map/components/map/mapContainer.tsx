@@ -93,6 +93,14 @@ export function MapContainer({ children, className, mapStyle: propMapStyle }: Ma
         mapboxAccessToken={MAPBOX_TOKEN}
         style={{ width: "100%", height: "100%" }}
         projection={{ name: "globe" }}
+        fog={{
+          range: [-1, 2],
+          color: "white",
+          "horizon-blend": 0.02,
+          "high-color": "#0f172a", // Darker space blue
+          "space-color": "#000000", // Pure black space
+          "star-intensity": 1.0,    // More stars
+        }}
         reuseMaps
       >
         <GeolocateControl 
