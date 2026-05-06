@@ -92,6 +92,7 @@ export function MapContainer({ children, className, mapStyle: propMapStyle }: Ma
         mapStyle={activeMapStyle}
         mapboxAccessToken={MAPBOX_TOKEN}
         style={{ width: "100%", height: "100%" }}
+        projection={{ name: "globe" }}
         reuseMaps
       >
         <GeolocateControl 

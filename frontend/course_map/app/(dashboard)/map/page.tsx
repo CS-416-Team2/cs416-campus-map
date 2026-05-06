@@ -50,6 +50,7 @@ export default function MapPage() {
  setSelectedEvent,
  setSelectedDestination,
  setUserLocation,
+ viewState,
  setViewState,
  resetNavigation,
  } = useMapStore();
@@ -106,6 +107,7 @@ export default function MapPage() {
  key={marker.id}
  marker={marker}
  isActive={selectedEvent?.id === marker.eventId}
+ zoom={viewState.zoom}
  onClick={() => {
  const event = events.find((e) => e.id === marker.eventId);
  if (event) setSelectedEvent(event);

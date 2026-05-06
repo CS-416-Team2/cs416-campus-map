@@ -26,11 +26,17 @@ interface MapMarkerProps {
   marker: MapMarkerData;
   isActive?: boolean;
   onClick?: (marker: MapMarkerData) => void;
+  zoom?: number;
 }
 
-export function MapMarker({ marker, isActive = false, onClick }: MapMarkerProps) {
+export function MapMarker({ marker, isActive = false, onClick, zoom = 16 }: MapMarkerProps) {
   const config = markerConfig[marker.type] ?? markerConfig.building;
   const { Icon } = config;
+
+  // Calculate opacity based on zoom (fade out between zoom 7 and 4)
+  const opacity = zoom > 7 ? 1 : Math.max(0, (zoom - 4) / 3);
+
+  if (opacity <= 0) return null;
 
   return (
     <Marker
@@ -39,7 +45,8 @@ export function MapMarker({ marker, isActive = false, onClick }: MapMarkerProps)
       anchor="bottom"
     >
       <button
-        className="relative flex flex-col items-center gap-1 group cursor-pointer"
+        className="relative flex flex-col items-center gap-1 group cursor-pointer transition-opacity duration-300"
+        style={{ opacity }}
         onClick={() => onClick?.(marker)}
         aria-label={`${marker.name} — ${marker.type}`}
       >
