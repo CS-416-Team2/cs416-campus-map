@@ -266,8 +266,6 @@ export function MapLayerController({
             "text-max-width": 10,
             "text-allow-overlap": true,
             "text-ignore-placement": true,
-            "text-pitch-alignment": "map",
-            "text-rotation-alignment": "map",
           }}
           paint={{
             "text-color": "#334155",

@@ -11,6 +11,7 @@ import {
   MapPin,
   Footprints,
   Phone,
+  HardHat,
 } from "lucide-react";
 import { MapContainer } from "@/components/map/mapContainer";
 import { LocationCard } from "@/components/map/LocationCard";
@@ -29,6 +30,7 @@ const campusLayers = [
   { id: "events" as MapLayerId, label: "Events", Icon: CalendarCheck, color: "text-[#f59e0b]" },
   { id: "parking" as MapLayerId, label: "Parking", Icon: ParkingSquare, color: "text-[#3b82f6]" },
   { id: "permittedParking" as MapLayerId, label: "Permitted Parking", Icon: ParkingSquare, color: "text-[#ef4444]" },
+  { id: "construction" as MapLayerId, label: "Construction", Icon: HardHat, color: "text-[#eab308]" },
   { id: "callStations" as MapLayerId, label: "Call Stations", Icon: Phone, color: "text-[#facc15]" },
 ];
 

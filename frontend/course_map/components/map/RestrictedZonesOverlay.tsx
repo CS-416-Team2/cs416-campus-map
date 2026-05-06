@@ -360,7 +360,7 @@ export function RestrictedZonesOverlay() {
         </Source>
       )}
 
-      {activeLayers.permittedParking && (
+      {activeLayers.construction && (
         <Source id="construction-zones-source" type="geojson" data={constructionGeojson}>
           <Layer
             id="construction-zones-fill"
