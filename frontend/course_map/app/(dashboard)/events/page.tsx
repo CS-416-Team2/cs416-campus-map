@@ -112,6 +112,12 @@ export default function EventsPage() {
  router.push(`/eventCreator?eventId=${encodeURIComponent(event.id)}`);
  };
 
+ const handleNavigate = (event: CampusEvent) => {
+ setSelectedEvent(event);
+ setSelectedDestination(event.coordinates);
+ router.push("/mapRouting");
+ };
+
  return (
  <div className="flex h-full overflow-hidden bg-surface">
  {/* ── Left panel: event list ────────────────────────────────────── */}
@@ -163,6 +169,7 @@ export default function EventsPage() {
  isActive={activeEvent?.id === event.id}
  onSelect={handleSelect}
  onRegister={handleRegister}
+ onNavigate={handleNavigate}
  eagerImage={index === 0}
  />
  </div>

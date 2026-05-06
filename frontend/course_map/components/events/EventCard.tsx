@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ParkingSuggestions } from "@/components/events/ParkingSuggestions";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ interface EventCardProps {
   isActive?: boolean;
   onSelect?: (event: CampusEvent) => void;
   onRegister?: (event: CampusEvent) => void;
+  onNavigate?: (event: CampusEvent) => void;
   eagerImage?: boolean;
 }
 
@@ -21,6 +22,7 @@ export function EventCard({
   isActive = false,
   onSelect,
   onRegister,
+  onNavigate,
   eagerImage = false,
 }: EventCardProps) {
   const [imageError, setImageError] = useState(false);
@@ -97,6 +99,18 @@ export function EventCard({
             aria-label={`Register for ${event.title}`}
           >
             Register
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              onNavigate?.(event);
+            }}
+            aria-label={`Navigate to ${event.title}`}
+            title="Navigate"
+          >
+            <Navigation className="w-4 h-4" aria-hidden="true" />
           </Button>
 
         </div>
