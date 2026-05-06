@@ -54,7 +54,9 @@ export function MapLayerController({
             ["==", ["get", "maki"], "university"]
           ],
           ["!=", ["get", "name"], "Purdue University Northwest"],
-          ["!=", ["get", "name"], "Gyte Annex"]
+          ["!=", ["get", "name"], "Gyte Annex"],
+          ["!=", ["get", "name"], "GYTE ANNEX"],
+          ["!=", ["get", "name"], "Millard E Gyte Building Annex"]
         ]}
         layout={{
           "text-field": [

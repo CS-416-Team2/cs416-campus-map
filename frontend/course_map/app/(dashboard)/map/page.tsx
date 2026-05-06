@@ -103,23 +103,6 @@ export default function MapPage() {
  ))}
  </MapContainer>
 
- {/* Floating action buttons */}
- <div className="absolute bottom-24 lg:bottom-8 right-8 flex flex-col gap-4 z-30">
- <button
- onClick={handleCenterLocation}
- aria-label="Center on my location"
- className="w-14 h-14 bg-surface-container-lowest text-on-surface-variant rounded-full flex items-center justify-center shadow-2xl hover:bg-surface-container-low transition-colors active:scale-90"
- >
- <MapPin className="w-5 h-5" aria-hidden="true" />
- </button>
- <button
- onClick={handleStartWalking}
- aria-label="Start walking navigation"
- className="w-14 h-14 bg-secondary text-on-secondary rounded-full flex items-center justify-center shadow-2xl hover:opacity-90 active:scale-90 transition-all"
- >
- <Footprints className="w-5 h-5" aria-hidden="true" />
- </button>
- </div>
 
  {/* Layer filter panel (desktop) */}
  <div className="absolute top-4 left-4 z-30 hidden lg:block">
