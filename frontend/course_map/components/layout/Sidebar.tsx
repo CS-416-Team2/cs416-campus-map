@@ -124,7 +124,7 @@ export function Sidebar({ className }: SidebarProps) {
  <div className="border-t border-outline-variant pt-3">
  <Link
  href="/login"
- className="flex items-center justify-center gap-2 w-full border border-secondary text-secondary py-2.5 px-4 rounded-lg text-label-md font-semibold hover:bg-secondary-container 50 transition-colors"
+ className="flex items-center justify-center gap-2 w-full border border-secondary text-secondary py-2.5 px-4 rounded-lg text-label-md font-semibold hover:bg-surface-container-high transition-colors"
  >
  <LogIn className="w-4 h-4" aria-hidden="true" />
  Sign In

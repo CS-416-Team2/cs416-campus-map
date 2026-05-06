@@ -60,6 +60,8 @@ export function MapLayerController({
             ["get", "name"],
             "Edward D Anderson Building", "ANDR",
             "Purdue University Northwest Library", "SULB",
+            "University Library", "SULB",
+            "Library", "SULB",
             "Donald S Powers Computer Education Building", "POWERS",
             "Andrey A Potter Laboratory Building", "POTTER",
             "Gene Stratton Porter Hall", "PORTER",
@@ -67,6 +69,7 @@ export function MapLayerController({
             "C H Lawshe Hall", "LAWSHE",
             "Millard E Gyte Building", "GYTE",
             "Classroom Office Building", "CLO",
+            "Classroom-Office Building", "CLO",
             ["get", "name"]
           ],
           "text-size": [
