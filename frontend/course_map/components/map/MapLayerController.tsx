@@ -4,13 +4,9 @@ import { Layer } from "react-map-gl";
 import { useMapStore } from "@/hooks/use-map-store";
 import type { MapLayerId } from "@/types";
 
-type PoiLayerId = Extract<MapLayerId, "parking" | "restaurants" | "banks" | "grocery">;
+type PoiLayerId = Extract<MapLayerId, "restaurants" | "banks" | "grocery">;
 
 const POI_CONFIG: Record<PoiLayerId, { maki: string[]; color: string }> = {
-  parking: {
-    maki: ["parking", "parking-garage"],
-    color: "#3b82f6",
-  },
   restaurants: {
     maki: ["restaurant", "fast-food", "cafe", "bar"],
     color: "#ef4444",
@@ -35,7 +31,7 @@ export function MapLayerController({
   const { activeLayers } = useMapStore();
   const poiEntries = (
     Object.entries(POI_CONFIG) as [PoiLayerId, (typeof POI_CONFIG)[PoiLayerId]][]
-  ).filter(([layerId]) => includeLocalAreas || layerId === "parking");
+  ).filter(() => includeLocalAreas);
 
   return (
     <>
@@ -70,7 +66,6 @@ export function MapLayerController({
             "Nils K Nelson Bioscience Innovation Building", "NILS",
             "C H Lawshe Hall", "LAWSHE",
             "Millard E Gyte Building", "GYTE",
-            "Millard E. Gyte Building", "GYTE",
             "Classroom Office Building", "CLO",
             ["get", "name"]
           ],

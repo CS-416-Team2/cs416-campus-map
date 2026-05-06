@@ -138,12 +138,142 @@ const RESTRICTED_ZONES = [
       [-87.4754073922085, 41.58082040651468], // Close loop
     ],
   },
+  {
+    id: "preferred-permit-parking-12",
+    name: "Preferred Permit Parking",
+    coordinates: [
+      [-87.47410727285809, 41.58567797301283],
+      [-87.47402010106667, 41.58565189246198],
+      [-87.4740187599622, 41.58568198540434],
+      [-87.47409520291774, 41.585681483855424],
+      [-87.47410727285809, 41.58567797301283], // Close loop
+    ],
+  },
+];
+
+const OPEN_PARKING_ZONES = [
+  {
+    id: "open-parking-1",
+    name: "Open Parking",
+    coordinates: [
+      [-87.47451429807559, 41.585820914309465],
+      [-87.47453076635612, 41.5867825577249],
+      [-87.47431149577311, 41.58678205618453],
+      [-87.47431084100981, 41.587547211250175],
+      [-87.47387766426175, 41.58754570664686],
+      [-87.47372477834905, 41.58774030171981],
+      [-87.47366576975178, 41.587738295588046],
+      [-87.47366093321654, 41.58673433722047],
+      [-87.47372262402276, 41.5865196774219],
+      [-87.4737154687856, 41.58584313195087],
+      [-87.47387640132398, 41.585823571588534],
+      [-87.47451429807559, 41.585820914309465],
+    ],
+  },
+  {
+    id: "open-parking-2",
+    name: "Open Parking",
+    coordinates: [
+      [-87.47360446738386, 41.58576590851815],
+      [-87.47360927424266, 41.58655143332397],
+      [-87.47314659319174, 41.586545414818026],
+      [-87.47224831516526, 41.58636882850014],
+      [-87.47225209179105, 41.58576868713473],
+      [-87.4726946562716, 41.58576266855404],
+      [-87.47269733984093, 41.58535063566952],
+      [-87.47328345516286, 41.58535962654877],
+      [-87.47327809074523, 41.585758358705405],
+      [-87.47360446738386, 41.58576590851815],
+    ],
+  },
+  {
+    id: "open-parking-3",
+    name: "Open Parking",
+    coordinates: [
+      [-87.471554960085, 41.58644521571715],
+      [-87.4720062417436, 41.586440200287015],
+      [-87.47200385747813, 41.585766971184135],
+      [-87.47154654084936, 41.58577549750404],
+      [-87.471554960085, 41.58644521571715],
+    ],
+  },
+  {
+    id: "open-parking-4",
+    name: "Open Parking",
+    coordinates: [
+      [-87.47222830662582, 41.586602614810715],
+      [-87.47182597528085, 41.58662719035285],
+      [-87.47155574272749, 41.586628193436],
+      [-87.47154546413388, 41.58714097509705],
+      [-87.47223009797459, 41.587139470485454],
+      [-87.47222830662582, 41.586602614810715],
+    ],
+  },
+  {
+    id: "open-parking-5",
+    name: "Open Parking",
+    coordinates: [
+      [-87.47409402378214, 41.581373319858045],
+      [-87.47349812890512, 41.58136288247431],
+      [-87.47350141207248, 41.58189948460413],
+      [-87.47410141090873, 41.581895186893135],
+      [-87.47409402378214, 41.581373319858045],
+    ],
+  },
+  {
+    id: "open-parking-6",
+    name: "Open Parking",
+    coordinates: [
+      [-87.47480599847587, 41.58205031028636],
+      [-87.47481183339079, 41.58293206896404],
+      [-87.47449993249094, 41.582931455015164],
+      [-87.47450239486646, 41.58288479488309],
+      [-87.47324986651273, 41.58288909252819],
+      [-87.47324070305358, 41.58197056033736],
+      [-87.47354357524317, 41.5820528306597],
+      [-87.47480599847587, 41.58205031028636],
+    ],
+  },
+  {
+    id: "open-parking-7",
+    name: "Open Parking",
+    coordinates: [
+      [-87.47540590257624, 41.57963903751696],
+      [-87.47474742027498, 41.57963301836636],
+      [-87.4747299096952, 41.58069752955476],
+      [-87.47540582635473, 41.580694520028864],
+      [-87.47540590257624, 41.57963903751696],
+    ],
+  },
+  {
+    id: "open-parking-8",
+    name: "Open Parking",
+    coordinates: [
+      [-87.47336109369499, 41.57958187261139],
+      [-87.47125418965035, 41.579571158000995],
+      [-87.47124967363348, 41.58052153366591],
+      [-87.47146192641044, 41.58052716381175],
+      [-87.47147246378235, 41.57986843341744],
+      [-87.47155826809644, 41.579863929254856],
+      [-87.47156127877412, 41.58030533569431],
+      [-87.47180514366681, 41.58041906492587],
+      [-87.4720384711876, 41.580261420392894],
+      [-87.4720384711876, 41.579915727105536],
+      [-87.472747485783, 41.579919105224775],
+      [-87.4727369484111, 41.58027718486349],
+      [-87.47297930796495, 41.58042019095686],
+      [-87.47321715150227, 41.58025241212224],
+      [-87.473229194213, 41.57986955945802],
+      [-87.47336768539287, 41.57979411468735],
+      [-87.47336109369499, 41.57958187261139],
+    ],
+  },
 ];
 
 export function RestrictedZonesOverlay() {
   const { activeLayers } = useMapStore();
 
-  const features = RESTRICTED_ZONES.map((zone) => ({
+  const restrictedFeatures = RESTRICTED_ZONES.map((zone) => ({
     type: "Feature",
     properties: {
       name: zone.name,
@@ -154,33 +284,74 @@ export function RestrictedZonesOverlay() {
     },
   }));
 
-  const geojson: GeoJSON.FeatureCollection = {
+  const openFeatures = OPEN_PARKING_ZONES.map((zone) => ({
+    type: "Feature",
+    properties: {
+      name: zone.name,
+    },
+    geometry: {
+      type: "Polygon",
+      coordinates: [zone.coordinates],
+    },
+  }));
+
+  const restrictedGeojson: GeoJSON.FeatureCollection = {
     type: "FeatureCollection",
-    features: features as any,
+    features: restrictedFeatures as any,
   };
 
-  if (!activeLayers.permittedParking) return null;
+  const openGeojson: GeoJSON.FeatureCollection = {
+    type: "FeatureCollection",
+    features: openFeatures as any,
+  };
 
   return (
-    <Source id="restricted-zones-source" type="geojson" data={geojson}>
-      <Layer
-        id="restricted-zones-fill"
-        type="fill"
-        paint={{
-          "fill-color": "#ef4444", // Red-500
-          "fill-opacity": 0.4,
-          "fill-outline-color": "#b91c1c", // Red-700
-        }}
-      />
-      <Layer
-        id="restricted-zones-outline"
-        type="line"
-        paint={{
-          "line-color": "#b91c1c",
-          "line-width": 2,
-          "line-opacity": 0.8,
-        }}
-      />
-    </Source>
+    <>
+      {activeLayers.permittedParking && (
+        <Source id="restricted-zones-source" type="geojson" data={restrictedGeojson}>
+          <Layer
+            id="restricted-zones-fill"
+            type="fill"
+            paint={{
+              "fill-color": "#ef4444", // Red-500
+              "fill-opacity": 0.4,
+              "fill-outline-color": "#b91c1c", // Red-700
+            }}
+          />
+          <Layer
+            id="restricted-zones-outline"
+            type="line"
+            paint={{
+              "line-color": "#b91c1c",
+              "line-width": 2,
+              "line-opacity": 0.8,
+            }}
+          />
+        </Source>
+      )}
+      
+      {activeLayers.parking && (
+        <Source id="open-parking-source" type="geojson" data={openGeojson}>
+          <Layer
+            id="open-parking-fill"
+            type="fill"
+            paint={{
+              "fill-color": "#10b981", // Emerald-500 (Green)
+              "fill-opacity": 0.4,
+              "fill-outline-color": "#059669", // Emerald-600
+            }}
+          />
+          <Layer
+            id="open-parking-outline"
+            type="line"
+            paint={{
+              "line-color": "#059669",
+              "line-width": 2,
+              "line-opacity": 0.8,
+            }}
+          />
+        </Source>
+      )}
+    </>
   );
 }
