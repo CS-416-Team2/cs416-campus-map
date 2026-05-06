@@ -27,6 +27,7 @@ const campusLayers = [
  { id: "buildings" as MapLayerId, label: "Buildings", Icon: Building2, color: "text-secondary" },
  { id: "events" as MapLayerId, label: "Events", Icon: CalendarCheck, color: "text-[#f59e0b]" },
  { id: "parking" as MapLayerId, label: "Parking", Icon: ParkingSquare, color: "text-[#3b82f6]" },
+ { id: "permittedParking" as MapLayerId, label: "Permitted Parking", Icon: ParkingSquare, color: "text-[#ef4444]" },
 ];
 
 const localLayers = [
