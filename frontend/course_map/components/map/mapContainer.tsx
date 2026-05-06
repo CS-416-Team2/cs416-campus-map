@@ -9,6 +9,7 @@ import { useTheme } from "next-themes";
 import { ParkingLotsOverlay } from "./ParkingLotsOverlay";
 import { RestrictedZonesOverlay } from "./RestrictedZonesOverlay";
 import { CallStationsOverlay } from "./CallStationsOverlay";
+import { SpaceOverlay } from "./SpaceOverlay";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -93,6 +94,14 @@ export function MapContainer({ children, className, mapStyle: propMapStyle }: Ma
         mapboxAccessToken={MAPBOX_TOKEN}
         style={{ width: "100%", height: "100%" }}
         projection={{ name: "globe" }}
+        fog={{
+          range: [-1, 2],
+          color: "white",
+          "horizon-blend": 0.1,
+          "high-color": "#245cdf",
+          "space-color": "#000000",
+          "star-intensity": 0.8,
+        }}
         reuseMaps
       >
         <GeolocateControl 
@@ -106,6 +115,7 @@ export function MapContainer({ children, className, mapStyle: propMapStyle }: Ma
         <ParkingLotsOverlay />
         <RestrictedZonesOverlay />
         <CallStationsOverlay />
+        <SpaceOverlay />
         {children}
 
         {/* Satellite Toggle Button */}
