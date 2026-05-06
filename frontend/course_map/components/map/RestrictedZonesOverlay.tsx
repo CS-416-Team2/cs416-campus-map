@@ -151,10 +151,10 @@ const RESTRICTED_ZONES = [
   },
 ];
 
-const CONSTRUCTION_ZONES = [
+const PERIMETER_ZONES = [
   {
-    id: "construction-zone-1",
-    name: "Construction",
+    id: "campus-perimeter-1",
+    name: "Campus Perimeter",
     coordinates: [
       [-87.47623735804027, 41.58850235009015],
       [-87.47621523224083, 41.58471953765655],
@@ -174,7 +174,21 @@ const CONSTRUCTION_ZONES = [
       [-87.473108305357, 41.58470683413397],
       [-87.47132041036407, 41.584706834156236],
       [-87.47129482373661, 41.588485139978246],
-      [-87.47623735804027, 41.58850235009015], // Close loop
+      [-87.47623735804027, 41.58850235009015],
+    ],
+  },
+];
+
+const CONSTRUCTION_ZONES = [
+  {
+    id: "construction-zone-1",
+    name: "Construction",
+    coordinates: [
+      [-87.47587873210026, 41.58197755921748],
+      [-87.47495068779787, 41.58198558446015],
+      [-87.47495068779787, 41.58137165051621],
+      [-87.47588007320473, 41.58137165051621],
+      [-87.47587873210026, 41.58197755921748],
     ],
   },
 ];
@@ -323,6 +337,17 @@ export function RestrictedZonesOverlay() {
     },
   }));
 
+  const perimeterFeatures = PERIMETER_ZONES.map((zone) => ({
+    type: "Feature",
+    properties: {
+      name: zone.name,
+    },
+    geometry: {
+      type: "LineString",
+      coordinates: zone.coordinates,
+    },
+  }));
+
   const constructionFeatures = CONSTRUCTION_ZONES.map((zone) => ({
     type: "Feature",
     properties: {
@@ -342,6 +367,11 @@ export function RestrictedZonesOverlay() {
   const openGeojson: GeoJSON.FeatureCollection = {
     type: "FeatureCollection",
     features: openFeatures as any,
+  };
+
+  const perimeterGeojson: GeoJSON.FeatureCollection = {
+    type: "FeatureCollection",
+    features: perimeterFeatures as any,
   };
 
   const constructionGeojson: GeoJSON.FeatureCollection = {
@@ -374,16 +404,36 @@ export function RestrictedZonesOverlay() {
         </Source>
       )}
 
+      <Source id="perimeter-zones-source" type="geojson" data={perimeterGeojson}>
+        <Layer
+          id="perimeter-zones-outline"
+          type="line"
+          paint={{
+            "line-color": "#78350f", // Brown
+            "line-width": 4,
+            "line-dasharray": [2, 2],
+            "line-opacity": 0.8,
+          }}
+        />
+      </Source>
+
       {activeLayers.construction && (
         <Source id="construction-zones-source" type="geojson" data={constructionGeojson}>
-          {/* Brown dotted border only */}
+          <Layer
+            id="construction-zones-fill"
+            type="fill"
+            paint={{
+              "fill-color": "#eab308", // Yellow-500
+              "fill-opacity": 0.4,
+              "fill-outline-color": "#a16207", // Yellow-700
+            }}
+          />
           <Layer
             id="construction-zones-outline"
             type="line"
             paint={{
-              "line-color": "#78350f", // Brown
-              "line-width": 4,
-              "line-dasharray": [2, 2], // Dotted/short dashes
+              "line-color": "#a16207",
+              "line-width": 2,
               "line-opacity": 0.8,
             }}
           />
