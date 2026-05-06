@@ -95,11 +95,11 @@ export function MapContainer({ children, className, mapStyle: propMapStyle }: Ma
         projection={{ name: "globe" }}
         fog={{
           range: [0.5, 10],
-          color: "#000000", // Remove white glow by making it black
-          "horizon-blend": 0.01,
-          "high-color": "#020617", // Very dark navy/black
-          "space-color": "#010409", // Almost pure black
-          "star-intensity": 0.15,   // Much fewer stars
+          color: "#ffffff",
+          "horizon-blend": 0.1,
+          "high-color": "#245cdf",
+          "space-color": "#000000",
+          "star-intensity": 0.2,
         }}
         reuseMaps
       >
