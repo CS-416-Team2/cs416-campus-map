@@ -156,11 +156,25 @@ const CONSTRUCTION_ZONES = [
     id: "construction-zone-1",
     name: "Construction",
     coordinates: [
-      [-87.47587873210026, 41.58197755921748],
-      [-87.47495068779787, 41.58198558446015],
-      [-87.47495068779787, 41.58137165051621],
-      [-87.47588007320473, 41.58137165051621],
-      [-87.47587873210026, 41.58197755921748], // Close loop
+      [-87.47623735804027, 41.58850235009015],
+      [-87.47621523224083, 41.58471953765655],
+      [-87.47610442320654, 41.583726111986145],
+      [-87.47609050962687, 41.58208696165548],
+      [-87.4761879046843, 41.58145730872104],
+      [-87.47622268863006, 41.58105141346526],
+      [-87.47548526890971, 41.581056617266384],
+      [-87.47550613927262, 41.57756997649282],
+      [-87.47341910230254, 41.57758038464962],
+      [-87.47336344798403, 41.5795787208505],
+      [-87.47126249745999, 41.57957351693025],
+      [-87.47125084245287, 41.57980494463461],
+      [-87.4682802931859, 41.579872595328176],
+      [-87.46830812034331, 41.58118396390033],
+      [-87.47316395967451, 41.58123079801044],
+      [-87.473108305357, 41.58470683413397],
+      [-87.47132041036407, 41.584706834156236],
+      [-87.47129482373661, 41.588485139978246],
+      [-87.47623735804027, 41.58850235009015], // Close loop
     ],
   },
 ];
@@ -362,36 +376,15 @@ export function RestrictedZonesOverlay() {
 
       {activeLayers.construction && (
         <Source id="construction-zones-source" type="geojson" data={constructionGeojson}>
-          {/* Main yellow fill */}
-          <Layer
-            id="construction-zones-fill"
-            type="fill"
-            paint={{
-              "fill-color": "#facc15", // Vibrant Yellow
-              "fill-opacity": 0.5,
-              "fill-outline-color": "#854d0e", // Dark brown/yellow
-            }}
-          />
-          {/* Thick outer glow for "cartoon" emphasis */}
-          <Layer
-            id="construction-zones-glow"
-            type="line"
-            paint={{
-              "line-color": "#facc15",
-              "line-width": 12,
-              "line-opacity": 0.4,
-              "line-blur": 8,
-            }}
-          />
-          {/* Dashed "caution tape" border */}
+          {/* Brown dotted border only */}
           <Layer
             id="construction-zones-outline"
             type="line"
             paint={{
-              "line-color": "#854d0e",
-              "line-width": 4,
-              "line-dasharray": [2, 1],
-              "line-opacity": 0.9,
+              "line-color": "#78350f", // Brown
+              "line-width": 2,
+              "line-dasharray": [2, 2], // Dotted/short dashes
+              "line-opacity": 0.8,
             }}
           />
         </Source>
