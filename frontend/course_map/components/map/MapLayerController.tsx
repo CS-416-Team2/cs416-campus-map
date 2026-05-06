@@ -47,7 +47,9 @@ export function MapLayerController({
             "any",
             ["==", ["get", "class"], "building"],
             ["==", ["get", "maki"], "college"],
-            ["==", ["get", "maki"], "university"]
+            ["==", ["get", "maki"], "university"],
+            ["==", ["get", "maki"], "library"],
+            ["==", ["get", "maki"], "school"]
           ],
           ["!=", ["get", "name"], "Purdue University Northwest"],
           ["!=", ["get", "name"], "Gyte Annex"],
@@ -61,6 +63,7 @@ export function MapLayerController({
             "Edward D Anderson Building", "ANDR",
             "Purdue University Northwest Library", "SULB",
             "Student Union and Library", "SULB",
+            "Student Union & Library", "SULB",
             "University Library", "SULB",
             "Library", "SULB",
             "Donald S Powers Computer Education Building", "POWERS",
@@ -86,8 +89,9 @@ export function MapLayerController({
           "text-transform": "uppercase",
           "text-letter-spacing": 0.05,
           "text-max-width": 10,
-          "text-allow-overlap": false,
-          "text-padding": 50,
+          "text-allow-overlap": true,
+          "text-ignore-placement": true,
+          "text-padding": 2,
         }}
         paint={{
           "text-color": "#334155",
