@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Calendar, MapPin, Share2, Bookmark } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ParkingSuggestions } from "@/components/events/ParkingSuggestions";
 import { cn } from "@/lib/utils";
@@ -78,13 +78,7 @@ export function EventCard({
               </span>
             </div>
           </div>
-          <button
-            onClick={(e) => e.stopPropagation()}
-            aria-label={`Bookmark ${event.title}`}
-            className="text-secondary hover:text-secondary/80 transition-colors mt-0.5 shrink-0"
-          >
-            <Bookmark className="w-5 h-5" aria-hidden="true" />
-          </button>
+
         </div>
 
         <div className="flex items-center gap-2 text-on-surface-variant text-body-sm">
@@ -104,14 +98,7 @@ export function EventCard({
           >
             Register
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={(e) => e.stopPropagation()}
-            aria-label={`Share ${event.title}`}
-          >
-            <Share2 className="w-4 h-4" aria-hidden="true" />
-          </Button>
+
         </div>
       </div>
 
