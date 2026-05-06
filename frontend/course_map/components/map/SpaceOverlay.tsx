@@ -11,7 +11,7 @@ export function SpaceOverlay() {
   const { current: map } = useMap();
   const [isLoaded, setIsLoaded] = useState(false);
   const [longOffset, setLongOffset] = useState(0);
-  const requestRef = useRef<number>();
+  const requestRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     if (!map) return;
