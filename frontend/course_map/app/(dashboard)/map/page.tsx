@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Building2,
@@ -50,7 +51,12 @@ export default function MapPage() {
  setSelectedDestination,
  setUserLocation,
  setViewState,
+ resetNavigation,
  } = useMapStore();
+
+ useEffect(() => {
+   resetNavigation();
+ }, [resetNavigation]);
 
  const { data: events = [] } = useEvents();
 
