@@ -272,13 +272,6 @@ export function MapLayerController({
             "text-halo-color": "rgba(255, 255, 255, 0.95)",
             "text-halo-width": 2.5,
             "text-halo-blur": 0.5,
-            "text-opacity": [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              10, 0,
-              13, 1
-            ],
           }}
         />
       </Source>
